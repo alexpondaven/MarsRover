@@ -51,7 +51,7 @@
   1. Copy the generated file `~/nfshome/EEE2Rover/DE10_LITE_D8M_VIP_16/output_files/DE10_LITE_D8M_VIP_16_time_limited.sof` to your local computer or virtual machine, or map the nfshome directory so it can be accessed from the file system.
   2. In the Programmer window, select the correct hardware device and autodetect the JTAG chain.
   3. Assign the .sof file to the 10M50DA device
-  4. Check 'Program/Configure' and 'Verify'
+  4. Check 'Program/Configure'
   5. Click 'Start'
 
   #### Method 2: Connect to programmer using JTAG server
@@ -72,8 +72,8 @@ The starter project contains IP blocks that are used under an evaluation licence
   
   Download the firmware to the FPGA by running:
   `nios2_command_shell.sh nios2-download ~/nfshome/EEE2Rover/DE10_LITE_D8M_VIP_16/demo_batch/D8M_Camera_Test.elf -c 1 -g`
-  `nios2_command_shell.sh` may not be found in the PATH variable for your system. It is located in the Quartus installation in `nios2eds` (`/usr/local/altera/16.0/` on the EEE deparmental servers)
-  You can download the firmware from your local machine or VM, or from the departmental server once you have set up the JTAG server (Method 2 above). The parameter `-c 1` is the 'cable number' and you may need to change it if more than one item appears in the list of available hardware in the Quartus programmer.
+  `nios2_command_shell.sh` may not be found in the PATH variable for your system. It is located in the Quartus installation in `nios2eds` (`/usr/local/altera/16.0/nios2eds` on the EEE deparmental servers)
+  You can download the firmware from your local machine or VM, or from the departmental server once you have set up the JTAG server (Method 2 above). The parameter `-c 1` is the 'cable number' and you may need to change it if more than one item appears in the list of available hardware in the Quartus programmer. If the cable number is wrong you may get the misleading message `There is a problem with the Quartus Prime installation on your computer`.
   
   On downloading the firmware you will see progress and status messages showing that it was successful.
   
