@@ -1,5 +1,7 @@
 # FPGA Starter System Documentation
 
+The starter system is based on the demonstrator for the Terasic D8M-GPIO camera module. It consists of a streaming video pipeline with supervisor firmware running on a NIOS II soft processor. 
+
  ## Demonstration image processor
   The file /ip/EEE_IMGPROC/EEE_IMGPROC.v contains an example of a streaming video processor
   
@@ -34,10 +36,15 @@
   ### Memory-mapped interface
   The block has a memory mapped interface for input and output with the NIOS II processor.
   
-  - [] TODO: Finish this
+  Offset | Function
+------------ | -------------
+0x0 | Status register
+0x1 | Read message buffer
+0x2 | ID register
   
  ### Extending the image processor
  You can add whatever logic is necessary to implement your vision algorithm. There are a few high-level challenges:
+ - Transform the video to make it more suitable for object detection. e.g. filtering, colour space conversion
  - Find pixels that could be part of coloured balls
  - Group candidate pixels together to find bounding boxes of balls
  - Use the position and size of bounding boxes to determine the location of the ball relative to the camera in three dimensions
