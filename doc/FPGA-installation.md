@@ -13,13 +13,13 @@
   1. Install [MobaXterm software](https://mobaxterm.mobatek.net/)
   2. Connect to [Imperial College VPN](https://www.imperial.ac.uk/admin-services/ict/self-service/connect-communicate/remote-access/virtual-private-network-vpn/)
   3. Run MobaXterm and start a new session
-  4. Choose SSH, enter the hostname `ee-mill1.ee.ic.ac.uk` or `ee-mill2.ee.ic.ac.uk` and your College username
+  4. Choose SSH, enter the hostname `ee-mill2.ee.ic.ac.uk` and your College username
   5. Click OK and enter your College password when prompted
 
    #### macOS
   1. Install [XQuartz](https://www.xquartz.org/)
   2. Start a terminal
-  3. Start an SSH session with `ssh -X <username>@ee-mill1.ee.ic.ac.uk` or `ee-mill1.ee.ic.ac.uk`
+  3. Start an SSH session with `ssh -X <username>@ee-mill2.ee.ic.ac.uk`
 
   Once you have logged in, test window forwarding by running `gedit &`. You should see a text editor window.
      
