@@ -9,5 +9,6 @@
 ## Getting started
 
   [Building the FPGA starter project](doc/FPGA-installation.md)
+  
   [Starter project documentation](doc/FPGA-system.md)
   
