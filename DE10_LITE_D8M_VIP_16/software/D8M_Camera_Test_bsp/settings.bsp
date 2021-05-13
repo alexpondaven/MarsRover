@@ -2,11 +2,11 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>17-May-2019 11:25:32</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1558063532963</BspGeneratedUnixTimeStamp>
-        <BspGeneratedLocation>E:\daisy\DE10_LITE_D8M_VIP\software\D8M_Camera_Test_bsp</BspGeneratedLocation>
-        <BspSettingsFile>settings.bsp</BspSettingsFile>
-        <SopcDesignFile>..\..\Qsys.sopcinfo</SopcDesignFile>
+        <BspGeneratedTimeStamp>May 12, 2021 10:55:41 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1620856541138</BspGeneratedUnixTimeStamp>
+        <BspGeneratedLocation>./</BspGeneratedLocation>
+        <BspSettingsFile>/home/estott/EEE2Rover/DE10_LITE_D8M_VIP_16/software/D8M_Camera_Test_bsp/settings.bsp</BspSettingsFile>
+        <SopcDesignFile>../../Qsys.sopcinfo</SopcDesignFile>
         <JdiFile>default</JdiFile>
         <Cpu>nios2_gen2</Cpu>
         <SchemaVersion>1.9</SchemaVersion>
@@ -975,6 +975,12 @@
                 <addressRange>0x000410E8 - 0x000410EF</addressRange>
                 <addressSpan>8</addressSpan>
                 <attributes>printable</attributes>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>EEE_IMGPROC_0</slaveDescriptor>
+                <addressRange>0x00042000 - 0x0004201F</addressRange>
+                <addressSpan>32</addressSpan>
+                <attributes/>
         </MemoryMap>
         <LinkerSection>
                 <sectionName>.text</sectionName>

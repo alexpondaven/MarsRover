@@ -4,7 +4,7 @@
  * Machine generated for CPU 'nios2_gen2' in SOPC Builder design 'Qsys'
  * SOPC Builder design path: ../../Qsys.sopcinfo
  *
- * Generated: Fri May 17 11:25:33 CST 2019
+ * Generated: Wed May 12 22:30:41 BST 2021
  */
 
 /*
@@ -148,8 +148,23 @@
 #define __ALTERA_AVALON_TIMER
 #define __ALTERA_NIOS2_GEN2
 #define __ALTPLL
+#define __EEE_IMGPROC
 #define __I2C_OPENCORES
 #define __TERASIC_AUTO_FOCUS
+
+
+/*
+ * EEE_IMGPROC_0 configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_EEE_IMGPROC_0 EEE_IMGPROC
+#define EEE_IMGPROC_0_BASE 0x42000
+#define EEE_IMGPROC_0_IRQ -1
+#define EEE_IMGPROC_0_IRQ_INTERRUPT_CONTROLLER_ID -1
+#define EEE_IMGPROC_0_NAME "/dev/EEE_IMGPROC_0"
+#define EEE_IMGPROC_0_SPAN 32
+#define EEE_IMGPROC_0_TYPE "EEE_IMGPROC"
 
 
 /*
@@ -449,7 +464,7 @@
 #define SYSID_QSYS_IRQ_INTERRUPT_CONTROLLER_ID -1
 #define SYSID_QSYS_NAME "/dev/sysid_qsys"
 #define SYSID_QSYS_SPAN 8
-#define SYSID_QSYS_TIMESTAMP 1558063212
+#define SYSID_QSYS_TIMESTAMP 1620854098
 #define SYSID_QSYS_TYPE "altera_avalon_sysid_qsys"
 
 
