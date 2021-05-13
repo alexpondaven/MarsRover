@@ -1,6 +1,7 @@
-11:25:54 **** Build of configuration Nios II for project D8M_Camera_Test_bsp ****
+22:58:05 **** Incremental Build of configuration Nios II for project D8M_Camera_Test_bsp ****
 make all 
+/bin/sh: line 0: igncr: invalid option name
 [BSP build complete]
 
-11:25:55 Build Finished (took 562ms)
+22:58:05 Build Finished (took 116ms)
 
