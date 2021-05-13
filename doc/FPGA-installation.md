@@ -83,7 +83,11 @@ The starter project contains IP blocks that are used under an evaluation licence
   
   If the FPGA has the default power-on configuration (counting digits) then the video stream will show a blue Altera/Terasic splash screen. If the FPGA has been configured with the starter configuration and the firmware has been downloaded, you will see the camera feed. Toggling switch SW0 will switch between raw camera data and a basic image processor output that highlights red pixels.
   
-  - [] TODO: Add example images
+![WIN_20210513_11_03_10_Pro](https://user-images.githubusercontent.com/4660308/118118469-e290fc00-b3e4-11eb-9659-246b53dafe76.jpg)
+*Unprocessed Image*
+
+![WIN_20210513_11_03_16_Pro](https://user-images.githubusercontent.com/4660308/118118518-f0df1800-b3e4-11eb-8408-7861ba3cd8ba.jpg)
+*Image highlighting red pixels*
 
 The VGA output from the DE10-Lite board has only 4 bits per colour channel and you will notice the limited colour depth in the displayed video stream. The camera produces 8 bits of colour depth per channel, which means that your image processing algorithm will be able to 'see' a higher colour resolution than can be displayed on the video output.
   
