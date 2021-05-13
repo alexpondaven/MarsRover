@@ -10,15 +10,14 @@
       
    #### Windows
         
-  1. Install [MobaXterm software] (https://mobaxterm.mobatek.net/)
-  2. Connect to [Imperial College VPN] (https://www.imperial.ac.uk/admin-services/ict/self-service/connect-communicate/remote-access/virtual-private-network-vpn/)
+  1. Install [MobaXterm software](https://mobaxterm.mobatek.net/)
+  2. Connect to [Imperial College VPN](https://www.imperial.ac.uk/admin-services/ict/self-service/connect-communicate/remote-access/virtual-private-network-vpn/)
   3. Run MobaXterm and start a new session
   4. Choose SSH, enter the hostname `ee-mill1.ee.ic.ac.uk` or `ee-mill2.ee.ic.ac.uk` and your College username
   5. Click OK and enter your College password when prompted
 
    #### macOS
-  - [] TODO: Test this
-  1. Install [XQuartz] (https://www.xquartz.org/)
+  1. Install [XQuartz](https://www.xquartz.org/)
   2. Start a terminal
   3. Start an SSH session with `ssh -X <username>@ee-mill1.ee.ic.ac.uk` or `ee-mill1.ee.ic.ac.uk`
 
@@ -27,8 +26,10 @@
    ### Running Quartus
 
  The servers contain different versions of Quartus. You'll need to use Quartus 16.0. First, set up the environment variables for this version of Quartus by running:
- `source /usr/local/altera/.settings64.sh`
-
+ 
+    export ALTERAPATH="/usr/local/altera/16.0/"
+    source /usr/local/altera/.settings64.sh
+    
  Then run Quartus with:
  `quartus &`
      
@@ -71,13 +72,11 @@ The starter project contains IP blocks that are used under an evaluation licence
   The FPGA configuration requires firmware for the NIOS II soft processor. The firmware manages configuration of the camera and its bridge device so there will be no video data until the firmware is started. Source code and a pre-built firmware binary are included in the repository.
   
   Download the firmware to the FPGA by running:
-  `nios2_command_shell.sh nios2-download ~/nfshome/EEE2Rover/DE10_LITE_D8M_VIP_16/demo_batch/D8M_Camera_Test.elf -c 1 -g`
+  `nios2_command_shell.sh nios2-download EEE2Rover/DE10_LITE_D8M_VIP_16/software/D8M_Camera_Test/D8M_Camera_Test.elf -c 1 -g`
   `nios2_command_shell.sh` may not be found in the PATH variable for your system. It is located in the Quartus installation in `nios2eds` (`/usr/local/altera/16.0/nios2eds` on the EEE deparmental servers)
   You can download the firmware from your local machine or VM, or from the departmental server once you have set up the JTAG server (Method 2 above). The parameter `-c 1` is the 'cable number' and you may need to change it if more than one item appears in the list of available hardware in the Quartus programmer. If the cable number is wrong you may get the misleading message `There is a problem with the Quartus Prime installation on your computer`.
   
   On downloading the firmware you will see progress and status messages showing that it was successful.
-  
-  - [] TODO: Test this on Windows
   
   ### Observing the camera feed
   The starter system includes a VGA video output so you can view the camera stream and any annotations you might apply for debugging purposes. Connect the 15-pin VGA port on the FPGA board to your computer using the VGA to USB adapter module. The adapter module enumerates as a camera device so you can see the video stream by opening the camera app on your computer and selecting the 'AFN_Cap' camera.
