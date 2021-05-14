@@ -1,0 +1,3 @@
+
+// Enable WiFi
+#define WIFI
