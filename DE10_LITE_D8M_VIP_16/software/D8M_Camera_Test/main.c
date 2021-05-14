@@ -8,6 +8,13 @@
 
 #include "auto_focus.h"
 
+//EEE_IMGPROC defines
+#define EEE_IMGPROC_MSG_START 'R'<<16 | 'B'<<8 | 'R'
+
+//offsets
+#define EEE_IMGPROC_STATUS 0
+#define EEE_IMGPROC_MSG 1
+#define EEE_IMGPROC_ID 2
 
 
 #define DEFAULT_LEVEL 2
@@ -119,8 +126,8 @@ int main()
   usleep(2000);
   IOWR(MIPI_RESET_N_BASE, 0x00, 0xFF);
 
-  printf("Image Processor ID: %x\n",IORD(0x42000,2));
-  //printf("Image Processor ID: %x\n",IORD(EEE_IMGPROC_0_BASE,2)); //Don't know why this doesn't work - definition is in system.h in BSP
+  printf("Image Processor ID: %x\n",IORD(0x42000,EEE_IMGPROC_ID));
+  //printf("Image Processor ID: %x\n",IORD(EEE_IMGPROC_0_BASE,EEE_IMGPROC_ID)); //Don't know why this doesn't work - definition is in system.h in BSP
 
 
   usleep(2000);
@@ -222,7 +229,16 @@ int main()
        }
 	#endif
 
-       usleep(200000);
+
+       usleep(1000);
+
+       while ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) { //Extract buffer size from image processor status word
+    	   int word = IORD(0x42000,EEE_IMGPROC_MSG); //Get next word from message buffer
+    	   if (word == EEE_IMGPROC_MSG_START){ //Newline on start of message
+    		   printf("\n")
+    	   }
+    	   printf("%x ",word);
+       }
 
 
 

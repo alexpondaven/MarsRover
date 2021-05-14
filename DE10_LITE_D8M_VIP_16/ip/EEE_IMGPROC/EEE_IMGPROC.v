@@ -270,7 +270,7 @@ begin
 end
 
 //Update message output after it is read, if there is data in the buffer
-assign msg_buf_rd = s_chipselect & s_read & ~msg_buf_empty;
+assign msg_buf_rd = s_chipselect & s_read & ~msg_buf_empty & (s_address == `READ_MSG);
 						
 
 
