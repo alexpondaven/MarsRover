@@ -66,6 +66,7 @@ input                         mode;
 parameter IMAGE_W = 11'd640;
 parameter IMAGE_H = 11'd480;
 parameter MESSAGE_BUF_MAX = 256;
+parameter MSG_INTERVAL = 6;
 
 reg  [7:0]   reg_status;
 
@@ -137,6 +138,7 @@ end
 //Process bounding box at the end of the frame.
 reg [1:0] msg_state;
 reg [10:0] left, right, top, bottom;
+reg [7:0] frame_count;
 always@(posedge clk) begin
 	if (eop & in_valid & packet_video) begin  //Ignore non-video packets
 		
@@ -146,9 +148,14 @@ always@(posedge clk) begin
 		top <= y_min;
 		bottom <= y_max;
 		
-		//Start message writer FSM if there is room in the FIFO
-		if (msg_buf_size < MESSAGE_BUF_MAX - 3)
+		
+		//Start message writer FSM once every MSG_INTERVAL frames, if there is room in the FIFO
+		frame_count <= frame_count - 1;
+		
+		if (frame_count == 0 && msg_buf_size < MESSAGE_BUF_MAX - 3) begin
 			msg_state <= 2'b01;
+			frame_count <= MSG_INTERVAL-1;
+		end
 	end
 	
 	//Cycle through message writer states once started
@@ -194,10 +201,11 @@ MSG_FIFO	MSG_FIFO_inst (
 	.clock (clk),
 	.data (msg_buf_in),
 	.rdreq (msg_buf_rd),
-	.sclr (reset_n | msg_buf_flush),
+	.sclr (~reset_n | msg_buf_flush),
 	.wrreq (msg_buf_wr),
 	.q (msg_buf_out),
-	.usedw (msg_buf_size)
+	.usedw (msg_buf_size),
+	.empty (msg_buf_empty)
 	);
 
 
@@ -236,7 +244,7 @@ STREAM_REG #(.DATA_WIDTH(26)) out_reg (
 
 //Status register bits
 // 31:16 - unused
-// 15:8 - number of words in messgae buffer
+// 15:8 - number of words in message buffer
 // 7:0 - status flags
 
 
@@ -257,20 +265,27 @@ end
 
 
 // Process reads
+reg read_d; //Store the read signal for correct updating of the message buffer
+
+// Copy the requested word to the output port when there is a read.
 always @ (posedge clk)
 begin
-   if (~reset_n) 
-	   s_readdata <= {16'b0,1'b1,15'b0};
-	else if (s_chipselect & s_read)
-	begin
+   if (~reset_n) begin
+	   s_readdata <= {32'b0};
+		read_d <= 1'b0;
+	end
+	
+	else if (s_chipselect & s_read) begin
 		if   (s_address == `REG_STATUS) s_readdata <= {16'b0,msg_buf_size,reg_status};
 		if   (s_address == `READ_MSG) s_readdata <= {msg_buf_out};
 		if   (s_address == `READ_ID) s_readdata <= 32'h1234EEE2;
 	end
+	
+	read_d <= s_read;
 end
 
-//Update message output after it is read, if there is data in the buffer
-assign msg_buf_rd = s_chipselect & s_read & ~msg_buf_empty & (s_address == `READ_MSG);
+//Fetch next word from message buffer after read from READ_MSG
+assign msg_buf_rd = s_chipselect & s_read & ~read_d & ~msg_buf_empty & (s_address == `READ_MSG);
 						
 
 

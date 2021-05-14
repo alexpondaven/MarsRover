@@ -9,7 +9,7 @@
 #include "auto_focus.h"
 
 //EEE_IMGPROC defines
-#define EEE_IMGPROC_MSG_START 'R'<<16 | 'B'<<8 | 'R'
+#define EEE_IMGPROC_MSG_START ('R'<<16 | 'B'<<8 | 'B')
 
 //offsets
 #define EEE_IMGPROC_STATUS 0
@@ -229,18 +229,19 @@ int main()
        }
 	#endif
 
-
-       usleep(1000);
-
-       while ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) { //Extract buffer size from image processor status word
-    	   int word = IORD(0x42000,EEE_IMGPROC_MSG); //Get next word from message buffer
-    	   if (word == EEE_IMGPROC_MSG_START){ //Newline on start of message
-    		   printf("\n")
+       //Read messages from the image processor and print them on the terminal
+       while ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) { 	//Find out if there are words to read
+           int word = IORD(0x42000,EEE_IMGPROC_MSG); 			//Get next word from message buffer
+    	   if (word == EEE_IMGPROC_MSG_START){ 					//Newline on message identifier
+    		   printf("\n");
     	   }
-    	   printf("%x ",word);
+    	   printf("%08x ",word);
        }
 
 
+
+	   //Main loop delay
+	   usleep(10000);
 
    };
   return 0;
