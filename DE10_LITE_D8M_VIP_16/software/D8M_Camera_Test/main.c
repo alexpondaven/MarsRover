@@ -15,6 +15,7 @@
 #define EEE_IMGPROC_STATUS 0
 #define EEE_IMGPROC_MSG 1
 #define EEE_IMGPROC_ID 2
+#define EEE_IMGPROC_BBCOL 3
 
 
 #define DEFAULT_LEVEL 2
@@ -114,6 +115,7 @@ bool MIPI_Init(void){
 
 int main()
 {
+	int boundingBoxColour = 0;
 
 
   printf("DE10-LITE D8M VGA Demo\n");
@@ -237,6 +239,10 @@ int main()
     	   }
     	   printf("%08x ",word);
        }
+
+       //Update the bounding box colour
+       boundingBoxColour = (++boundingBoxColour & 0xff);
+       IOWR(0x42000, EEE_IMGPROC_BBCOL, (boundingBoxColour << 8) | (0xff - boundingBoxColour));
 
 
 

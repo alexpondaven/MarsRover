@@ -67,8 +67,8 @@ parameter IMAGE_W = 11'd640;
 parameter IMAGE_H = 11'd480;
 parameter MESSAGE_BUF_MAX = 256;
 parameter MSG_INTERVAL = 6;
+parameter BB_COL_DEFAULT = 24'h00ff00;
 
-reg  [7:0]   reg_status;
 
 wire [7:0]   red, green, blue, grey;
 wire [7:0]   red_out, green_out, blue_out;
@@ -91,7 +91,7 @@ assign red_high  =  red_detect ? {8'hff, 8'h0, 8'h0} : {grey, grey, grey};
 wire [23:0] new_image;
 wire bb_active;
 assign bb_active = (x == left) | (x == right) | (y == top) | (y == bottom);
-assign new_image = bb_active ? {8'h00, 8'hff, 8'h00} : red_high;
+assign new_image = bb_active ? bb_col : red_high;
 
 // Switch output pixels depending on mode switch
 // Don't modify the start-of-packet word - it's a packet discriptor
@@ -194,7 +194,6 @@ always@(*) begin	//Write words to FIFO as state machine advances
 	endcase
 end
 
-assign msg_buf_flush = 1'b0;
 
 //Output message FIFO
 MSG_FIFO	MSG_FIFO_inst (
@@ -241,27 +240,39 @@ STREAM_REG #(.DATA_WIDTH(26)) out_reg (
 `define REG_STATUS    			0
 `define READ_MSG    				1
 `define READ_ID    				2
+`define REG_BBCOL					3
 
 //Status register bits
-// 31:16 - unused
-// 15:8 - number of words in message buffer
-// 7:0 - status flags
+// 31:16 - unimplemented
+// 15:8 - number of words in message buffer (read only)
+// 7:5 - unused
+// 4 - flush message buffer (write only - read as 0)
+// 3:0 - unused
 
 
 // Process write
+
+reg  [7:0]   reg_status;
+reg	[23:0]	bb_col;
+
 always @ (posedge clk)
 begin
 	if (~reset_n)
 	begin
-		reg_status = 8'b0;
+		reg_status <= 8'b0;
+		bb_col <= BB_COL_DEFAULT;
 	end
 	else begin
 		if(s_chipselect & s_write) begin
 		   if      (s_address == `REG_STATUS)	reg_status <= s_writedata[7:0];
+		   if      (s_address == `REG_BBCOL)	bb_col <= s_writedata[23:0];
 		end
 	end
 end
 
+
+//Flush the message buffer if 1 is written to status register bit 4
+assign msg_buf_flush = (s_chipselect & s_write & (s_address == `REG_STATUS) & s_writedata[4]);
 
 
 // Process reads
@@ -279,6 +290,7 @@ begin
 		if   (s_address == `REG_STATUS) s_readdata <= {16'b0,msg_buf_size,reg_status};
 		if   (s_address == `READ_MSG) s_readdata <= {msg_buf_out};
 		if   (s_address == `READ_ID) s_readdata <= 32'h1234EEE2;
+		if   (s_address == `REG_BBCOL) s_readdata <= {8'h0, bb_col};
 	end
 	
 	read_d <= s_read;
