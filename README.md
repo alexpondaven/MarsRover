@@ -45,7 +45,7 @@ Data is fetched from the server (`https://localhost:5000/hi`)every 1 second and 
 ## Node.js Server
 Node.js is chosen as the back-end server. It establishs a server at port 5000 (`https://localhost:5000`). Data packet containing information on Battery and Speed would be returned if there is a fetch at subpage `/hi` (which is done under the hood)
 
-The server takes in command line input for testing currently, which would update its database on Battery and Speed, and reflected on the client webpage.
+The server takes in command line input and TCP packet, which would update its database on Battery and Speed, and reflected on the client webpage.
 
 Input in the following format: <br/>
 * battery charge: `b` + { number ∈ (0,100) }
@@ -54,11 +54,16 @@ Input in the following format: <br/>
 
 An updated database would be printed out in the command line after a valid input.
 
+## Python TCP Client
+A simple TCP client is set up in `server/TCPC.py`, which sends whatever user inputted to the `Node.js` server using TCP protocol. The server would then change the database accordingly. 
+
+Input format as indicated in above section.
+
 
 ## Future Development
-1. Add socket for communication with the control subsystem
-2. Add components for manual remote control
-3. Video streaming
+1. Add components for manual remote control
+2. Video streaming
 
 ## Change Log
-14-May-2021: initial commit
+14-May-2021: initial commit <br/>
+17-May-2021: added TCP socket

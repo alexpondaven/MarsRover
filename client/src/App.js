@@ -18,17 +18,20 @@ function App() {
     }
   ])
 
+  // this would be run when function called
   useEffect(() => {
     getAxios();
+    // getAxios called every 1s
     setInterval(getAxios, 1000)
-    // console.log("hi")
   },[]);
 
+  // update value of battery and speed
   function update(data) {
     setBattery([data.battery]);
     setSpeed([data.speed])
   }
 
+  // fetch from server and call function update to update data
   const getAxios = async() => {
     fetch('http://localhost:5000/hi')
       .then(response => response.json())

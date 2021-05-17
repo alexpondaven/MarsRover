@@ -1,9 +1,10 @@
-// setting up server
+// setting up HTTP server
 const express = require("express");
 const app = express(); 
 var cors = require('cors')
 app.use(cors())
 app.listen(5000, () => console.log("listening")); 
+// respond with the data pack of battery and speed and 'hi'
 app.get("/hi", (request, response) => {
     response.json({
         data: 'hi',
@@ -12,6 +13,7 @@ app.get("/hi", (request, response) => {
     });
 });
 
+// database 
 var battery = {
     status: false,
     remain : `34%`,
@@ -20,7 +22,30 @@ var speed = {
     speed : 57
 }
 
-// read from command line
+// setting up TCP server 
+var net = require('net');
+
+const server = net.createServer(socket => {
+    socket.write("Received.")   // response
+    // parse the received data and update database
+    socket.on("data", data => {
+        console.log(data.toString())
+        var tmp = parse(data.toString())
+        if (tmp != null && tmp[0] == 'b'){
+            battery.remain = String(tmp[1])+'%';
+            console.log(battery);
+        } else if (tmp != null && tmp[0] == 's'){
+            speed.speed = tmp[1];
+            console.log(speed)
+        } else if (tmp != null && tmp[0] == 'bc'){
+            battery.status = tmp[1];
+            console.log(battery);
+        }
+    })
+})
+server.listen(2000, '127.0.0.1');
+
+// read from command line and update battery or speed
 const readline = require("readline");
 const rl = readline.createInterface({
     input: process.stdin,
