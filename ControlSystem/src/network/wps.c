@@ -51,6 +51,8 @@ static esp_wps_config_t config = WPS_CONFIG_INIT_DEFAULT(WPS_MODE);
 static wifi_config_t wps_ap_creds[MAX_WPS_AP_CRED];
 static int s_ap_creds_num = 0;
 static int s_retry_num = 0;
+xSemaphoreHandle s_semph_get_ip_addrs;
+
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base,
                                 int32_t event_id, void* event_data)
@@ -138,6 +140,7 @@ static void got_ip_event_handler(void* arg, esp_event_base_t event_base,
 {
     ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
     ESP_LOGI(TAG, "got ip: " IPSTR, IP2STR(&event->ip_info.ip));
+    xSemaphoreGive(s_semph_get_ip_addrs);
 }
 
 /*init wifi as sta and start wps*/
@@ -172,6 +175,8 @@ void wifi_main(void)
         ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK( ret );
+
+    s_semph_get_ip_addrs = xSemaphoreCreateCounting(1, 0);
 
     start_wps();
 }

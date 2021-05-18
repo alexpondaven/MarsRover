@@ -2,7 +2,7 @@
 #include "Configuration.h"
 
 #ifdef WIFI
-  #include "WiFi/wifi.h"
+  #include "network/network.h"
 #endif
 
 
@@ -10,6 +10,7 @@ extern "C" void app_main() {
 
   #ifdef WIFI
     wifi_main();
+    tcp_client_main();
   #endif
 
 }
