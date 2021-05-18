@@ -94,9 +94,9 @@ code {
   width: 100px;
   margin: 5px;
   padding: 10px 20px;
-  background-color: aqua;
+  cursor: pointer;
 }
 
-button:active:hover {
-  background-color: blanchedalmond;
+.Controller {
+  display: flex;
 }

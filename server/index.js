@@ -3,15 +3,27 @@ const express = require("express");
 const app = express(); 
 var cors = require('cors')
 app.use(cors())
+app.use(express.json())
 app.listen(5000, () => console.log("listening")); 
 // respond with the data pack of battery and speed and 'hi'
-app.get("/hi", (request, response) => {
+app.get("/data", (request, response) => {
     response.json({
         data: 'hi',
         battery: battery,
         speed: speed
     });
+    // console.log(request.body.json())
 });
+
+app.post("/position", (request,response) => {
+    var tmp = request.body;
+    position[tmp.id] = tmp.state ? 1 : 0;
+    console.log(position)
+    // response.json()
+    response.json({
+        data: 'hey'
+    })
+})
 
 // database 
 var battery = {
@@ -21,12 +33,19 @@ var battery = {
 var speed = {
     speed : 57
 }
+var position = new Uint8Array(4);
+for (let i=0; i<4; i++){
+    position[i] = 0;
+}
 
 // setting up TCP server 
 var net = require('net');
 
+// const rtn = new Uint8Array(4);
+// rtn = position;
+// const buf = Buffer.from(rtn.buffer);
+
 const server = net.createServer(socket => {
-    socket.write("Received.")   // response
     // parse the received data and update database
     socket.on("data", data => {
         console.log(data.toString())
@@ -42,6 +61,8 @@ const server = net.createServer(socket => {
             console.log(battery);
         }
     })
+
+    socket.write(position)
 })
 server.listen(2000, '127.0.0.1');
 

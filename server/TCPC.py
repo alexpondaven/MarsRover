@@ -16,7 +16,7 @@ def local(MESSAGE):
         s.sendall(data)
         data = s.recv(1024)
     
-    print('Received', repr(data))
+    print('Received %s' %list(data))
     print()
 
 while True:
