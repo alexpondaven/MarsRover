@@ -29,6 +29,8 @@
 
 static const char *TAG = "tcp_client";
 static const char *payload = "Message from ESP32 ";
+void update_drive_SPI_data(uint8_t left, uint8_t right, uint8_t forward, uint8_t backward);
+void prepare_TCP_packet(tcp_send_pkt_t *pkt);
 
 static void tcp_client_task(void *pvParameters)
 {
@@ -38,6 +40,8 @@ static void tcp_client_task(void *pvParameters)
     int ip_protocol = 0;
 
     while (1) {
+
+        tcp_send_pkt_t tcp_send_pkt;
 
         struct sockaddr_in dest_addr;
         dest_addr.sin_addr.s_addr = inet_addr(host_ip);
@@ -68,7 +72,9 @@ static void tcp_client_task(void *pvParameters)
         }
 
         while (1) {
-            int err = send(sock, payload, strlen(payload), 0);
+            prepare_TCP_packet(&tcp_send_pkt);
+
+            int err = send(sock, &tcp_send_pkt, sizeof(tcp_send_pkt), 0);
             if (err < 0) {
                 ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
                 break;
@@ -88,10 +94,10 @@ static void tcp_client_task(void *pvParameters)
                 ESP_LOGI(TAG, "Received %d bytes from %s:", len, host_ip);
                 motor_control_pkt_t *pkt = (motor_control_pkt_t *) rx_buffer;
                 ESP_LOGI(TAG, "Recieved data %d, %d, %d, %d", pkt->left, pkt->right, pkt->forward, pkt->backward);
-
+                update_drive_SPI_data(pkt->left, pkt->right, pkt->forward, pkt->backward);
             }
 
-            vTaskDelay(2000 / portTICK_PERIOD_MS);
+            vTaskDelay(TCP_INTERVAL / portTICK_PERIOD_MS);
         }
 
         if (sock != -1) {
@@ -125,5 +131,5 @@ void tcp_client_main(void)
     
 
 
-    xTaskCreate(tcp_client_task, "tcp_client", 4096, NULL, 5, NULL);
+    xTaskCreate(tcp_client_task, "tcp_client", 4096, NULL, TCP_PRIORITY, NULL);
 }
