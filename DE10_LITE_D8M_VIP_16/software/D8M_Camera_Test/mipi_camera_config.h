@@ -17,6 +17,9 @@
 
 
 void OV8865_FOCUS_Move_to(alt_u16 a_u2MovePosition);
+void OV8865SetExposure(alt_u32 exposure);
+alt_u32 OV8865ReadExposure();
+void OV8865SetGain(alt_u16 gain);
 void MIPI_BIN_LEVEL(alt_u8 level);
 void BLC_LEVEL(alt_u8 blc0,alt_u8 blc1);
 

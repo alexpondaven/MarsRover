@@ -106,7 +106,7 @@ static SZ_CONFIG_T MipiCameraReg[] = {
 	     {0x6c,0x3502, 0x00}, // exposure L
 
 	     {0x6c,0x3503, 0x00}, // gain no delay, exposure no delay
-	     {0x6c,0x3508, 0x03}, // gain H
+	     {0x6c,0x3508, 0x05}, // gain H
 	     {0x6c,0x3509, 0x00}, // gain L
 	     {0x6c,0x3700, 0x48}, // sensor control  // TODO: to check
 	     {0x6c,0x3701, 0x18},
@@ -456,7 +456,7 @@ void OV8865_FOCUS_Move_to(alt_u16 a_u2MovePosition)
 	if (!bSuccess)
 		printf("failed to init MIPI- Camera i2c\r\n");
 
-	printf("Manual set focus to %d\r\n",a_u2MovePosition);
+	//printf("Manual set focus to %d\r\n",a_u2MovePosition);
   alt_u8 msb,lsb;
   msb = (a_u2MovePosition >> 4)&0x00FF;
   lsb = (a_u2MovePosition << 4 )&0x00F0;
@@ -470,7 +470,61 @@ void OV8865_FOCUS_Move_to(alt_u16 a_u2MovePosition)
 
 }
 
+void OV8865SetExposure(alt_u32 exposure){
 
+	Focus_Released(); // waiting for VCM release I2C bus
+
+	int bSuccess = oc_i2c_init_ex(I2C_OPENCORES_CAMERA_BASE, 50*1000*1000,400*1000); //I2C: 400K
+	if (!bSuccess)
+		printf("failed to init MIPI- Camera i2c\r\n");
+
+	if (exposure > 0xFFFFF) exposure = 0xFFFFF;
+	if (exposure < 0x20) exposure = 0x20;
+
+	OV8865_write_cmos_sensor_8(0x3500, (exposure >> 16) & 0x0F);
+	OV8865_write_cmos_sensor_8(0x3501, (exposure >> 8) & 0xFF);
+	OV8865_write_cmos_sensor_8(0x3502, exposure & 0xFF);
+
+
+	oc_i2c_uninit(I2C_OPENCORES_CAMERA_BASE);
+}
+
+void OV8865SetGain(alt_u16 gain){
+
+	Focus_Released(); // waiting for VCM release I2C bus
+
+	int bSuccess = oc_i2c_init_ex(I2C_OPENCORES_CAMERA_BASE, 50*1000*1000,400*1000); //I2C: 400K
+	if (!bSuccess)
+		printf("failed to init MIPI- Camera i2c\r\n");
+
+	if (gain > 0x7FF) gain = 0x7FF;
+	if (gain < 0x080) gain = 0x080;
+
+	OV8865_write_cmos_sensor_8(0x3508, (gain >> 8) & 0x0F);
+	OV8865_write_cmos_sensor_8(0x3509, gain & 0xFF);
+
+
+	oc_i2c_uninit(I2C_OPENCORES_CAMERA_BASE);
+}
+
+alt_u32 OV8865ReadExposure(){
+
+	alt_u32 exposure;
+
+	Focus_Released(); // waiting for VCM release I2C bus
+
+	int bSuccess = oc_i2c_init_ex(I2C_OPENCORES_CAMERA_BASE, 50*1000*1000,400*1000); //I2C: 400K
+	if (!bSuccess)
+		printf("failed to init MIPI- Camera i2c\r\n");
+
+	exposure = OV8865_read_cmos_sensor_8(0x3500);
+	exposure = (exposure <<8) | OV8865_read_cmos_sensor_8(0x3501);
+	exposure = (exposure <<8) | OV8865_read_cmos_sensor_8(0x3502);
+
+	oc_i2c_uninit(I2C_OPENCORES_CAMERA_BASE);
+
+	return exposure;
+}
 
 
 //ZOOM

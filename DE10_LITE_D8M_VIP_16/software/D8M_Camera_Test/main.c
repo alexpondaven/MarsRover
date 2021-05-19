@@ -8,16 +8,25 @@
 
 #include "auto_focus.h"
 
+#include <fcntl.h>
+#include <unistd.h>
+
 //EEE_IMGPROC defines
-#define EEE_IMGPROC_MSG_START 'R'<<16 | 'B'<<8 | 'R'
+#define EEE_IMGPROC_MSG_START ('R'<<16 | 'B'<<8 | 'B')
 
 //offsets
 #define EEE_IMGPROC_STATUS 0
 #define EEE_IMGPROC_MSG 1
 #define EEE_IMGPROC_ID 2
+#define EEE_IMGPROC_BBCOL 3
+#define EEE_IMGPROC_CONTRAST 4
 
 
-#define DEFAULT_LEVEL 2
+#define EXPOSURE_INIT 0x001f00
+#define EXPOSURE_STEP 0x100
+#define GAIN_INIT 0x400
+#define GAIN_STEP 0x040
+#define DEFAULT_LEVEL 3
 
 #define MIPI_REG_PHYClkCtl		0x0056
 #define MIPI_REG_PHYData0Ctl	0x0058
@@ -114,6 +123,7 @@ bool MIPI_Init(void){
 
 int main()
 {
+	fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);
 
 
   printf("DE10-LITE D8M VGA Demo\n");
@@ -177,6 +187,12 @@ int main()
         alt_u16 bin_level = DEFAULT_LEVEL;
         alt_u8  manual_focus_step = 10;
         alt_u16  current_focus = 300;
+        int boundingBoxColour = 0;
+		alt_u32 exposureTime = EXPOSURE_INIT;
+		alt_u16 gain = GAIN_INIT;
+
+		OV8865SetExposure(exposureTime);
+		OV8865SetGain(gain);
         Focus_Init();
   while(1){
 
@@ -229,18 +245,61 @@ int main()
        }
 	#endif
 
-
-       usleep(1000);
-
-       while ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) { //Extract buffer size from image processor status word
-    	   int word = IORD(0x42000,EEE_IMGPROC_MSG); //Get next word from message buffer
-    	   if (word == EEE_IMGPROC_MSG_START){ //Newline on start of message
-    		   printf("\n")
+       //Read messages from the image processor and print them on the terminal
+       while ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) { 	//Find out if there are words to read
+           int word = IORD(0x42000,EEE_IMGPROC_MSG); 			//Get next word from message buffer
+    	   if (word == EEE_IMGPROC_MSG_START){ 					//Newline on message identifier
+    		   printf("\n");
     	   }
-    	   printf("%x ",word);
+    	   printf("%08x ",word);
        }
 
+       //Update the bounding box colour - cycles from blue (0000ff) to green (00ff00)
+       //boundingBoxColour = ((boundingBoxColour + 1) & 0xff);
+       //IOWR(0x42000, EEE_IMGPROC_BBCOL, (boundingBoxColour << 8) | (0xff - boundingBoxColour));
 
+       //Process input commands
+		  int in = getchar();
+		  switch (in) {
+			   case 'e': {
+				   exposureTime += EXPOSURE_STEP;
+				   OV8865SetExposure(exposureTime);
+				   printf("\nExposure = %x ", exposureTime);
+				   break;}
+			   case 'd': {
+				   exposureTime -= EXPOSURE_STEP;
+				   OV8865SetExposure(exposureTime);
+				   printf("\nExposure = %x ", exposureTime);
+				   break;}
+			   case 't': {
+				   gain += GAIN_STEP;
+				   OV8865SetGain(gain);
+				   printf("\nGain = %x ", gain);
+				   break;}
+			   case 'g': {
+				   gain -= GAIN_STEP;
+				   OV8865SetGain(gain);
+				   printf("\nGain = %x ", gain);
+				   break;}
+			   case 'r': {
+				   current_focus += manual_focus_step;
+				   if(current_focus >1023) current_focus = 1023;
+				   OV8865_FOCUS_Move_to(current_focus);
+				   printf("\nFocus = %x ",current_focus);
+				   break;}
+			   case 'f': {
+				   if(current_focus > manual_focus_step) current_focus -= manual_focus_step;
+				   OV8865_FOCUS_Move_to(current_focus);
+				   printf("\nFocus = %x ",current_focus);
+				   break;}
+		  }
+
+       // Update contrast of image
+       IOWR(0x42000, EEE_IMGPROC_CONTRAST, 0xf);
+
+
+	   //Main loop delay
+	   usleep(10000);
 
    };
   return 0;

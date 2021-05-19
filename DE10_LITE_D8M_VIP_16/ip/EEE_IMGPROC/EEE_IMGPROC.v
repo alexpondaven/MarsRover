@@ -59,15 +59,17 @@ output								source_sop;
 output								source_eop;
 
 // conduit export
-input                         mode;
+input  [1:0]                  mode;
 
 ////////////////////////////////////////////////////////////////////////
 //
 parameter IMAGE_W = 11'd640;
 parameter IMAGE_H = 11'd480;
 parameter MESSAGE_BUF_MAX = 256;
+parameter MSG_INTERVAL = 6;
+parameter BB_COL_DEFAULT = 24'h0000ff;
+parameter CONTRAST_DEFAULT = 8'd0;
 
-reg  [7:0]   reg_status;
 
 wire [7:0]   red, green, blue, grey;
 wire [7:0]   red_out, green_out, blue_out;
@@ -77,27 +79,88 @@ wire         sop, eop, in_valid, out_ready;
 
 // Detect red areas
 wire red_detect;
+wire green_detect;
 assign red_detect = red[7] & ~green[7] & ~blue[7];
+assign green_detect = ~red[7] & green[7] & ~blue[7];
 
 // Find boundary of cursor box
 
 // Highlight detected areas
-wire [23:0] red_high;
+wire [23:0] red_high, green_high;
 assign grey = green[7:1] + red[7:2] + blue[7:2]; //Grey = green/2 + red/4 + blue/4
-assign red_high  =  red_detect ? {8'hff, 8'h0, 8'h0} : {grey, grey, grey};
+assign red_high  = red_detect ? {8'hff, 8'h0, 8'h0} : {grey, grey, grey};
+assign green_high = green_detect ? {8'h0, 8'hff, 8'h0} : {grey, grey, grey};
 
 // Show bounding box
 wire [23:0] new_image;
 wire bb_active;
 assign bb_active = (x == left) | (x == right) | (y == top) | (y == bottom);
-assign new_image = bb_active ? {8'h00, 8'hff, 8'h00} : red_high;
+assign new_image = bb_active ? bb_col : red_high;
+
+
+
+
+
+
+// Contrast - can help with edge detection
+wire [7:0] contrast_factor;
+assign contrast_factor = (8'd259 * (contrast + 8'd255)) / (8'd255 * (8'd259 - contrast));
+
+function [7:0] apply_contrast;
+	input [7:0] colour;
+	reg [7:0] contrast_colour;
+	begin
+		contrast_colour = contrast_factor * (colour - 8'd128) + 8'd128;
+		if (contrast_colour < 8'd0) begin
+			apply_contrast = 8'd0;
+		end
+		else if (contrast_colour > 8'd255) begin
+			apply_contrast = 8'd255;
+		end
+		else begin
+			apply_contrast = contrast_colour;
+		end
+	end
+endfunction
+
+wire [23:0] contrast_image;
+assign contrast_image = {apply_contrast(red), apply_contrast(green), apply_contrast(blue)}; // contrast image
+
+
+
+// Edge detection - horizontally
+// - difference in intensity compared to previous pixel
+reg [7:0] prev_grey; // intensity of the pixel to the left
+wire [7:0] diff_grey; // intensity difference between left pixel and current pixel
+assign diff_grey = (grey>prev_grey) ? {grey-prev_grey, grey-prev_grey, grey-prev_grey} : {prev_grey-grey, prev_grey-grey, prev_grey-grey};
+
+// Sharpen - use convolution with [-1 5 -1]
+reg [7:0] pp_grey; // previous previous grey
+wire [7:0] conv_grey;
+assign conv_grey = 5*prev_grey - pp_grey - conv_grey;
+
+//Noise reduction
+// Median filter:
+wire [7:0] med_grey;
+assign med_grey = ((pp_grey >= prev_grey && prev_grey >= grey)||(grey >= prev_grey && prev_grey >= pp_grey)) ? prev_grey :
+						((prev_grey >= pp_grey && pp_grey >= grey)||(grey >= pp_grey && pp_grey >= prev_grey))     ? pp_grey :
+																																					grey;
+
+
 
 // Switch output pixels depending on mode switch
 // Don't modify the start-of-packet word - it's a packet discriptor
 // Don't modify data in non-video packets
-assign {red_out, green_out, blue_out} = (mode & ~sop & packet_video) ? new_image : {red,green,blue};
+// Normal rgb: {red,green,blue}
+// Pixel by pixel edge detection: {diff_grey, diff_grey, diff_grey}
+// contrasted image: contrast_image
+// Convolution grey edge detection: {conv_grey, conv_grey, conv_grey}
+// Median filter grey: {med_grey, med_grey, med_grey}
+assign {red_out, green_out, blue_out} = ((mode==2'b01) & ~sop & packet_video) ? new_image: // red/green detection with bounding box
+													 ((mode==2'b10) & ~sop & packet_video) ? {diff_grey, diff_grey, diff_grey} : // edge detection
+																										  {red,green,blue};
 
-//Count valid pixels to tget the image coordinates. Reset and detect packet type on Start of Packet.
+//Count valid pixels to get the image coordinates. Reset and detect packet type on Start of Packet.
 reg [10:0] x, y;
 reg packet_video;
 always@(posedge clk) begin
@@ -105,14 +168,20 @@ always@(posedge clk) begin
 		x <= 11'h0;
 		y <= 11'h0;
 		packet_video <= (blue[3:0] == 3'h0);
+		prev_grey <= 24'h0;
+		pp_grey <= 24'h0;
 	end
 	else if (in_valid) begin
 		if (x == IMAGE_W-1) begin
 			x <= 11'h0;
 			y <= y + 11'h1;
+			prev_grey <= 24'h0;
+			pp_grey <= 24'h0;
 		end
 		else begin
 			x <= x + 11'h1;
+			pp_grey <= prev_grey;
+			prev_grey <= grey;
 		end
 	end
 end
@@ -137,6 +206,7 @@ end
 //Process bounding box at the end of the frame.
 reg [1:0] msg_state;
 reg [10:0] left, right, top, bottom;
+reg [7:0] frame_count;
 always@(posedge clk) begin
 	if (eop & in_valid & packet_video) begin  //Ignore non-video packets
 		
@@ -146,9 +216,14 @@ always@(posedge clk) begin
 		top <= y_min;
 		bottom <= y_max;
 		
-		//Start message writer FSM if there is room in the FIFO
-		if (msg_buf_size < MESSAGE_BUF_MAX - 3)
+		
+		//Start message writer FSM once every MSG_INTERVAL frames, if there is room in the FIFO
+		frame_count <= frame_count - 1;
+		
+		if (frame_count == 0 && msg_buf_size < MESSAGE_BUF_MAX - 3) begin
 			msg_state <= 2'b01;
+			frame_count <= MSG_INTERVAL-1;
+		end
 	end
 	
 	//Cycle through message writer states once started
@@ -187,17 +262,17 @@ always@(*) begin	//Write words to FIFO as state machine advances
 	endcase
 end
 
-assign msg_buf_flush = 1'b0;
 
 //Output message FIFO
 MSG_FIFO	MSG_FIFO_inst (
 	.clock (clk),
 	.data (msg_buf_in),
 	.rdreq (msg_buf_rd),
-	.sclr (reset_n | msg_buf_flush),
+	.sclr (~reset_n | msg_buf_flush),
 	.wrreq (msg_buf_wr),
 	.q (msg_buf_out),
-	.usedw (msg_buf_size)
+	.usedw (msg_buf_size),
+	.empty (msg_buf_empty)
 	);
 
 
@@ -233,44 +308,69 @@ STREAM_REG #(.DATA_WIDTH(26)) out_reg (
 `define REG_STATUS    			0
 `define READ_MSG    				1
 `define READ_ID    				2
+`define REG_BBCOL					3 // bounding box colour
+`define REG_CONTRAST				4
 
 //Status register bits
-// 31:16 - unused
-// 15:8 - number of words in messgae buffer
-// 7:0 - status flags
+// 31:16 - unimplemented
+// 15:8 - number of words in message buffer (read only)
+// 7:5 - unused
+// 4 - flush message buffer (write only - read as 0)
+// 3:0 - unused
 
 
 // Process write
+
+reg  [7:0]   reg_status;
+reg	[23:0]	bb_col;
+reg [7:0] contrast;
+
 always @ (posedge clk)
 begin
 	if (~reset_n)
 	begin
-		reg_status = 8'b0;
+		reg_status <= 8'b0;
+		bb_col <= BB_COL_DEFAULT;
+		contrast <= CONTRAST_DEFAULT;
 	end
 	else begin
 		if(s_chipselect & s_write) begin
 		   if      (s_address == `REG_STATUS)	reg_status <= s_writedata[7:0];
+		   if      (s_address == `REG_BBCOL)	bb_col <= s_writedata[23:0];
+			if 	  (s_address == `REG_CONTRAST)	contrast <= s_writedata[7:0];
 		end
 	end
 end
 
 
+//Flush the message buffer if 1 is written to status register bit 4
+assign msg_buf_flush = (s_chipselect & s_write & (s_address == `REG_STATUS) & s_writedata[4]);
+
 
 // Process reads
+reg read_d; //Store the read signal for correct updating of the message buffer
+
+// Copy the requested word to the output port when there is a read.
 always @ (posedge clk)
 begin
-   if (~reset_n) 
-	   s_readdata <= {16'b0,1'b1,15'b0};
-	else if (s_chipselect & s_read)
-	begin
+   if (~reset_n) begin
+	   s_readdata <= {32'b0};
+		read_d <= 1'b0;
+	end
+	
+	else if (s_chipselect & s_read) begin
 		if   (s_address == `REG_STATUS) s_readdata <= {16'b0,msg_buf_size,reg_status};
 		if   (s_address == `READ_MSG) s_readdata <= {msg_buf_out};
 		if   (s_address == `READ_ID) s_readdata <= 32'h1234EEE2;
+		if   (s_address == `REG_BBCOL) s_readdata <= {8'h0, bb_col};
+		if   (s_address == `REG_CONTRAST) s_readdata <= {24'h0, contrast};
 	end
+	
+	read_d <= s_read;
 end
 
-//Update message output after it is read, if there is data in the buffer
-assign msg_buf_rd = s_chipselect & s_read & ~msg_buf_empty & (s_address == `READ_MSG);
+//Fetch next word from message buffer after read from READ_MSG
+assign msg_buf_rd = s_chipselect & s_read & ~read_d & ~msg_buf_empty & (s_address == `READ_MSG);
 						
 
 
