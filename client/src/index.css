@@ -30,11 +30,7 @@ code {
 
 .Block {
   font-family: 'Segoe UI';
-  /* display: inline-block; */
-  /* align-items: center; */
-  /* justify-content: space-between; */
   padding: 10px 20px;
-  /* block-size: 150px; */
   writing-mode: horizontal-tb;
   height: 180px;
   width: 280px;

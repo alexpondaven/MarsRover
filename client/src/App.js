@@ -38,7 +38,6 @@ function App() {
       state: false,
     },
   ])
-  var position_int = [0,0,0,0]
 
   // this would be run when function called
   useEffect(() => {

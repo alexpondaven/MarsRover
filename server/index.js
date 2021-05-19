@@ -12,14 +12,12 @@ app.get("/data", (request, response) => {
         battery: battery,
         speed: speed
     });
-    // console.log(request.body.json())
 });
 
 app.post("/position", (request,response) => {
     var tmp = request.body;
     position[tmp.id] = tmp.state ? 1 : 0;
     console.log(position)
-    // response.json()
     response.json({
         data: 'hey'
     })
@@ -41,12 +39,9 @@ for (let i=0; i<4; i++){
 // setting up TCP server 
 var net = require('net');
 
-// const rtn = new Uint8Array(4);
-// rtn = position;
-// const buf = Buffer.from(rtn.buffer);
-
 const server = net.createServer(socket => {
     // parse the received data and update database
+    // reply with the 'position'
     socket.on("data", data => {
         console.log(data.toString())
         var tmp = parse(data.toString())
@@ -60,35 +55,15 @@ const server = net.createServer(socket => {
             battery.status = tmp[1];
             console.log(battery);
         }
+
+        socket.write(position)
     })
 
-    socket.write(position)
+    socket.on("end",() => {
+        console.log("client left")
+    })
 })
-server.listen(2000, '127.0.0.1');
-
-// read from command line and update battery or speed
-const readline = require("readline");
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
-var recursiveAsyncReadLine = function () {
-    rl.question('updates? ', function (answer) {
-        var tmp = parse(answer);
-        if (tmp != null && tmp[0] == 'b'){
-            battery.remain = String(tmp[1])+'%';
-            console.log(battery);
-        } else if (tmp != null && tmp[0] == 's'){
-            speed.speed = tmp[1];
-            console.log(speed)
-        } else if (tmp != null && tmp[0] == 'bc'){
-            battery.status = tmp[1];
-            console.log(battery);
-        }
-        recursiveAsyncReadLine(); 
-    });
-};
-recursiveAsyncReadLine();
+server.listen(2000);
 
 function parse(str){
     if (str[0] == 'b' && str[1] == 'c'){
