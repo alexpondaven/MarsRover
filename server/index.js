@@ -31,10 +31,7 @@ var battery = {
 var speed = {
     speed : 57
 }
-var position = new Uint8Array(4);
-for (let i=0; i<4; i++){
-    position[i] = 0;
-}
+var position = new Uint8Array([0,0,0,0]);
 
 // setting up TCP server 
 var net = require('net');

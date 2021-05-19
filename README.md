@@ -2,13 +2,13 @@
 The Command Subsystem consists of a client and server, which is run with React framework and Node.js respectively.
 
 ## Overview
-The server would be set up on `https://localhost:5000` and the client (React dev server) would be set up on `https://localhost:3000` <br/>
-Going to `https://localhost:3000` on the web browser after setting up both servers would show you 
+The server would be set up on `http://localhost:5000` and the client (React dev server) would be set up on `http://localhost:3000` <br/>
+Going to `http://localhost:3000` on the web browser after setting up both servers would show you 
 ![title](images/webpage.png) <br>
 The two cards show information about the battery and speed represented on different meters. 
 
 ## Usage
-`Node.js` is required to be installed for running the script. It can be downloaded from `https://nodejs.org/en/`
+`Node.js` is required to be installed for running the script. It can be downloaded from https://nodejs.org/en/
 ### Install Dependencies for Server
 ```
 cd server 
@@ -24,6 +24,7 @@ node index.js
 ### Install Dependencies for Client
 ```
 cd client
+npm install react react-dom
 npm install --save react-circular-progressbar
 npm install --save react-d3-speedometer
 ```
@@ -40,7 +41,7 @@ React is chosen as the front-end framework due to its largely supported librarie
 `src/App.js` contains the "main framework" of the webpage. <br/>
 `src/Components` folder contains Javascript files for components called in `src/App.js` which are also written in React. 
 
-Data is fetched from the server (`https://localhost:5000/hi`)every 1 second and dynamically updates the webpage without reloading. 
+Data is fetched from the server (`http://localhost:5000/data`)every 1 second and dynamically updates the webpage without reloading. 
 
 The rover can be remotely controlled by the bottom four buttons (left,right,forward, backward). The rover would be moving in the specific position as long as the button is clicked, a BlanchedAlmond colour of the button indicates it's being pressed.
 
@@ -49,7 +50,7 @@ The rover can be remotely controlled by the bottom four buttons (left,right,forw
 Whenever there is a state change in the button (MouseDown or MouseRelease), it would send a packet to the server to update its database.
 
 ## Node.js Server
-Node.js is chosen as the back-end server. It establishs a server at port 5000 (`https://localhost:5000`). Data packet containing information on Battery and Speed would be returned if there is a fetch at subpage `/hi` (which is done under the hood)
+Node.js is chosen as the back-end server. It establishs a server at port 5000 (`http://localhost:5000`). Data packet containing information on Battery and Speed would be returned if there is a fetch at subpage `/data` (which is done under the hood)
 
 The server takes in command line input and TCP packet, which would update its database on Battery and Speed, and reflected on the client webpage.
 
@@ -65,6 +66,8 @@ For example, if the user presses "right" on the webpage, the TCP packet being se
 `[0,1,0,0]`
 
 Due to the Request/Respone nature of server, above-mentioned array would only be sent to the client if the server receives a packet (despite being a valid input or not)
+
+`server/TCP_index.js` contains only the TCP server extract in `server/index.js` to simplify testing on communication channels.
 
 ## Python TCP Client
 A simple TCP client is set up in `server/TCPC.py`, which sends whatever user inputted to the `Node.js` server using TCP protocol. The server would then change the database accordingly. 

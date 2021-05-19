@@ -22,7 +22,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
     while True:
         x = input("updates? ")
-        if x=="end":
+        if x=="end" or x=="exit":
             break
         local(x)
 
