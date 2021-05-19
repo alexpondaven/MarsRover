@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>18-May-2021 11:12:46</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1621332766398</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>19-May-2021 22:27:00</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1621459620307</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>C:\work_files\mars_rover\EEE2Rover\DE10_LITE_D8M_VIP_16\software\D8M_Camera_Test_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>..\..\Qsys.sopcinfo</SopcDesignFile>
@@ -898,6 +898,12 @@
                 <Enabled>false</Enabled>
                 <Group xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
         </Setting>
+        <MemoryMap>
+                <slaveDescriptor>i2c_opencores_esp</slaveDescriptor>
+                <addressRange>0x00004020 - 0x0000403F</addressRange>
+                <addressSpan>32</addressSpan>
+                <attributes/>
+        </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>onchip_memory2_0</slaveDescriptor>
                 <addressRange>0x00020000 - 0x0003869F</addressRange>

@@ -4,7 +4,7 @@
  * Machine generated for CPU 'nios2_gen2' in SOPC Builder design 'Qsys'
  * SOPC Builder design path: ../../Qsys.sopcinfo
  *
- * Generated: Sat May 15 23:21:28 BST 2021
+ * Generated: Wed May 19 22:27:00 BST 2021
  */
 
 /*
@@ -257,6 +257,20 @@
 
 
 /*
+ * i2c_opencores_esp configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_i2c_opencores_esp i2c_opencores
+#define I2C_OPENCORES_ESP_BASE 0x4020
+#define I2C_OPENCORES_ESP_IRQ 4
+#define I2C_OPENCORES_ESP_IRQ_INTERRUPT_CONTROLLER_ID 0
+#define I2C_OPENCORES_ESP_NAME "/dev/i2c_opencores_esp"
+#define I2C_OPENCORES_ESP_SPAN 32
+#define I2C_OPENCORES_ESP_TYPE "i2c_opencores"
+
+
+/*
  * i2c_opencores_mipi configuration
  *
  */
@@ -464,7 +478,7 @@
 #define SYSID_QSYS_IRQ_INTERRUPT_CONTROLLER_ID -1
 #define SYSID_QSYS_NAME "/dev/sysid_qsys"
 #define SYSID_QSYS_SPAN 8
-#define SYSID_QSYS_TIMESTAMP 1621116459
+#define SYSID_QSYS_TIMESTAMP 1621458914
 #define SYSID_QSYS_TYPE "altera_avalon_sysid_qsys"
 
 
