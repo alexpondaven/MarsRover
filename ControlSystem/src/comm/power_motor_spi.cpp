@@ -1,6 +1,6 @@
 #include "../Configuration.h"
 
-
+/*
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,9 +14,7 @@
 #include "esp_log.h"
 
 #include "power_motor_spi.h"
-/*
- This code demonstrates how to use the SPI master half duplex mode to read/write a AT932C46D EEPROM (8-bit mode).
-*/
+
 
 
 
@@ -145,3 +143,5 @@ void SPI2_setup(void)
     xTaskCreate(power_arduino_SPI, "Power_Arduino_SPI", 1024, NULL, POWER_ARDUINO_SPI_PRIORITY, NULL);
     xTaskCreate(drive_arduino_SPI, "Drive_Arduino_SPI", 1024, NULL, DRIVE_ARDUINO_SPI_PRIORITY, NULL);
 }
+
+*/

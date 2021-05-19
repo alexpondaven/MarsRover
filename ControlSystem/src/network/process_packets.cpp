@@ -1,4 +1,4 @@
-#include "../SPI/power_motor_spi.h"
+#include "../comm/power_motor_spi.h"
 #include "packets.h"
 
 #include "freertos/FreeRTOS.h"

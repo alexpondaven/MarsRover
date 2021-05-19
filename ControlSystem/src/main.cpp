@@ -1,10 +1,13 @@
 
+
+
 #include "Configuration.h"
 
 #ifdef WIFI
   #include "network/network.h"
 #endif
 
+extern void uart_setup();
 
 extern "C" void app_main() {
 
@@ -12,5 +15,6 @@ extern "C" void app_main() {
     wifi_main();
     tcp_client_main();
   #endif
+  uart_setup();
 
 }
