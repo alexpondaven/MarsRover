@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="Qsys" kind="Qsys" version="1.0" fabric="QSYS">
  <!-- Format version 16.0 222 (Future versions may contain additional information.) -->
- <!-- 2021.05.19.22:15:14 -->
+ <!-- 2021.05.20.11:40:21 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
-  <value>1621458914</value>
+  <value>1621507221</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
@@ -13832,7 +13832,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="dataSlaveMapParam">
    <type>java.lang.String</type>
-   <value><![CDATA[<address-map><slave name='i2c_opencores_esp.avalon_slave_0' start='0x4020' end='0x4040' type='i2c_opencores.avalon_slave_0' /><slave name='onchip_memory2_0.s1' start='0x20000' end='0x386A0' type='altera_avalon_onchip_memory2.s1' /><slave name='nios2_gen2.debug_mem_slave' start='0x40800' end='0x41000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='timer.s1' start='0x41000' end='0x41020' type='altera_avalon_timer.s1' /><slave name='TERASIC_AUTO_FOCUS_0.mm_ctrl' start='0x41020' end='0x41040' type='TERASIC_AUTO_FOCUS.mm_ctrl' /><slave name='i2c_opencores_camera.avalon_slave_0' start='0x41040' end='0x41060' type='i2c_opencores.avalon_slave_0' /><slave name='i2c_opencores_mipi.avalon_slave_0' start='0x41060' end='0x41080' type='i2c_opencores.avalon_slave_0' /><slave name='mipi_pwdn_n.s1' start='0x41080' end='0x41090' type='altera_avalon_pio.s1' /><slave name='mipi_reset_n.s1' start='0x41090' end='0x410A0' type='altera_avalon_pio.s1' /><slave name='key.s1' start='0x410A0' end='0x410B0' type='altera_avalon_pio.s1' /><slave name='sw.s1' start='0x410B0' end='0x410C0' type='altera_avalon_pio.s1' /><slave name='led.s1' start='0x410C0' end='0x410D0' type='altera_avalon_pio.s1' /><slave name='altpll_0.pll_slave' start='0x410D0' end='0x410E0' type='altpll.pll_slave' /><slave name='sysid_qsys.control_slave' start='0x410E0' end='0x410E8' type='altera_avalon_sysid_qsys.control_slave' /><slave name='jtag_uart.avalon_jtag_slave' start='0x410E8' end='0x410F0' type='altera_avalon_jtag_uart.avalon_jtag_slave' /><slave name='EEE_IMGPROC_0.s1' start='0x42000' end='0x42020' type='EEE_IMGPROC.s1' /></address-map>]]></value>
+   <value><![CDATA[<address-map><slave name='onchip_memory2_0.s1' start='0x20000' end='0x386A0' type='altera_avalon_onchip_memory2.s1' /><slave name='nios2_gen2.debug_mem_slave' start='0x40800' end='0x41000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='timer.s1' start='0x41000' end='0x41020' type='altera_avalon_timer.s1' /><slave name='TERASIC_AUTO_FOCUS_0.mm_ctrl' start='0x41020' end='0x41040' type='TERASIC_AUTO_FOCUS.mm_ctrl' /><slave name='i2c_opencores_camera.avalon_slave_0' start='0x41040' end='0x41060' type='i2c_opencores.avalon_slave_0' /><slave name='i2c_opencores_mipi.avalon_slave_0' start='0x41060' end='0x41080' type='i2c_opencores.avalon_slave_0' /><slave name='mipi_pwdn_n.s1' start='0x41080' end='0x41090' type='altera_avalon_pio.s1' /><slave name='mipi_reset_n.s1' start='0x41090' end='0x410A0' type='altera_avalon_pio.s1' /><slave name='key.s1' start='0x410A0' end='0x410B0' type='altera_avalon_pio.s1' /><slave name='sw.s1' start='0x410B0' end='0x410C0' type='altera_avalon_pio.s1' /><slave name='led.s1' start='0x410C0' end='0x410D0' type='altera_avalon_pio.s1' /><slave name='altpll_0.pll_slave' start='0x410D0' end='0x410E0' type='altpll.pll_slave' /><slave name='sysid_qsys.control_slave' start='0x410E0' end='0x410E8' type='altera_avalon_sysid_qsys.control_slave' /><slave name='jtag_uart.avalon_jtag_slave' start='0x410E8' end='0x410F0' type='altera_avalon_jtag_uart.avalon_jtag_slave' /><slave name='EEE_IMGPROC_0.s1' start='0x42000' end='0x42020' type='EEE_IMGPROC.s1' /><slave name='i2c_opencores_esp.avalon_slave_0' start='0x42020' end='0x42040' type='i2c_opencores.avalon_slave_0' /></address-map>]]></value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -14533,7 +14533,7 @@ parameters are a RESULT of the module parameters. -->
     <moduleName>i2c_opencores_esp</moduleName>
     <slaveName>avalon_slave_0</slaveName>
     <name>i2c_opencores_esp.avalon_slave_0</name>
-    <baseAddress>16416</baseAddress>
+    <baseAddress>270368</baseAddress>
     <span>32</span>
    </memoryBlock>
    <memoryBlock>
@@ -18171,7 +18171,7 @@ the requested settings for a module instance. -->
   </assignment>
   <assignment>
    <name>embeddedsw.CMacro.TIMESTAMP</name>
-   <value>1621458914</value>
+   <value>1621507221</value>
   </assignment>
   <assignment>
    <name>embeddedsw.dts.compatible</name>
@@ -18191,7 +18191,7 @@ the requested settings for a module instance. -->
   </assignment>
   <assignment>
    <name>embeddedsw.dts.params.timestamp</name>
-   <value>1621458914</value>
+   <value>1621507221</value>
   </assignment>
   <assignment>
    <name>embeddedsw.dts.vendor</name>
@@ -18207,7 +18207,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="timestamp">
    <type>int</type>
-   <value>1621458914</value>
+   <value>1621507221</value>
    <derived>true</derived>
    <enabled>false</enabled>
    <visible>false</visible>
@@ -19611,7 +19611,7 @@ parameters are a RESULT of the module parameters. -->
   </parameter>
   <parameter name="baseAddress">
    <type>java.math.BigInteger</type>
-   <value>0x4020</value>
+   <value>0x00042020</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>

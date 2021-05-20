@@ -3,7 +3,7 @@
 #ifndef MIPI_CAMERA_CONFIG_H_
 #define MIPI_CAMERA_CONFIG_H_
 
-#define MIPI_I2C_ADDR   0x6C
+#define MIPI_I2C_ADDR   0x6C // sensor's SCCB ID is 0x6C when SID is low (section 2.11 of OV8865 data sheet)
 #define MIPI_AF_I2C_ADDR 0x18
 
 #define BYD_MODE_SELECT   0x0100

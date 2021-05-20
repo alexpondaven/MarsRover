@@ -246,13 +246,20 @@ int main()
 	#endif
 
        //Read messages from the image processor and print them on the terminal
+       int word;
        while ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) { 	//Find out if there are words to read
-           int word = IORD(0x42000,EEE_IMGPROC_MSG); 			//Get next word from message buffer
+           word = IORD(0x42000,EEE_IMGPROC_MSG); 			//Get next word from message buffer
     	   if (word == EEE_IMGPROC_MSG_START){ 					//Newline on message identifier
     		   printf("\n");
     	   }
     	   printf("%08x ",word);
        }
+
+       // Send word through UART
+       const alt_u8 device_address = ESP_I2C_ADDR; // needs to be defined
+       OC_I2CL_Write(I2C_OPENCORES_ESP_BASE, device_address, Addr, (alt_u8 *)&word, sizeof(word)); // or use OC_I2C_Write
+
+       // not sure what device_address or write address will be - probably decided by ESP program?
 
        //Update the bounding box colour - cycles from blue (0000ff) to green (00ff00)
        //boundingBoxColour = ((boundingBoxColour + 1) & 0xff);
