@@ -179,7 +179,10 @@ Qsys u0 (
 		.eee_imgproc_0_conduit_mode_new_signal     (SW[1:0]),
 		
 		.i2c_opencores_esp_export_scl_pad_io       (ARDUINO_IO[8]),       //         i2c_opencores_esp_export.scl_pad_io
-		.i2c_opencores_esp_export_sda_pad_io       (ARDUINO_IO[9])        //                                 .sda_pad_io
+		.i2c_opencores_esp_export_sda_pad_io       (ARDUINO_IO[9]),        //                                 .sda_pad_io
+		
+		.uart_esp_external_connection_rxd          (ARDUINO_IO[10]),          //     uart_esp_external_connection.rxd
+		.uart_esp_external_connection_txd          (ARDUINO_IO[11])           //                                 .txd
 	);
 
 FpsMonitor uFps(

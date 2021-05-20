@@ -194,6 +194,12 @@ int main()
 		OV8865SetExposure(exposureTime);
 		OV8865SetGain(gain);
         Focus_Init();
+
+        //init UART for esp
+        FILE* fp;
+        fp = fopen ("/dev/uart_esp", "r+"); //open file for read/write
+
+
   while(1){
 
        // touch KEY0 to trigger Auto focus
@@ -255,9 +261,13 @@ int main()
     	   printf("%08x ",word);
        }
 
-       // Send word through UART
-       const alt_u8 device_address = ESP_I2C_ADDR; // needs to be defined
-       OC_I2CL_Write(I2C_OPENCORES_ESP_BASE, device_address, Addr, (alt_u8 *)&word, sizeof(word)); // or use OC_I2C_Write
+       if (fp){
+    	   fwrite(&word,sizeof(word),1,fp);
+       }
+
+       // Send word through I2C
+//       const alt_u8 device_address = ESP_I2C_ADDR; // needs to be defined
+//       OC_I2CL_Write(I2C_OPENCORES_ESP_BASE, device_address, Addr, (alt_u8 *)&word, sizeof(word)); // or use OC_I2C_Write
 
        // not sure what device_address or write address will be - probably decided by ESP program?
 

@@ -163,26 +163,41 @@ assign {red_out, green_out, blue_out} = ((mode==2'b01) & ~sop & packet_video) ? 
 //Count valid pixels to get the image coordinates. Reset and detect packet type on Start of Packet.
 reg [10:0] x, y;
 reg packet_video;
+// store previous row of grey pixels 
+//reg [7:0] prev_row [IMAGE_W-11'h1:0][2:0];
+integer i;
+
 always@(posedge clk) begin
-	if (sop) begin
+	if (sop) begin // new frame
 		x <= 11'h0;
 		y <= 11'h0;
 		packet_video <= (blue[3:0] == 3'h0);
-		prev_grey <= 24'h0;
-		pp_grey <= 24'h0;
+		prev_grey <= 8'h0;
+		pp_grey <= 8'h0;
+//		for (i=0;i<IMAGE_W;i=i+1) begin
+//			prev_row[i][0] <= 8'h0;
+//			prev_row[i][1] <= 8'h0;
+//			prev_row[i][2] <= 8'h0;
+//		end
+		
 	end
 	else if (in_valid) begin
-		if (x == IMAGE_W-1) begin
+		if (x == IMAGE_W-1) begin // end of row
 			x <= 11'h0;
 			y <= y + 11'h1;
-			prev_grey <= 24'h0;
-			pp_grey <= 24'h0;
+			prev_grey <= 8'h0;
+			pp_grey <= 8'h0;
 		end
-		else begin
+		else begin // next pixel in row
 			x <= x + 11'h1;
 			pp_grey <= prev_grey;
 			prev_grey <= grey;
 		end
+		
+//		prev_row[x][2] <= prev_row[x][1];
+//		prev_row[x][1] <= prev_row[x][0];
+//		prev_row[x][0] <= grey;
+		
 	end
 end
 
