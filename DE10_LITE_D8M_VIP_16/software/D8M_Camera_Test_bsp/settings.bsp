@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>20-May-2021 13:24:32</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1621513472648</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>20-May-2021 19:24:07</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1621535047441</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>C:\work_files\mars_rover\EEE2Rover\DE10_LITE_D8M_VIP_16\software\D8M_Camera_Test_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>..\..\Qsys.sopcinfo</SopcDesignFile>

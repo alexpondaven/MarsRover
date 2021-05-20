@@ -145,7 +145,16 @@ wire [7:0] med_grey;
 assign med_grey = ((pp_grey >= prev_grey && prev_grey >= grey)||(grey >= prev_grey && prev_grey >= pp_grey)) ? prev_grey :
 						((prev_grey >= pp_grey && pp_grey >= grey)||(grey >= pp_grey && pp_grey >= prev_grey))     ? pp_grey :
 																																					grey;
-
+// Gaussian blur - using separable filter technique (reduces matrix multiplication from O(n^2) to O(n)
+// Good blur to remove high frequency noise but preserve edges by weighting the center pixel more (gaussian distribution)
+// Convolution with 1/16[1 2 1; 2 4 2; 1 2 1] = 1/16([1 2 1] * [1 2 1])
+// 1. Horizontal convolution with [1 2 1]
+// 2. Vertical convolution with [1 2 1] on result of 1.
+// 3. Divide by 16 (to preserve intensity)
+wire [9:0] horizontal_blur; // 10 bits to allow for overflow
+wire [9:0] vertical_blur;
+assign horizontal_blur = (grey + 2*prev_grey + pp_grey)/8'd4;
+assign vertical_blur = (horizontal_blur + 2*prev_hor_blur[x][0] + prev_hor_blur[x][1])/8'd4;
 
 
 // Switch output pixels depending on mode switch
@@ -156,15 +165,19 @@ assign med_grey = ((pp_grey >= prev_grey && prev_grey >= grey)||(grey >= prev_gr
 // contrasted image: contrast_image
 // Convolution grey edge detection: {conv_grey, conv_grey, conv_grey}
 // Median filter grey: {med_grey, med_grey, med_grey}
-assign {red_out, green_out, blue_out} = ((mode==2'b01) & ~sop & packet_video) ? new_image: // red/green detection with bounding box
+// Horizontal blur grey: {horizontal_blur[7:0],horizontal_blur[7:0],horizontal_blur[7:0]}
+// 3d gaussian blur grey: {vertical_blur[7:0], vertical_blur[7:0], vertical_blur[7:0]}
+assign {red_out, green_out, blue_out} = ((mode==2'b01) & ~sop & packet_video) ? {vertical_blur[7:0], vertical_blur[7:0], vertical_blur[7:0]}: // red/green detection with bounding box
 													 ((mode==2'b10) & ~sop & packet_video) ? {diff_grey, diff_grey, diff_grey} : // edge detection
-																										  {red,green,blue};
+																										  {grey,grey,grey};
 
 //Count valid pixels to get the image coordinates. Reset and detect packet type on Start of Packet.
 reg [10:0] x, y;
 reg packet_video;
 // store previous row of grey pixels 
-//reg [7:0] prev_row [IMAGE_W-11'h1:0][2:0];
+reg [7:0] prev_row [IMAGE_W-11'h1:0][1:0];
+//store previous horizontal_blurs
+reg [7:0] prev_hor_blur [IMAGE_W-11'h1:0][1:0];
 integer i;
 
 always@(posedge clk) begin
@@ -174,11 +187,12 @@ always@(posedge clk) begin
 		packet_video <= (blue[3:0] == 3'h0);
 		prev_grey <= 8'h0;
 		pp_grey <= 8'h0;
-//		for (i=0;i<IMAGE_W;i=i+1) begin
-//			prev_row[i][0] <= 8'h0;
-//			prev_row[i][1] <= 8'h0;
-//			prev_row[i][2] <= 8'h0;
-//		end
+		for (i=0;i<IMAGE_W;i=i+1) begin
+			prev_row[i][0] <= 8'h0;
+			prev_row[i][1] <= 8'h0;
+			prev_hor_blur[i][0] <= 8'h0;
+			prev_hor_blur[i][1] <= 8'h0;
+		end
 		
 	end
 	else if (in_valid) begin
@@ -194,9 +208,11 @@ always@(posedge clk) begin
 			prev_grey <= grey;
 		end
 		
-//		prev_row[x][2] <= prev_row[x][1];
-//		prev_row[x][1] <= prev_row[x][0];
-//		prev_row[x][0] <= grey;
+		prev_row[x][1] <= prev_row[x][0];
+		prev_row[x][0] <= grey;
+		
+		prev_hor_blur[x][1] <= prev_hor_blur[x][0];
+		prev_hor_blur[x][0] <= horizontal_blur;
 		
 	end
 end
