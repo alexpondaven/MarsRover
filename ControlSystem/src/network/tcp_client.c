@@ -31,9 +31,16 @@ static const char *TAG = "tcp_client";
 static const char *payload = "Message from ESP32 ";
 void update_drive_SPI_data(uint8_t left, uint8_t right, uint8_t forward, uint8_t backward);
 void prepare_TCP_packet(tcp_send_pkt_t *pkt);
+extern xSemaphoreHandle s_semph_get_ip_addrs;
+
 
 static void tcp_client_task(void *pvParameters)
 {
+    // ESP_ERROR_CHECK(example_connect());
+    ESP_LOGI(TAG, "Waiting for IP(s)");
+
+    // block indefinitely until ip address obtained
+    xSemaphoreTake(s_semph_get_ip_addrs, portMAX_DELAY);
     char rx_buffer[128];
     char host_ip[] = HOST_IP_ADDR;
     int addr_family = 0;
@@ -109,15 +116,11 @@ static void tcp_client_task(void *pvParameters)
     vTaskDelete(NULL);
 }
 
-extern xSemaphoreHandle s_semph_get_ip_addrs;
+
 
 void tcp_client_main(void)
 {
-    // ESP_ERROR_CHECK(example_connect());
-    ESP_LOGI(TAG, "Waiting for IP(s)");
-
-    // block indefinitely until ip address obtained
-    xSemaphoreTake(s_semph_get_ip_addrs, portMAX_DELAY);
+    
 
     // these are done by wps.c
     // ESP_ERROR_CHECK(nvs_flash_init());
