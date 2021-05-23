@@ -24,8 +24,8 @@ static const char* TAG = "I2S frame read";
 #define BITS_PER_SAMPLE I2S_BITS_PER_SAMPLE_16BIT
 #define BCLK_RATE MCLK_RATE/8
 
-#define FRAME_SIZE_BYTES 460800
-#define LINE_SIZE_BYTES 940 // supposed to be 960
+#define FRAME_SIZE_BYTES 307200
+#define LINE_SIZE_BYTES 640 // supposed to be 960
 #define BUFFER_LINES_READ 40
 #define READ_BUFFER_SIZE LINE_SIZE_BYTES * BUFFER_LINES_READ
 #define TIME_READ_BUFFER_MS 1000*8*READ_BUFFER_SIZE/BCLK_RATE
@@ -97,7 +97,7 @@ void init_i2s(void)
         i2s_config.communication_format = I2S_COMM_FORMAT_STAND_MSB;
         i2s_config.intr_alloc_flags = ESP_INTR_FLAG_LEVEL1;
         i2s_config.dma_buf_count = 80; // max value allowed is 128
-        i2s_config.dma_buf_len = 240;
+        i2s_config.dma_buf_len = 160;
         i2s_config.use_apll = 1;
         i2s_config.fixed_mclk = MCLK_RATE;//48000 * 24 * 2 * 8;
 
