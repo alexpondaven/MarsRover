@@ -32,7 +32,8 @@ static const char *payload = "Message from ESP32 ";
 void update_drive_SPI_data(uint8_t left, uint8_t right, uint8_t forward, uint8_t backward);
 void prepare_TCP_packet(tcp_send_pkt_t *pkt);
 extern xSemaphoreHandle s_semph_get_ip_addrs;
-
+extern xSemaphoreHandle mutex_video_frame_buffer;
+extern char * video_frame_buff;
 
 static void tcp_client_task(void *pvParameters)
 {
@@ -64,9 +65,10 @@ static void tcp_client_task(void *pvParameters)
         }
         ESP_LOGI(TAG, "Socket created, connecting to %s:%d", host_ip, PORT);
 
-        int err = connect(sock, (struct sockaddr *)&dest_addr, sizeof(struct sockaddr_in6));
-        if (err != 0) {
-            ESP_LOGE(TAG, "Socket unable to connect: errno %d", errno);
+        int err;
+        while (connect(sock, (struct sockaddr *)&dest_addr, sizeof(struct sockaddr_in6)) != 0) {
+            ESP_LOGE(TAG, "Socket unable to connect: errno %d. Will keep trying", errno);
+            vTaskDelay(4000 / portTICK_PERIOD_MS);
             break;
         }
         ESP_LOGI(TAG, "Successfully connected");
@@ -79,13 +81,20 @@ static void tcp_client_task(void *pvParameters)
         }
 
         while (1) {
-            prepare_TCP_packet(&tcp_send_pkt);
+            // prepare_TCP_packet(&tcp_send_pkt);
 
-            int err = send(sock, &tcp_send_pkt, sizeof(tcp_send_pkt), 0);
+            xSemaphoreTake(mutex_video_frame_buffer, portMAX_DELAY);
+            ESP_LOGI(TAG, "Sending TCP Packet");
+
+            int err = send(sock, video_frame_buff, 38400, 0);
+
+            xSemaphoreGive(mutex_video_frame_buffer);
             if (err < 0) {
                 ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
                 break;
             }
+
+            
 
             int len = recv(sock, rx_buffer, sizeof(rx_buffer) - 1, 0);
             // Error occurred during receiving
