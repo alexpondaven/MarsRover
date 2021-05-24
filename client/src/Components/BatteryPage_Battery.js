@@ -1,25 +1,20 @@
-import { CircularProgressbar,buildStyles } from 'react-circular-progressbar'
-import { Link } from 'react-router-dom'
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar'
 
 function Battery({battery}) {
     const x = battery.remain.slice(0,-1);
 
     return (
-        <Link to="/battery" style={{ textDecoration: 'none' , textColor: 'black'}} >
-        <card 
-            className='Battery' 
+        <div
+            className="Card1"
             style={{ backgroundColor: battery.status ? 'rgb(70,225,70)' : 'rgb(221, 96, 96)' }}
         >
-            <h2 className='card-title'>BATTERY</h2>
-            <p1>
+            <h4>
                 STATUS:{battery.status ? 'Charging' : 'Not Charging'}
-                <br/>
-                ESTIMATED TIME: NA
-            </p1>
+            </h4>
             <div style={{ width: 200, height: 200 }}>
-                <CircularProgressbar 
-                    value={x} text={battery.remain} 
-                    styles={ buildStyles({
+                <CircularProgressbar
+                    value={x} text={battery.remain}
+                    styles={buildStyles({
                         pathColor: `rgba(62, 152, 199, ${x})`,
                         textColor: '#000000',
                         trailColor: '#d6d6d6',
@@ -28,8 +23,7 @@ function Battery({battery}) {
                     })}
                 />
             </div>
-       </card>
-       </Link>
+        </div>
     )
 }
 

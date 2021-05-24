@@ -1,9 +1,11 @@
 import ReactSpeedometer from "react-d3-speedometer"
+import { Link } from 'react-router-dom'
 
 function Speed({speed}) {
     return (
-        <div 
-            className='Battery'         
+        <Link to="/speed" style={{ textDecoration: 'none'}} >
+        <card 
+            className='Speed'         
         >
             <h2>SPEED</h2>
             <p1>
@@ -14,9 +16,13 @@ function Speed({speed}) {
                     value={speed.speed}
                     needleColor="red"
                     segments={10}
+                    startColor="#33CC33"
+                    endColor="#FF471A"
+
                 />
             </div>
-       </div>
+       </card>
+       </Link>
     )
 }
 

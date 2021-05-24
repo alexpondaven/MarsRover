@@ -12,20 +12,18 @@ code {
     monospace;
 }
 
-.card {
-  /* Add shadows to create the "card" effect */
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-  transition: 0.3s;
-  margin: 5px;
-  height: 200px;
-  width: 300px;
-  max-width: 300px;
-  display: grid;
+.Navbar {
+  font-family: 'Segoe UI';
+  color: black;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #f2f2f2;
 }
 
-/* On mouse-over, add a deeper shadow */
-.card:hover {
-  box-shadow: 0 8px 16px 0 rgba(0,0,0,1);
+.Navbar .links {
+  margin-left: auto;
+  color: grey;
 }
 
 .Block {
@@ -38,9 +36,78 @@ code {
   position: relative;
 }
 
+.Card0 {
+  font-family: 'Segoe UI';
+  padding: 10px 20px;
+  writing-mode: horizontal-tb;
+  height: 320px;
+  position: relataive;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  border-radius: 15px;
+  transition: 0.3s;
+  margin: 5px;
+}
+
+.Card1 {
+  font-family: 'Segoe UI';
+  padding: 10px 20px;
+  writing-mode: horizontal-tb;
+  text-align: center;
+  align-self: center;
+  height: 320px;
+  width: 50%;
+  position: relative;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  border-radius: 15px;
+  transition: 0.3s;
+  margin: 5px;
+}
+
+.Card2 {
+  font-family: 'Segoe UI';
+  padding: 10px 20px;
+  writing-mode: horizontal-tb;
+  height: 425px;
+  position: relative;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  border-radius: 15px;
+  transition: 0.3s;
+  margin: 5px;
+}
+
+.Card3 {
+  font-family: 'Segoe UI';
+  padding: 10px 20px;
+  writing-mode: horizontal-tb;
+  position: relative;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  border-radius: 15px;
+  transition: 0.3s;
+  margin: 0px 5px;
+}
+
+/* for which?  */
+.Card4 {
+  font-family: 'Segoe UI';
+  padding: 10px 20px;
+  writing-mode: horizontal-tb;
+  position: relative;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  border-radius: 15px;
+  transition: 0.3s;
+}
+
+.Alert {
+  border-left: 5px solid black;
+  background: #f4f4f4;
+  margin: 5px;
+  padding: 10px 20px;
+}
+
 .Battery {
   display: inline-flex;
   font-family: 'Segoe UI';
+  color: black;
   align-items: center;
   justify-content: space-between;
   padding: 10px 20px;
@@ -50,6 +117,7 @@ code {
   max-width: 500px;
   position: relative;
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  border-radius: 15px;
   transition: 0.3s;
   margin: 5px;
 }
@@ -58,9 +126,37 @@ code {
   box-shadow: 0 8px 16px 0 rgba(0,0,0,1);
 }
 
+.BatteryPage {
+  display: flex;
+  overflow: auto;
+}
+
+.LeftColumn {
+  display: 'inline-block';
+  width: 30%;
+  max-width: 325px;
+}
+
+.RightColumn {
+  display: 'inline-block';
+  float: left;
+  min-width: 70%;
+}
+
+@media only screen and (max-width: 620px) {
+  /* For mobile phones: */
+  .LeftColumn, .RightColumn {
+    width: 100%;
+  }
+  .BatteryPage {
+    display: grid;
+  }
+}
+
 .Speed {
   display: inline-flex;
   font-family: 'Segoe UI';
+  color: black;
   align-items: center;
   justify-content: space-between;
   padding: 10px 20px;
@@ -70,6 +166,7 @@ code {
   max-width: 500px;
   position: relative;
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  border-radius: 15px;
   transition: 0.3s;
   margin: 5px;
 }

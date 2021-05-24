@@ -23,15 +23,60 @@ app.post("/position", (request,response) => {
     })
 })
 
+app.get("/battery", (request, response) => {
+    response.json({
+        battery: battery,
+        batteryusage: batteryusage,
+        alert: batteryalert
+    })
+})
+
 // database 
 var battery = {
     status: false,
-    remain : `34%`,
+    remain: '34%',
+    health: '50%'
 }
 var speed = {
     speed : 57
 }
 var position = new Uint8Array([0,0,0,0]);
+var batteryusage = [
+    {
+        x: new Date(1000000),
+        y: 100
+    },
+    {
+        x: new Date(2000000),
+        y: 100
+    },
+    {
+        x: new Date(3000000),
+        y: 90
+    },
+    {
+        x: new Date(4000000),
+        y: 90
+    },
+    {
+        x: new Date(5000000),
+        y: 60
+    },
+    {
+        x: new Date(6000000),
+        y: 70
+    }
+]
+var batteryalert = [
+    {
+        id:0,
+        text: "hi"
+    },
+    {
+        id:1,
+        text: "world"
+    }
+]
 
 // setting up TCP server 
 var net = require('net');

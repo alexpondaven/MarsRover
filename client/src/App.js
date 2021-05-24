@@ -1,7 +1,9 @@
 import { useState, useEffect, Component } from 'react'
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
 
 import Header from './Components/Header.js'
 import Battery from './Components/Battery.js'
+import BatteryPage from './Pages/BatteryPage.js'
 import Speed from './Components/Speed.js'
 import Controller from './Components/Controller.js'
 
@@ -10,6 +12,7 @@ function App() {
     {
       status: true,
       remain : '34%',
+      health: '30%',
     }
   ]) 
 
@@ -71,7 +74,7 @@ function App() {
       },
       body: JSON.stringify(body),
       
-    }).then()
+    })
   }
 
   const onClick = (id) => {
@@ -108,17 +111,36 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <Header />
-        {batteries.map(battery =>
-          <Battery battery={battery} />
-        )}
-        {speeds.map(speed =>
-          <Speed speed={speed} />
-        )}
-      <Controller positions={position} onClick={onClick} onRelease={onRelease} />
-      
-    </div>
+    <BrowserRouter>
+      <div className="App">
+        <Header />      
+
+        <Switch>
+          <Route exact path="/">
+            {batteries.map(battery =>
+              <Battery battery={battery} />
+            )}
+            {speeds.map(speed =>
+              <Speed speed={speed} />
+            )}
+            <Controller positions={position} onClick={onClick} onRelease={onRelease} />
+          </Route>
+
+          <Route path="/battery">
+            {batteries.map(battery =>
+              <BatteryPage battery={battery} />
+            )}
+          </Route>
+
+          <Route path="/speed">
+            {speeds.map(speed =>
+              <Speed speed={speed} />
+            )}
+          </Route>
+
+        </Switch>
+      </div> 
+    </BrowserRouter>
   );
 }
 

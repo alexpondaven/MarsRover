@@ -1,8 +1,11 @@
+import { Link } from 'react-router-dom'
+
 function Header() {
     return (
-        <div>
-            <h1>Mars Rover Dashboard</h1>
-        </div>
+        <nav className="Navbar">
+            <h1> Mars Rover Dashboard</h1>
+            <Link to="/" className="links" style={{ textDecoration: 'none'}}>Home</Link>
+        </nav>
     )
 }
 

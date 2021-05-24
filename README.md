@@ -13,7 +13,7 @@ The two cards show information about the battery and speed represented on differ
 ```
 cd server 
 npm install express 
-npm install cors --save 
+npm install cors
 npm install readline
 ```
 ### Run the Node.js Server
@@ -24,9 +24,7 @@ node index.js
 ### Install Dependencies for Client
 ```
 cd client
-npm install react react-dom
-npm install --save react-circular-progressbar
-npm install --save react-d3-speedometer
+npm install 
 ```
 ### Run the React dev Client Server
 ``` 
@@ -36,23 +34,53 @@ npm start
 *This is currently still in development mode. In the final product, separately starting up of the React dev Server would not be needed.
 
 ## React Client
+
+### Overview
 React is chosen as the front-end framework due to its largely supported libraries and community, also its DOM and state property. 
 
 `src/App.js` contains the "main framework" of the webpage. <br/>
 `src/Components` folder contains Javascript files for components called in `src/App.js` which are also written in React. 
 
-Data is fetched from the server (`http://localhost:5000/data`)every 1 second and dynamically updates the webpage without reloading. 
+The "website" has several webpages where user can jump to and contains more details of each subsystem.
 
-The rover can be remotely controlled by the bottom four buttons (left,right,forward, backward). The rover would be moving in the specific position as long as the button is clicked, a BlanchedAlmond colour of the button indicates it's being pressed.
+### Home Page
+The home page contains previews and basic details of each subsytems, clicking into each card would link to another page with more details on it.
+
+![title](images/webpage.png) <br>
+
+Data is fetched from the server (`http://localhost:5000/data`)every 1 second and dynamically updates the webpage without reloading.
+
+It also has four control buttons (`left`,`right`,`forward`, `backward`) to remotely control the movement of rover. (This is a temporal solution and needs further development) The rover would be moving in the specific position as long as the button is clicked, a BlanchedAlmond colour of the button indicates it's being pressed.
 
 ![title](images/controllerbutton.png) <br>
 
-Whenever there is a state change in the button (MouseDown or MouseRelease), it would send a packet to the server to update its database.
+Whenever there is a state change in the button (MouseDown or MouseRelease), it would send a packet to the server (`http://localhost:5000/position`) to update its database.
+
+### Battery Page
+The battery page, as suggested by the name, provides details on properties and information of the energy subsystem on the rover. The page is hosted on `http://localhost:3000/battery`, clicking on the `BATTERY` card on the home page will also be directed to this page.
+
+![title](images/battery.png) <br>
+
+It contains static properties of the battery, alerts/notifications, SoC, health, and a graph on past SoC.
+
+Data is fetched from the server (`http://localhost:5000/battery`)every 1 second and dynamically updates the webpage.
 
 ## Node.js Server
-Node.js is chosen as the back-end server. It establishs a server at port 5000 (`http://localhost:5000`). Data packet containing information on Battery and Speed would be returned if there is a fetch at subpage `/data` (which is done under the hood)
+Node.js is chosen as the back-end server. It acts as a two-way communication channel for data from the rover be able to display on the front-end webpage and remote command transmitted to the rover.
 
-The server takes in command line input and TCP packet, which would update its database on Battery and Speed, and reflected on the client webpage.
+### HTTP Port
+A HTTP port is established at port 5000 (`http://localhost:5000`), and it has 3 sub-ports that supports GET/POST on different data.
+
+`/data` GET returns basic overview of the status of all subsystems on the rover. it is designed for the home page to fetch data. 
+
+`/position` POST is fetched when there is a change in the position command on the webpage. It updates an array of 4 `unsigned_int8` elements (`'position'`) which indicates the remote control state. The array is in the seqeunce of [left,right,forward,backward]. Value of `1` means button being pressed on the webpage, and vice versa for `0` <br/>
+For example, if the user presses "right" on the webpage, the TCP packet being sent out would be:
+`[0,1,0,0]`
+
+`/battery` GET returns details on the properties of the batter, including SoC, health and past history of SoC.
+
+### TCP Port
+The server takes in TCP packet at port 2000, which would update its database on Battery and Speed, and reflected on the client webpage.
 
 Input in the following format: <br/>
 * battery charge: `b` + { number ∈ (0,100) }
@@ -61,9 +89,7 @@ Input in the following format: <br/>
 
 An updated database would be printed out in the command line after a valid input.
 
-The server would also response with an array of 4 `unsigned_int8` elements indicating the remote control state, in the sequence of [left,right,forward,backward]. Value of `1` means button being pressed on the webpage, and vice versa for `0` <br/>
-For example, if the user presses "right" on the webpage, the TCP packet being sent out would be:
-`[0,1,0,0]`
+The server would also response with the above-mentioned `unsigned_int8` array that contains information of remote control from the user on the webpage.
 
 Due to the Request/Respone nature of server, above-mentioned array would only be sent to the client if the server receives a packet (despite being a valid input or not)
 
@@ -78,10 +104,15 @@ It would also receive and print TCP packet received from the server on the termi
 
 
 ## Future Development
-1. Add map on webpage
-2. Video streaming
+1. Finish Speed subpage
+2. Add map on webpage
+3. Add sidebar
+3. Server receiving and updating data from control
+4. Add database to server
+5. Video streaming
 
 ## Change Log
 14-May-2021: initial commit <br/>
 17-May-2021: added TCP socket <br/>
 18-May-2021: added simple remote control buttons <br/>
+24-May-2021: added battery subpage <br/>
