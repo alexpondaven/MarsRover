@@ -20,7 +20,7 @@ sock.listen()
 print("Listening for connections")
 
 def readintoarray(data):
-  imgarray = numpy.empty(25600, dtype=numpy.uint8)
+  imgarray = numpy.empty(76800, dtype=numpy.uint8)
   once = False
   idx=0
   for b in struct.iter_unpack('B', data):
@@ -38,7 +38,7 @@ def readintoarray(data):
     
 
   print(numpy.shape(imgarray))
-  img3darr = numpy.reshape(imgarray, (40, 640))
+  img3darr = numpy.reshape(imgarray, (240, 320))
 
   pt.imshow(img3darr, interpolation='nearest')
   pt.show()
@@ -55,7 +55,7 @@ while True:
 
     # Receive the data in small chunks and retransmit it
     while True:
-        data = connection.recv(25600, socket.MSG_WAITALL)
+        data = connection.recv(76800, socket.MSG_WAITALL)
         
         print('received data of size %d', len(data))
         readintoarray(data)

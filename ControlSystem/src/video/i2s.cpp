@@ -24,10 +24,9 @@ static const char* TAG = "I2S frame read";
 #define BITS_PER_SAMPLE I2S_BITS_PER_SAMPLE_16BIT
 #define BCLK_RATE MCLK_RATE/8
 
-#define FRAME_SIZE_BYTES 307200
-#define LINE_SIZE_BYTES 640 // supposed to be 960
-#define BUFFER_LINES_READ 40
-#define READ_BUFFER_SIZE LINE_SIZE_BYTES * BUFFER_LINES_READ
+#define FRAME_SIZE_BYTES 76800
+#define LINE_SIZE_BYTES 320 // supposed to be 960
+#define READ_BUFFER_SIZE FRAME_SIZE_BYTES/8
 #define TIME_READ_BUFFER_MS 1000*8*READ_BUFFER_SIZE/BCLK_RATE
 
 char * video_frame_buff;
@@ -52,7 +51,7 @@ void get_frame_i2s(void* params) {
 
       xSemaphoreTake(mutex_video_frame_buffer, portMAX_DELAY);
       // wait until half the buffer has data and read
-      i2s_read(I2S_NUM_0, (void *) video_frame_buff, READ_BUFFER_SIZE, &bytes_read, 2000 / portTICK_PERIOD_MS);
+      i2s_read(I2S_NUM_0, (void *) (&video_frame_buff[total_bytes_read]), READ_BUFFER_SIZE, &bytes_read, 5000 / portTICK_PERIOD_MS); // TODO: change timeout
 
       xSemaphoreGive(mutex_video_frame_buffer);
       total_bytes_read += bytes_read;
@@ -63,7 +62,7 @@ void get_frame_i2s(void* params) {
       }
       
       
-      ESP_LOGI(TAG, "First pixel: %d %d %d, Last pixel: %d %d %d", video_frame_buff[0], video_frame_buff[1], video_frame_buff[2], video_frame_buff[READ_BUFFER_SIZE-3], video_frame_buff[READ_BUFFER_SIZE-2], video_frame_buff[READ_BUFFER_SIZE-1]);
+      ESP_LOGI(TAG, "Bytes Read: %d, First pixel: %d %d %d, Last pixel: %d %d %d", bytes_read, video_frame_buff[0], video_frame_buff[1], video_frame_buff[2], video_frame_buff[READ_BUFFER_SIZE-3], video_frame_buff[READ_BUFFER_SIZE-2], video_frame_buff[READ_BUFFER_SIZE-1]);
    
     }
 
@@ -112,7 +111,7 @@ void init_i2s(void)
     ESP_ERROR_CHECK(i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL));
     ESP_ERROR_CHECK(i2s_set_pin(I2S_NUM_0, &pin_config));
     // ESP_ERROR_CHECK(i2s_set_clk(I2S_NUM_0, CONFIG_EXAMPLE_AUDIO_SAMPLE_RATE, I2S_BITS_PER_SAMPLE_16BIT, I2S_CHANNEL_MONO));
-    video_frame_buff = (char *) heap_caps_malloc(READ_BUFFER_SIZE, MALLOC_CAP_8BIT);
+    video_frame_buff = (char *) heap_caps_malloc(FRAME_SIZE_BYTES, MALLOC_CAP_8BIT);
     xTaskCreate(get_frame_i2s, "Read frame I2S", 2048, NULL, READ_VIDEO_FRAME_PRIORITY, NULL);
 
 

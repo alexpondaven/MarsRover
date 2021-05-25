@@ -86,7 +86,8 @@ static void tcp_client_task(void *pvParameters)
             xSemaphoreTake(mutex_video_frame_buffer, portMAX_DELAY);
             ESP_LOGI(TAG, "Sending TCP Packet");
 
-            int err = send(sock, video_frame_buff, 38400, 0);
+            int err = send(sock, video_frame_buff, 76800, 0);
+            
 
             xSemaphoreGive(mutex_video_frame_buffer);
             if (err < 0) {
