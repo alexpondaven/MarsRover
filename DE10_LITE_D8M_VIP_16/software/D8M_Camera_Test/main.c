@@ -11,6 +11,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include <math.h>
+
 //EEE_IMGPROC defines
 #define EEE_IMGPROC_MSG_START ('R'<<16 | 'B'<<8 | 'B')
 
@@ -20,12 +22,13 @@
 #define EEE_IMGPROC_ID 2
 #define EEE_IMGPROC_BBCOL 3
 #define EEE_IMGPROC_CONTRAST 4
+#define EEE_IMGPROC_RED_THRESH 5
 
 
 #define EXPOSURE_INIT 0x001f00
-#define EXPOSURE_STEP 0x100
-#define GAIN_INIT 0x400
-#define GAIN_STEP 0x040
+#define EXPOSURE_STEP 0x500
+#define GAIN_INIT 0x300
+#define GAIN_STEP 0x100
 #define DEFAULT_LEVEL 3
 
 #define MIPI_REG_PHYClkCtl		0x0056
@@ -250,20 +253,67 @@ int main()
 
        }
 	#endif
+       int word;
+	  while ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) { 	//Find out if there are words to read
+		  word = IORD(0x42000,EEE_IMGPROC_MSG); 			//Get next word from message buffer
+	   if (word == EEE_IMGPROC_MSG_START){ 					//Newline on message identifier
+		   printf("\n");
+	   }
+	   printf("%08x ",word);
+	  }
 
+	  if (fp){
+	   fwrite(&word,sizeof(word),1,fp);
+	  }
+	  /*
        //Read messages from the image processor and print them on the terminal
        int word;
+       int bb_width=0;
+       int dist_from_centre=0;
+       int distance=0;
+       int angle=0;
        while ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) { 	//Find out if there are words to read
            word = IORD(0x42000,EEE_IMGPROC_MSG); 			//Get next word from message buffer
     	   if (word == EEE_IMGPROC_MSG_START){ 					//Newline on message identifier
     		   printf("\n");
     	   }
     	   printf("%08x ",word);
-       }
+    	   // read next 2 words
+    	   if ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) {
+    		   bb_width = IORD(0x42000,EEE_IMGPROC_MSG);
+    		   //printf("%08x ",bb_width);
+    		   if ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) {
+    			   dist_from_centre = IORD(0x42000,EEE_IMGPROC_MSG);
+    			   // calculation of distance from camera and angle
+    			   // ping pong balls are 38 mm = bb_width pixels wide (1 pixel = bb_width/38 mm)
+    			   int dist_from_centre_mm = dist_from_centre *bb_width / 38;
+    			   //printf("%08x ",dist_from_centre_mm);
+    			   //distance from camera values
+    			   //ratio of sizes = ratio of distances - but inversely proportional
+    			   // sx/sy=dy/dx  =>  dy = dx * sx /sy = 100 * 256 / sy
 
-       if (fp){
-    	   fwrite(&word,sizeof(word),1,fp);
+    			   // 0x100 or 256 pixels is 100 mm away
+    			   // 0x80 is 200 mm
+    			   //0x54 is 300 mm
+    			   distance = 100 * 256 / bb_width;
+    			   printf("%08d ",distance);
+    			   //angle = asin(dist_from_centre_mm/distance);
+    			   angle = (dist_from_centre_mm/distance) * 57; // small angle approximation (57 is around 180/pi)
+    			   printf("%08d ", angle);
+
+//    			   if (fp){
+//					   fwrite(&distance,sizeof(distance),1,fp);
+//					   fwrite(&angle,sizeof(angle),1,fp);
+//
+//					 }
+    		   }
+    	   }
+
+
+
        }
+       */
+
 
        // Send word through I2C
 //       const alt_u8 device_address = ESP_I2C_ADDR; // needs to be defined
@@ -312,11 +362,15 @@ int main()
 		  }
 
        // Update contrast of image
-       IOWR(0x42000, EEE_IMGPROC_CONTRAST, 0xf);
+       //IOWR(0x42000, EEE_IMGPROC_CONTRAST, 0xf);
+
+       //Update red threshold
+		  IOWR(0x42000, EEE_IMGPROC_RED_THRESH, 0x0);
+
 
 
 	   //Main loop delay
-	   usleep(10000);
+		  usleep(10000);
 
    };
   return 0;

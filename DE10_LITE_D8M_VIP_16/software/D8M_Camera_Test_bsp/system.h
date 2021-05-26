@@ -4,7 +4,7 @@
  * Machine generated for CPU 'nios2_gen2' in SOPC Builder design 'Qsys'
  * SOPC Builder design path: ../../Qsys.sopcinfo
  *
- * Generated: Thu May 20 19:24:07 BST 2021
+ * Generated: Wed May 26 11:59:11 BST 2021
  */
 
 /*
@@ -258,20 +258,6 @@
 
 
 /*
- * i2c_opencores_esp configuration
- *
- */
-
-#define ALT_MODULE_CLASS_i2c_opencores_esp i2c_opencores
-#define I2C_OPENCORES_ESP_BASE 0x42020
-#define I2C_OPENCORES_ESP_IRQ 4
-#define I2C_OPENCORES_ESP_IRQ_INTERRUPT_CONTROLLER_ID 0
-#define I2C_OPENCORES_ESP_NAME "/dev/i2c_opencores_esp"
-#define I2C_OPENCORES_ESP_SPAN 32
-#define I2C_OPENCORES_ESP_TYPE "i2c_opencores"
-
-
-/*
  * i2c_opencores_mipi configuration
  *
  */
@@ -479,7 +465,7 @@
 #define SYSID_QSYS_IRQ_INTERRUPT_CONTROLLER_ID -1
 #define SYSID_QSYS_NAME "/dev/sysid_qsys"
 #define SYSID_QSYS_SPAN 8
-#define SYSID_QSYS_TIMESTAMP 1621534635
+#define SYSID_QSYS_TIMESTAMP 1622026618
 #define SYSID_QSYS_TYPE "altera_avalon_sysid_qsys"
 
 
@@ -515,7 +501,7 @@
  */
 
 #define ALT_MODULE_CLASS_uart_esp altera_avalon_uart
-#define UART_ESP_BASE 0x42040
+#define UART_ESP_BASE 0x42020
 #define UART_ESP_BAUD 115200
 #define UART_ESP_DATA_BITS 8
 #define UART_ESP_FIXED_BAUD 1

@@ -35,47 +35,47 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   8 .debug_aranges 00001208  00000000  00000000  00017098  2**3
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_info   0002dbcf  00000000  00000000  000182a0  2**0
+  9 .debug_info   0002dbde  00000000  00000000  000182a0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_abbrev 0000b953  00000000  00000000  00045e6f  2**0
+ 10 .debug_abbrev 0000b962  00000000  00000000  00045e7e  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_line   0000e273  00000000  00000000  000517c2  2**0
+ 11 .debug_line   0000e273  00000000  00000000  000517e0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_frame  00002d58  00000000  00000000  0005fa38  2**2
+ 12 .debug_frame  00002d58  00000000  00000000  0005fa54  2**2
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_str    00004341  00000000  00000000  00062790  2**0
+ 13 .debug_str    00004341  00000000  00000000  000627ac  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_loc    00018a3d  00000000  00000000  00066ad1  2**0
+ 14 .debug_loc    00018a3d  00000000  00000000  00066aed  2**0
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_alt_sim_info 00000060  00000000  00000000  0007f510  2**2
+ 15 .debug_alt_sim_info 00000060  00000000  00000000  0007f52c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 16 .debug_ranges 00001aa8  00000000  00000000  0007f570  2**3
+ 16 .debug_ranges 00001aa8  00000000  00000000  0007f590  2**3
                   CONTENTS, READONLY, DEBUGGING
- 17 .thread_model 00000003  00000000  00000000  00084db1  2**0
+ 17 .thread_model 00000003  00000000  00000000  00084dd1  2**0
                   CONTENTS, READONLY
- 18 .cpu          0000000a  00000000  00000000  00084db4  2**0
+ 18 .cpu          0000000a  00000000  00000000  00084dd4  2**0
                   CONTENTS, READONLY
- 19 .qsys         00000001  00000000  00000000  00084dbe  2**0
+ 19 .qsys         00000001  00000000  00000000  00084dde  2**0
                   CONTENTS, READONLY
- 20 .simulation_enabled 00000001  00000000  00000000  00084dbf  2**0
+ 20 .simulation_enabled 00000001  00000000  00000000  00084ddf  2**0
                   CONTENTS, READONLY
- 21 .sysid_hash   00000004  00000000  00000000  00084dc0  2**0
+ 21 .sysid_hash   00000004  00000000  00000000  00084de0  2**0
                   CONTENTS, READONLY
- 22 .sysid_base   00000004  00000000  00000000  00084dc4  2**0
+ 22 .sysid_base   00000004  00000000  00000000  00084de4  2**0
                   CONTENTS, READONLY
- 23 .sysid_time   00000004  00000000  00000000  00084dc8  2**0
+ 23 .sysid_time   00000004  00000000  00000000  00084de8  2**0
                   CONTENTS, READONLY
- 24 .stderr_dev   00000009  00000000  00000000  00084dcc  2**0
+ 24 .stderr_dev   00000009  00000000  00000000  00084dec  2**0
                   CONTENTS, READONLY
- 25 .stdin_dev    00000009  00000000  00000000  00084dd5  2**0
+ 25 .stdin_dev    00000009  00000000  00000000  00084df5  2**0
                   CONTENTS, READONLY
- 26 .stdout_dev   00000009  00000000  00000000  00084dde  2**0
+ 26 .stdout_dev   00000009  00000000  00000000  00084dfe  2**0
                   CONTENTS, READONLY
- 27 .sopc_system_name 00000004  00000000  00000000  00084de7  2**0
+ 27 .sopc_system_name 00000004  00000000  00000000  00084e07  2**0
                   CONTENTS, READONLY
- 28 .quartus_project_dir 00000037  00000000  00000000  00084deb  2**0
+ 28 .quartus_project_dir 00000037  00000000  00000000  00084e0b  2**0
                   CONTENTS, READONLY
- 29 .sopcinfo     000a52d3  00000000  00000000  00084e22  2**0
+ 29 .sopcinfo     0009fd53  00000000  00000000  00084e42  2**0
                   CONTENTS, READONLY
 SYMBOL TABLE:
 00020000 l    d  .entry	00000000 .entry
@@ -606,7 +606,7 @@ Disassembly of section .entry:
    20014:	08409114 	ori	at,at,580
     jmp r1
    20018:	0800683a 	jmp	at
-   2001c:	00000000 	call	0 <__reset-0x20000>
+   2001c:	00000000 	call	0 <__alt_mem_onchip_memory2_0-0x20000>
 
 Disassembly of section .exceptions:
 
@@ -3327,7 +3327,7 @@ int main()
    21858:	0087c004 	movi	r2,7936
    2185c:	e0bffa15 	stw	r2,-24(fp)
 		alt_u16 gain = GAIN_INIT;
-   21860:	00810004 	movi	r2,1024
+   21860:	0080c004 	movi	r2,768
    21864:	e0bffb0d 	sth	r2,-20(fp)
 
 		OV8865SetExposure(exposureTime);
@@ -3402,54 +3402,54 @@ int main()
    21920:	01000234 	movhi	r4,8
    21924:	21284804 	addi	r4,r4,-24288
    21928:	0030d140 	call	30d14 <usleep>
+    	 	usleep(500000);
+
        }
 	#endif
-
-       //Read messages from the image processor and print them on the terminal
        int word;
-       while ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) { 	//Find out if there are words to read
+	  while ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) { 	//Find out if there are words to read
    2192c:	00000f06 	br	2196c <main+0x228>
-           word = IORD(0x42000,EEE_IMGPROC_MSG); 			//Get next word from message buffer
+		  word = IORD(0x42000,EEE_IMGPROC_MSG); 			//Get next word from message buffer
    21930:	00800134 	movhi	r2,4
    21934:	10880104 	addi	r2,r2,8196
    21938:	10800037 	ldwio	r2,0(r2)
    2193c:	e0bfff15 	stw	r2,-4(fp)
-    	   if (word == EEE_IMGPROC_MSG_START){ 					//Newline on message identifier
+	   if (word == EEE_IMGPROC_MSG_START){ 					//Newline on message identifier
    21940:	e0ffff17 	ldw	r3,-4(fp)
    21944:	008014b4 	movhi	r2,82
    21948:	10909084 	addi	r2,r2,16962
    2194c:	1880021e 	bne	r3,r2,21958 <main+0x214>
-    		   printf("\n");
+		   printf("\n");
    21950:	01000284 	movi	r4,10
    21954:	0023ec00 	call	23ec0 <putchar>
-    	   }
-    	   printf("%08x ",word);
+	   }
+	   printf("%08x ",word);
    21958:	e0bfff17 	ldw	r2,-4(fp)
    2195c:	100b883a 	mov	r5,r2
    21960:	010000f4 	movhi	r4,3
    21964:	210e3404 	addi	r4,r4,14544
    21968:	0023e7c0 	call	23e7c <printf>
+    	 	usleep(500000);
+
        }
 	#endif
-
-       //Read messages from the image processor and print them on the terminal
        int word;
-       while ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) { 	//Find out if there are words to read
+	  while ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) { 	//Find out if there are words to read
    2196c:	00800134 	movhi	r2,4
    21970:	10880004 	addi	r2,r2,8192
    21974:	10800037 	ldwio	r2,0(r2)
    21978:	1005d23a 	srai	r2,r2,8
    2197c:	10803fcc 	andi	r2,r2,255
    21980:	103feb1e 	bne	r2,zero,21930 <_gp+0xfffe390c>
-    		   printf("\n");
-    	   }
-    	   printf("%08x ",word);
-       }
+		   printf("\n");
+	   }
+	   printf("%08x ",word);
+	  }
 
-       if (fp){
+	  if (fp){
    21984:	e0bffd17 	ldw	r2,-12(fp)
    21988:	10000626 	beq	r2,zero,219a4 <main+0x260>
-    	   fwrite(&word,sizeof(word),1,fp);
+	   fwrite(&word,sizeof(word),1,fp);
    2198c:	e0bfff04 	addi	r2,fp,-4
    21990:	e1fffd17 	ldw	r7,-12(fp)
    21994:	01800044 	movi	r6,1
@@ -3500,7 +3500,7 @@ int main()
 			   case 'e': {
 				   exposureTime += EXPOSURE_STEP;
    21a2c:	e0bffa17 	ldw	r2,-24(fp)
-   21a30:	10804004 	addi	r2,r2,256
+   21a30:	10814004 	addi	r2,r2,1280
    21a34:	e0bffa15 	stw	r2,-24(fp)
 				   OV8865SetExposure(exposureTime);
    21a38:	e13ffa17 	ldw	r4,-24(fp)
@@ -3515,7 +3515,7 @@ int main()
 			   case 'd': {
 				   exposureTime -= EXPOSURE_STEP;
    21a54:	e0bffa17 	ldw	r2,-24(fp)
-   21a58:	10bfc004 	addi	r2,r2,-256
+   21a58:	10bec004 	addi	r2,r2,-1280
    21a5c:	e0bffa15 	stw	r2,-24(fp)
 				   OV8865SetExposure(exposureTime);
    21a60:	e13ffa17 	ldw	r4,-24(fp)
@@ -3530,7 +3530,7 @@ int main()
 			   case 't': {
 				   gain += GAIN_STEP;
    21a7c:	e0bffb0b 	ldhu	r2,-20(fp)
-   21a80:	10801004 	addi	r2,r2,64
+   21a80:	10804004 	addi	r2,r2,256
    21a84:	e0bffb0d 	sth	r2,-20(fp)
 				   OV8865SetGain(gain);
    21a88:	e0bffb0b 	ldhu	r2,-20(fp)
@@ -3547,7 +3547,7 @@ int main()
 			   case 'g': {
 				   gain -= GAIN_STEP;
    21aac:	e0bffb0b 	ldhu	r2,-20(fp)
-   21ab0:	10bff004 	addi	r2,r2,-64
+   21ab0:	10bfc004 	addi	r2,r2,-256
    21ab4:	e0bffb0d 	sth	r2,-20(fp)
 				   OV8865SetGain(gain);
    21ab8:	e0bffb0b 	ldhu	r2,-20(fp)
@@ -3607,18 +3607,21 @@ int main()
    21b60:	0023e7c0 	call	23e7c <printf>
 				   break;}
    21b64:	0001883a 	nop
-		  }
 
        // Update contrast of image
-       IOWR(0x42000, EEE_IMGPROC_CONTRAST, 0xf);
-   21b68:	00c003c4 	movi	r3,15
+       //IOWR(0x42000, EEE_IMGPROC_CONTRAST, 0xf);
+
+       //Update red threshold
+		  IOWR(0x42000, EEE_IMGPROC_RED_THRESH, 0x0);
+   21b68:	0007883a 	mov	r3,zero
    21b6c:	00800134 	movhi	r2,4
-   21b70:	10880404 	addi	r2,r2,8208
+   21b70:	10880504 	addi	r2,r2,8212
    21b74:	10c00035 	stwio	r3,0(r2)
 
 
+
 	   //Main loop delay
-	   usleep(10000);
+		  usleep(10000);
    21b78:	0109c404 	movi	r4,10000
    21b7c:	0030d140 	call	30d14 <usleep>
 
@@ -6904,7 +6907,7 @@ void QUEUE_Empty(QUEUE_STRUCT *pQueue){
    2473c:	000251ec 	andhi	zero,zero,2375
    24740:	00025064 	muli	zero,zero,2369
    24744:	000251ec 	andhi	zero,zero,2375
-   24748:	000250c0 	call	250c <__reset-0x1daf4>
+   24748:	000250c0 	call	250c <__alt_mem_onchip_memory2_0-0x1daf4>
    2474c:	000251ec 	andhi	zero,zero,2375
    24750:	000251ec 	andhi	zero,zero,2375
    24754:	000250d0 	cmplti	zero,zero,2371
@@ -14031,12 +14034,12 @@ void QUEUE_Empty(QUEUE_STRUCT *pQueue){
    2b460:	0002bd10 	cmplti	zero,zero,2804
    2b464:	0002bd10 	cmplti	zero,zero,2804
    2b468:	0002b954 	movui	zero,2789
-   2b46c:	0002b980 	call	2b98 <__reset-0x1d468>
+   2b46c:	0002b980 	call	2b98 <__alt_mem_onchip_memory2_0-0x1d468>
    2b470:	0002bd10 	cmplti	zero,zero,2804
    2b474:	0002bd10 	cmplti	zero,zero,2804
    2b478:	0002bd10 	cmplti	zero,zero,2804
    2b47c:	0002bcb8 	rdprs	zero,zero,2802
-   2b480:	0002b980 	call	2b98 <__reset-0x1d468>
+   2b480:	0002b980 	call	2b98 <__alt_mem_onchip_memory2_0-0x1d468>
    2b484:	0002bd10 	cmplti	zero,zero,2804
    2b488:	0002bd10 	cmplti	zero,zero,2804
    2b48c:	0002b814 	movui	zero,2784
@@ -14051,7 +14054,7 @@ void QUEUE_Empty(QUEUE_STRUCT *pQueue){
    2b4b0:	0002bc3c 	xorhi	zero,zero,2800
    2b4b4:	0002bd10 	cmplti	zero,zero,2804
    2b4b8:	0002bd10 	cmplti	zero,zero,2804
-   2b4bc:	0002b900 	call	2b90 <__reset-0x1d470>
+   2b4bc:	0002b900 	call	2b90 <__alt_mem_onchip_memory2_0-0x1d470>
    2b4c0:	42000204 	addi	r8,r8,8
    2b4c4:	da802317 	ldw	r10,140(sp)
    2b4c8:	5455883a 	add	r10,r10,r17
