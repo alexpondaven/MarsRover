@@ -23,6 +23,7 @@
 #include "lwip/sockets.h"
 
 #include "packets.h"
+#include "../video/bitmap.h"
 
 
 #define PORT TCP_PORT
@@ -33,7 +34,7 @@ void update_drive_SPI_data(uint8_t left, uint8_t right, uint8_t forward, uint8_t
 void prepare_TCP_packet(tcp_send_pkt_t *pkt);
 extern xSemaphoreHandle s_semph_get_ip_addrs;
 extern xSemaphoreHandle mutex_video_frame_buffer;
-extern char * video_frame_buff;
+extern bitmap_t bitmap;
 
 static void tcp_client_task(void *pvParameters)
 {
@@ -74,20 +75,31 @@ static void tcp_client_task(void *pvParameters)
         ESP_LOGI(TAG, "Successfully connected");
 
         // Initial message
-        err = send(sock, payload, strlen(payload), 0);
-        if (err < 0) {
-            ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
-            break;
-        }
+        // err = send(sock, payload, strlen(payload), 0);
+        // if (err < 0) {
+        //     ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
+        //     break;
+        // }
 
         while (1) {
             // prepare_TCP_packet(&tcp_send_pkt);
 
             xSemaphoreTake(mutex_video_frame_buffer, portMAX_DELAY);
+            // find first non zero pixel and write to BMP header
+            char * first_pixel = &bitmap.FRAME_BUFFER[0];
+            while (!*first_pixel++) {}
+            uint32_t offset = first_pixel - &bitmap.FRAME_BUFFER[0];
+            for (int i=0; i<4; i++) {
+              bitmap.BITMAPFILEHEADER[10+i] = (char) offset;
+              offset >>= 8;
+            }
+
+            
+            
             ESP_LOGI(TAG, "Sending TCP Packet");
 
-            int err = send(sock, video_frame_buff, 76800, 0);
-            
+            int err = send(sock, &bitmap, sizeof(bitmap_t), 0);
+
 
             xSemaphoreGive(mutex_video_frame_buffer);
             if (err < 0) {

@@ -19,17 +19,19 @@
 #include <sys/stat.h>
 #include "esp_err.h"
 
+#include "bitmap.h"
+
 static const char* TAG = "I2S frame read";
 #define MCLK_RATE 20e6
 #define BITS_PER_SAMPLE I2S_BITS_PER_SAMPLE_16BIT
 #define BCLK_RATE MCLK_RATE/8
 
-#define FRAME_SIZE_BYTES 76800
+
 #define LINE_SIZE_BYTES 320 // supposed to be 960
 #define READ_BUFFER_SIZE FRAME_SIZE_BYTES/8
 #define TIME_READ_BUFFER_MS 1000*8*READ_BUFFER_SIZE/BCLK_RATE
 
-char * video_frame_buff;
+extern bitmap_t bitmap;
 xSemaphoreHandle mutex_video_frame_buffer;
 
 static size_t total_bytes_read;
@@ -43,28 +45,29 @@ void get_frame_i2s(void* params) {
     total_bytes_read = 0;
     bytes_read = 0;
     // ESP_LOGI(TAG, "Pointer of buffer: %d", (uint32_t) video_frame_buff);
-    
+    xSemaphoreTake(mutex_video_frame_buffer, portMAX_DELAY);
+    // make the first few lines zero
+    memset(&bitmap.FRAME_BUFFER, 0, 320*5);
     // stop and read the whole buffer
     i2s_zero_dma_buffer(I2S_NUM_0);
     gpio_set_level(I2S_CLEAR_TO_SEND, 1);
+
+    
     for (int i=0; i<(FRAME_SIZE_BYTES/(READ_BUFFER_SIZE)) ; i++ ) {
 
-      xSemaphoreTake(mutex_video_frame_buffer, portMAX_DELAY);
       // wait until half the buffer has data and read
-      i2s_read(I2S_NUM_0, (void *) (&video_frame_buff[total_bytes_read]), READ_BUFFER_SIZE, &bytes_read, 5000 / portTICK_PERIOD_MS); // TODO: change timeout
-
-      xSemaphoreGive(mutex_video_frame_buffer);
+      i2s_read(I2S_NUM_0, (void *) (&bitmap.FRAME_BUFFER[total_bytes_read]), READ_BUFFER_SIZE, &bytes_read, 2000 / portTICK_PERIOD_MS); // TODO: change timeout
+      
+      // ESP_LOGI(TAG, "Bytes Read: %d, First pixel: %d %d %d, Last pixel: %d %d %d", bytes_read, video_frame_buff[total_bytes_read], video_frame_buff[total_bytes_read+1], video_frame_buff[total_bytes_read+2], video_frame_buff[READ_BUFFER_SIZE-3], video_frame_buff[READ_BUFFER_SIZE-2], video_frame_buff[READ_BUFFER_SIZE-1]);
+      
       total_bytes_read += bytes_read;
-      // if had timed out
+
       gpio_set_level(I2S_CLEAR_TO_SEND, 0);
-      if (bytes_read < READ_BUFFER_SIZE) {
-        break;
-      }
-      
-      
-      ESP_LOGI(TAG, "Bytes Read: %d, First pixel: %d %d %d, Last pixel: %d %d %d", bytes_read, video_frame_buff[0], video_frame_buff[1], video_frame_buff[2], video_frame_buff[READ_BUFFER_SIZE-3], video_frame_buff[READ_BUFFER_SIZE-2], video_frame_buff[READ_BUFFER_SIZE-1]);
-   
+
     }
+    // memset(video_frame_buff, 128, 10);
+    xSemaphoreGive(mutex_video_frame_buffer);
+
 
 
     ESP_LOGI(TAG, "Done reading frame (%d bytes)", total_bytes_read);
@@ -96,7 +99,7 @@ void init_i2s(void)
         i2s_config.communication_format = I2S_COMM_FORMAT_STAND_MSB;
         i2s_config.intr_alloc_flags = ESP_INTR_FLAG_LEVEL1;
         i2s_config.dma_buf_count = 80; // max value allowed is 128
-        i2s_config.dma_buf_len = 160;
+        i2s_config.dma_buf_len = 80;
         i2s_config.use_apll = 1;
         i2s_config.fixed_mclk = MCLK_RATE;//48000 * 24 * 2 * 8;
 
@@ -110,8 +113,7 @@ void init_i2s(void)
 
     ESP_ERROR_CHECK(i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL));
     ESP_ERROR_CHECK(i2s_set_pin(I2S_NUM_0, &pin_config));
-    // ESP_ERROR_CHECK(i2s_set_clk(I2S_NUM_0, CONFIG_EXAMPLE_AUDIO_SAMPLE_RATE, I2S_BITS_PER_SAMPLE_16BIT, I2S_CHANNEL_MONO));
-    video_frame_buff = (char *) heap_caps_malloc(FRAME_SIZE_BYTES, MALLOC_CAP_8BIT);
+
     xTaskCreate(get_frame_i2s, "Read frame I2S", 2048, NULL, READ_VIDEO_FRAME_PRIORITY, NULL);
 
 

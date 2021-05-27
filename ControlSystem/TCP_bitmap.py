@@ -19,31 +19,16 @@ print("Bound socket to ", HOST, ":", PORT)
 sock.listen()
 print("Listening for connections")
 
-def readintoarray(data):
-  imgarray = numpy.empty(80000, dtype=numpy.uint8)
-  once = False
-  idx=0
-  for b in struct.iter_unpack('B', data):
-    
-    r0 = numpy.uint8( b[0])
-    if not once:
-      print(b) 
-      print(r0)
-      once = True
-
-    imgarray[idx] = r0
-    idx += 1
+def savebitmap(data):
+  f = open('bitmap.bmp', 'wb')
+  try:
+    f.write(data)
+  finally:
+    f.close()
 
 
     
 
-  print(numpy.shape(imgarray))
-  img3darr = numpy.reshape(imgarray, (250, 320))
-
-  pt.imshow(img3darr, interpolation='nearest')
-  pt.show()
-  # img = Image.fromarray(img3darr, 'RGB')
-  # img.show()
 
 
 while True:
@@ -55,10 +40,10 @@ while True:
 
     # Receive the data in small chunks and retransmit it
     while True:
-        data = connection.recv(80000, socket.MSG_WAITALL)
+        data = connection.recv(77880, socket.MSG_WAITALL)
         
         print('received data of size %d', len(data))
-        readintoarray(data)
+        savebitmap(data)
 
         num = input("Enter data to send to client")
 

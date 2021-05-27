@@ -39,7 +39,7 @@
 /*set wps mode via project configuration */
 #define WPS_MODE WPS_TYPE_PBC
 
-#define MAX_RETRY_ATTEMPTS     2
+#define MAX_RETRY_ATTEMPTS     4
 
 #ifndef PIN2STR
 #define PIN2STR(a) (a)[0], (a)[1], (a)[2], (a)[3], (a)[4], (a)[5], (a)[6], (a)[7]
