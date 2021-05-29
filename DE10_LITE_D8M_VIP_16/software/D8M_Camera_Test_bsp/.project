@@ -3,6 +3,7 @@
 	<name>D8M_Camera_Test_bsp</name>
 	<comment></comment>
 	<projects>
+		<project>D8M_Camera_Test</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

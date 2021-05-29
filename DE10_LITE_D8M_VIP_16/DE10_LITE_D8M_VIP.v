@@ -176,7 +176,20 @@ Qsys u0 (
 		.altpll_0_locked_conduit_export            (),            				//          altpll_0_locked_conduit.export
 		.altpll_0_phasedone_conduit_export         (),         					//       altpll_0_phasedone_conduit.export		
 		
-		.eee_imgproc_0_conduit_mode_new_signal     (SW[0])
+		.eee_imgproc_0_conduit_mode_new_signal     (SW[3:0]),
+		
+		.uart_esp_external_connection_rxd          (ARDUINO_IO[8]),          //     uart_esp_external_connection.rxd
+		.uart_esp_external_connection_txd          (ARDUINO_IO[9]),           //                                 .txd
+		
+		.alt_vip_cl_cvo_0_clocked_video_vid_clk (i2s_pclk), // alt_vip_cl_cvo_0_clocked_video.vid_clk
+		.alt_vip_cl_cvo_0_clocked_video_vid_data (cvo_disp_data), // .vid_data
+		.alt_vip_cl_cvo_0_clocked_video_underflow (), // .underflow
+		.alt_vip_cl_cvo_0_clocked_video_vid_datavalid (cvo_datavalid), // .vid_datavalid
+		.alt_vip_cl_cvo_0_clocked_video_vid_v_sync (cvo_vsync), // .vid_v_sync
+		.alt_vip_cl_cvo_0_clocked_video_vid_h_sync (), // .vid_h_sync
+		.alt_vip_cl_cvo_0_clocked_video_vid_f (), // .vid_f
+		.alt_vip_cl_cvo_0_clocked_video_vid_h (), // .vid_h
+		.alt_vip_cl_cvo_0_clocked_video_vid_v (), // .vid_v
 	);
 
 FpsMonitor uFps(
@@ -192,5 +205,40 @@ assign  HEX2 = 7'h7F;
 assign  HEX3 = 7'h7F;
 assign  HEX4 = 7'h7F;
 assign  HEX5 = 7'h7F;
+
+/////////////////////////////////
+// I2S Video
+/////////////////////////////////
+
+wire [3:0] cvo_vsync, cvo_datavalid;
+wire cvo_clk;
+wire i2s_bclk_in, i2s_bclk_out, i2s_ws, i2s_pclk, esp_mclk;
+assign esp_mclk = ARDUINO_IO[0];
+assign ARDUINO_IO[6] = i2s_ws;
+assign ARDUINO_IO[7] = i2s_bclk_out;
+
+
+wire [95:0] cvo_disp_data;
+
+
+i2s_video_mono_el esp_out (
+
+
+/*input*/ .mclk(esp_mclk),
+/*output*/ .i2s_bclk(i2s_bclk_out),
+/*output reg*/ .pclk(i2s_pclk), //pixel clock
+
+
+/*input*/ .cts(ARDUINO_IO[4]),
+/*output*/ .i2s_data(ARDUINO_IO[5]),
+/*output*/ .i2s_ws(i2s_ws),
+
+
+/*input*/ .datavalid(cvo_datavalid[3] & cvo_datavalid[2] & cvo_datavalid[1] & cvo_datavalid[0]),
+
+
+/*input [23:0]*/.disp_data(cvo_disp_data),
+/*input*/ .v_sync(cvo_vsync[3] & cvo_vsync[2] & cvo_vsync[1] & cvo_vsync[0])
+);
 
 endmodule
