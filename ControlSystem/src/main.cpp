@@ -3,9 +3,7 @@
 
 #include "Configuration.h"
 
-#ifdef WIFI
-  #include "network/network.h"
-#endif
+#include "network/network.h"
 
 extern void uart_setup();
 extern void init_i2s();
@@ -13,10 +11,10 @@ extern void init_i2s();
 extern "C" void app_main() {
 
   
-  #ifdef WIFI
-    wifi_main();
-    tcp_client_main();
-  #endif
+
+  wifi_main();
+  tcp_client_main();
+
   uart_setup();
   init_i2s();
 }

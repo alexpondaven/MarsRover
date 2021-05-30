@@ -1,9 +1,4 @@
-import sys
 import socket
-import numpy
-import struct
-from matplotlib import pylab as pt
-from PIL import Image
 
 # create TCP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

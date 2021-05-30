@@ -1,3 +1,4 @@
 .pio
 .vscode/*
+src/network/credentials.h
 

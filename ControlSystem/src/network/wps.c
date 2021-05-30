@@ -24,7 +24,7 @@
         Enter the PIN code on the router and then the ESP32 will get connected to router.
 */
 
-#ifdef WIFI
+#ifdef WPS_MODE
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"

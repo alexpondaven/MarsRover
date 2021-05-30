@@ -1,6 +1,6 @@
 
-// Enable WiFi
-#define WIFI
+// Choose between WPS or SSID/Pass
+// #define WPS_MODE
 
 // port and ip
 #define HOST_IP_ADDR "192.168.1.116"
