@@ -4,11 +4,12 @@
 
 // port and ip
 #define HOST_IP_ADDR "192.168.1.116"
-#define TCP_PORT 2000
+#define PORT_VIDEO 2001
+#define PORT_COMMAND 2000
 
 
 #define DRIVE_UART_TX_PIN 26
-#define DRIVE_UART_RX_PIN 77
+#define DRIVE_UART_RX_PIN 27
 
 #define FPGA_UART_TX_PIN 16
 #define FPGA_UART_RX_PIN 17
