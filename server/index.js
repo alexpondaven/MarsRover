@@ -31,6 +31,16 @@ app.get("/battery", (request, response) => {
     })
 })
 
+app.get("/drive", (request, response) => {
+    response.json({
+        speed: speed,
+        position: roverposition,
+        current: [lastposition],
+        obstacles: obstacles,
+        alert: batteryalert,
+    })
+})
+
 // database 
 var battery = {
     status: false,
@@ -38,33 +48,14 @@ var battery = {
     health: '50%'
 }
 var speed = {
-    speed : 57
+    speed : 57,
+    angle : 0
 }
 var position = new Uint8Array([0,0,0,0]);
 var batteryusage = [
     {
-        x: new Date(1000000),
-        y: 100
-    },
-    {
-        x: new Date(2000000),
-        y: 100
-    },
-    {
-        x: new Date(3000000),
-        y: 90
-    },
-    {
-        x: new Date(4000000),
-        y: 90
-    },
-    {
-        x: new Date(5000000),
-        y: 60
-    },
-    {
-        x: new Date(6000000),
-        y: 70
+        x: new Date(),
+        y: 34
     }
 ]
 var batteryalert = [
@@ -77,6 +68,13 @@ var batteryalert = [
         text: "world"
     }
 ]
+var lastposition = {x: 10, y:-1, time: new Date(), type: 'position'};
+var roverposition = [lastposition];
+var obstacles = [{
+    x: 10, y: 0, time: new Date(), type: 'obstacle'
+},{
+    x: 4, y: -10, time: new Date(), type: 'obstacle'
+}]
 
 // setting up TCP server 
 var net = require('net');
@@ -89,6 +87,10 @@ const server = net.createServer(socket => {
         var tmp = parse(data.toString())
         if (tmp != null && tmp[0] == 'b'){
             battery.remain = String(tmp[1])+'%';
+            batteryusage.push({
+                x: new Date(),
+                y: tmp[1]
+            })
             console.log(battery);
         } else if (tmp != null && tmp[0] == 's'){
             speed.speed = tmp[1];
@@ -96,9 +98,32 @@ const server = net.createServer(socket => {
         } else if (tmp != null && tmp[0] == 'bc'){
             battery.status = tmp[1];
             console.log(battery);
+        } else if (tmp != null && tmp[0] == 'h'){
+            battery.health = String(tmp[1])+'%';
+            console.log(battery);
+        } else if (tmp != null && tmp[0] == 'x'){
+            lastposition = {
+                x: tmp[1],
+                y: lastposition.y,
+                time: new Date(),
+                type: 'position'
+            }
+            roverposition.push(lastposition);
+            console.log(roverposition);
+        } else if (tmp != null && tmp[0] == 'y'){
+            lastposition = {
+                x: lastposition.x,
+                y: tmp[1],
+                time: new Date(),
+                type: 'position'
+            }
+            roverposition.push(lastposition);
+            console.log(roverposition);
+        } else if (tmp != null && tmp[0] == 'a'){
+            speed.angle = tmp[1];
+            console.log(speed);
         }
-
-        socket.write(position)
+        socket.write(position);
     })
 
     socket.on("end",() => {
@@ -129,6 +154,18 @@ function parse(str){
                 }
             }
         }
+    }else if (str[0] == 'h'){
+        for (var i =0; i<str.length; i++){
+            // treat 0-9 . - as a start of number
+            if ((str.charCodeAt(i) > 47 && str.charCodeAt(i) < 58) || (str[i] == '.') || (str[i] == '-') ){
+                var tmp = Number(str.slice(i));
+                if (isNaN(tmp)){
+                    return null;
+                } else {
+                    return ['h',tmp];
+                }
+            }
+        }
     } else if (str[0] == 's'){
         for (var i =0; i<str.length; i++){
             // treat 0-9 . - as a start of number
@@ -141,6 +178,44 @@ function parse(str){
                 }
             }
         }
-    }
+    } else if (str[0] == 'x'){
+        for (var i =0; i<str.length; i++){
+            // treat 0-9 . - as a start of number
+            if ((str.charCodeAt(i) > 47 && str.charCodeAt(i) < 58) || (str[i] == '.') || (str[i] == '-') ){
+                var tmp = Number(str.slice(i));
+                if (isNaN(tmp)){
+                    return null;
+                } else {
+                    return ['x',tmp];
+                }
+            }
+        }
+    } else if (str[0] == 'y'){
+        for (var i =0; i<str.length; i++){
+            // treat 0-9 . - as a start of number
+            if ((str.charCodeAt(i) > 47 && str.charCodeAt(i) < 58) || (str[i] == '.') || (str[i] == '-') ){
+                var tmp = Number(str.slice(i));
+                if (isNaN(tmp)){
+                    return null;
+                } else {
+                    return ['y',tmp];
+                }
+            }
+        }
+    } else if (str[0] == 'a'){
+        for (var i =0; i<str.length; i++){
+            // treat 0-9 . - as a start of number
+            if ((str.charCodeAt(i) > 47 && str.charCodeAt(i) < 58) || (str[i] == '.') || (str[i] == '-') ){
+                var tmp = Number(str.slice(i));
+                if (isNaN(tmp)){
+                    return null;
+                } else if (tmp < 180 && tmp > -180) {
+                    return ['a',tmp];
+                } else {
+                    return null;
+                }
+            }
+        }
+    } 
     return null;
 }

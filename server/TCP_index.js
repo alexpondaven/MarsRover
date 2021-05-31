@@ -31,7 +31,7 @@ const update = function() {
         position[i] = 1;
     }
     timeinterval = Math.floor(Math.random()*10+1)*100; // 100-1000
-    // console.log(position + " " + timeinterval)
+    console.log(position + " " + timeinterval)
     setTimeout(update,timeinterval);
 }
 update();

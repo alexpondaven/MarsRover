@@ -5,6 +5,7 @@ import Header from './Components/Header.js'
 import Battery from './Components/Battery.js'
 import BatteryPage from './Pages/BatteryPage.js'
 import Speed from './Components/Speed.js'
+import DrivePage from './Pages/DrivePage.js'
 import Controller from './Components/Controller.js'
 
 function App() {
@@ -18,7 +19,8 @@ function App() {
 
   const [speeds, setSpeed] = useState([
     {
-      speed : 43
+      speed : 43,
+      angle : 0
     }
   ])
 
@@ -134,7 +136,7 @@ function App() {
 
           <Route path="/speed">
             {speeds.map(speed =>
-              <Speed speed={speed} />
+                <DrivePage speed={speed} />
             )}
           </Route>
 

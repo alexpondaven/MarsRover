@@ -28,7 +28,7 @@ function BatteryPage({battery}) {
     }
 
     return (
-        <div className="BatteryPage">
+        <div className="SubPage">
             <div className="LeftColumn" >
                 <div className="Card0">
                     <h3>BATTERY</h3>

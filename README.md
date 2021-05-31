@@ -65,6 +65,20 @@ It contains static properties of the battery, alerts/notifications, SoC, health,
 
 Data is fetched from the server (`http://localhost:5000/battery`)every 1 second and dynamically updates the webpage.
 
+### Drive Page
+The drive page provides details on the driving subsystem on the rover. The page is hosted on `http://localhost:3000/speed`, the `SPEED` card on home page is linked to this page. 
+
+![title](images/drive.png) <br>
+
+It contains information on the speed and steering of the rover. The 2D map at the bottom contains calculated positions of obstacle, past and current positions of the rover.
+
+![title](images/map.png) <br>
+
+The red circles represent past pasitions of the rover, linked up with grey lines, and the red square represents the current position of the rover. Yellow circles are the obstacles and the black circle is the 'origin' (where the oprical sensor is resetted.)
+
+Data is fetched from the server (`http://localhost:5000/drive`)every 1 second and dynamically updates the webpage.
+
+
 ## Node.js Server
 Node.js is chosen as the back-end server. It acts as a two-way communication channel for data from the rover be able to display on the front-end webpage and remote command transmitted to the rover.
 
@@ -85,7 +99,10 @@ The server takes in TCP packet at port 2000, which would update its database on 
 Input in the following format: <br/>
 * battery charge: `b` + { number ∈ (0,100) }
 * battery charging status: `bc` + {`c`(charging)||`n`(not charging)} 
+* battery health: `h` + { number ∈ (0,100) }
 * speed: `s` + { number ∈ (0,100) }
+* position: `x`||`y` + { number ∈ R } 
+* steering angle: `a` + { number ∈ (-180,180) }
 
 An updated database would be printed out in the command line after a valid input.
 
@@ -104,15 +121,14 @@ It would also receive and print TCP packet received from the server on the termi
 
 
 ## Future Development
-1. Finish Speed subpage
-2. Add map on webpage
-3. Add sidebar
-3. Server receiving and updating data from control
-4. Add database to server
-5. Video streaming
+1. Add sidebar
+2. Server receiving and updating data from control
+3. Add database to server
+4. Video streaming
 
 ## Change Log
 14-May-2021: initial commit <br/>
 17-May-2021: added TCP socket <br/>
 18-May-2021: added simple remote control buttons <br/>
 24-May-2021: added battery subpage <br/>
+31-May-2021: added drive subpage <br/>
