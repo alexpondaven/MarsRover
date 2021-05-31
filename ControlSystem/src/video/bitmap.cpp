@@ -285,5 +285,6 @@ bitmap_t bitmap = {
     '\xff', '\xff', '\xff', '\x00', 
   },
 
-  .FRAME_BUFFER = {}
+  .FRAME_BUFFER = {},
+  .padding = {}
 };
