@@ -199,8 +199,8 @@ int main()
         Focus_Init();
 
         //init UART for esp
-        FILE* fp;
-        fp = fopen ("/dev/uart_esp", "r+"); //open file for read/write
+//        FILE* fp;
+//        fp = fopen ("/dev/uart_esp", "r+"); //open file for read/write
 
 
   while(1){
@@ -262,9 +262,9 @@ int main()
 	   printf("%08x ",word);
 	  }
 
-	  if (fp){
-	   fwrite(&word,sizeof(word),1,fp);
-	  }
+//	  if (fp){
+//	   fwrite(&word,sizeof(word),1,fp);
+//	  }
 	  /*
        //Read messages from the image processor and print them on the terminal
        int word;

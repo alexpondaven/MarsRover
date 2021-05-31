@@ -353,18 +353,18 @@ ALT_CFLAGS += -mgpopt=local
 
 # Slave descriptor of STDERR character-mode device. This setting is used by the 
 # ALT_STDERR family of defines in system.h. none 
-# setting hal.stderr is jtag_uart
-ELF_PATCH_FLAG  += --stderr_dev jtag_uart
+# setting hal.stderr is uart_esp
+ELF_PATCH_FLAG  += --stderr_dev uart_esp
 
 # Slave descriptor of STDIN character-mode device. This setting is used by the 
 # ALT_STDIN family of defines in system.h. none 
-# setting hal.stdin is jtag_uart
-ELF_PATCH_FLAG  += --stdin_dev jtag_uart
+# setting hal.stdin is uart_esp
+ELF_PATCH_FLAG  += --stdin_dev uart_esp
 
 # Slave descriptor of STDOUT character-mode device. This setting is used by the 
 # ALT_STDOUT family of defines in system.h. none 
-# setting hal.stdout is jtag_uart
-ELF_PATCH_FLAG  += --stdout_dev jtag_uart
+# setting hal.stdout is uart_esp
+ELF_PATCH_FLAG  += --stdout_dev uart_esp
 
 
 #------------------------------------------------------------------------------

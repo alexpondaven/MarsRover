@@ -4,7 +4,7 @@
  * Machine generated for CPU 'nios2_gen2' in SOPC Builder design 'Qsys'
  * SOPC Builder design path: ../../Qsys.sopcinfo
  *
- * Generated: Wed May 26 11:59:11 BST 2021
+ * Generated: Mon May 31 13:16:41 BST 2021
  */
 
 /*
@@ -183,24 +183,24 @@
 #define ALT_NUM_EXTERNAL_INTERRUPT_CONTROLLERS 0
 #define ALT_NUM_INTERNAL_INTERRUPT_CONTROLLERS 1
 #define ALT_NUM_INTERRUPT_CONTROLLERS 1
-#define ALT_STDERR "/dev/jtag_uart"
-#define ALT_STDERR_BASE 0x410e8
-#define ALT_STDERR_DEV jtag_uart
-#define ALT_STDERR_IS_JTAG_UART
+#define ALT_STDERR "/dev/uart_esp"
+#define ALT_STDERR_BASE 0x42020
+#define ALT_STDERR_DEV uart_esp
+#define ALT_STDERR_IS_UART
 #define ALT_STDERR_PRESENT
-#define ALT_STDERR_TYPE "altera_avalon_jtag_uart"
-#define ALT_STDIN "/dev/jtag_uart"
-#define ALT_STDIN_BASE 0x410e8
-#define ALT_STDIN_DEV jtag_uart
-#define ALT_STDIN_IS_JTAG_UART
+#define ALT_STDERR_TYPE "altera_avalon_uart"
+#define ALT_STDIN "/dev/uart_esp"
+#define ALT_STDIN_BASE 0x42020
+#define ALT_STDIN_DEV uart_esp
+#define ALT_STDIN_IS_UART
 #define ALT_STDIN_PRESENT
-#define ALT_STDIN_TYPE "altera_avalon_jtag_uart"
-#define ALT_STDOUT "/dev/jtag_uart"
-#define ALT_STDOUT_BASE 0x410e8
-#define ALT_STDOUT_DEV jtag_uart
-#define ALT_STDOUT_IS_JTAG_UART
+#define ALT_STDIN_TYPE "altera_avalon_uart"
+#define ALT_STDOUT "/dev/uart_esp"
+#define ALT_STDOUT_BASE 0x42020
+#define ALT_STDOUT_DEV uart_esp
+#define ALT_STDOUT_IS_UART
 #define ALT_STDOUT_PRESENT
-#define ALT_STDOUT_TYPE "altera_avalon_jtag_uart"
+#define ALT_STDOUT_TYPE "altera_avalon_uart"
 #define ALT_SYSTEM_NAME "Qsys"
 
 
