@@ -57,7 +57,7 @@ function Map({positions, current, obstacles}) {
                     label: function(context) {
                         var raw = context.raw;
                         var label = [];
-                        if (raw.type == 'position') {
+                        if (raw.type === 'position') {
                             label = ["time: " + raw.time];
                             label.push(["(" + raw.x + "," + raw.y + ")"]) ;
                         } else {

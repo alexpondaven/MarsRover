@@ -121,10 +121,9 @@ It would also receive and print TCP packet received from the server on the termi
 
 
 ## Future Development
-1. Add sidebar
-2. Server receiving and updating data from control
-3. Add database to server
-4. Video streaming
+1. Server receiving and updating data from control
+2. Add database to server
+3. Video streaming
 
 ## Change Log
 14-May-2021: initial commit <br/>
@@ -132,3 +131,4 @@ It would also receive and print TCP packet received from the server on the termi
 18-May-2021: added simple remote control buttons <br/>
 24-May-2021: added battery subpage <br/>
 31-May-2021: added drive subpage <br/>
+1-Jun-2021: added sidebar + simple image slideshow <br/>

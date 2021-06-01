@@ -1,5 +1,9 @@
 import { useState, useEffect, Component } from 'react'
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { BrowserRouter, Route, Switch, Link } from 'react-router-dom'
+import { AiFillHome } from 'react-icons/ai';
+import { BsBatteryFull } from 'react-icons/bs';
+import { RiSteeringFill } from 'react-icons/ri';
+import { IconContext } from 'react-icons';
 
 import Header from './Components/Header.js'
 import Battery from './Components/Battery.js'
@@ -8,7 +12,25 @@ import Speed from './Components/Speed.js'
 import DrivePage from './Pages/DrivePage.js'
 import Controller from './Components/Controller.js'
 
+import TestingPage from './Pages/TestingPage.js'
+
 function App() {
+  const [showSidebar, setSidebar] = useState(false);
+  const Sidebar = () => setSidebar(!showSidebar);
+  const SidebarData = [{
+    name: 'Home',
+    link: '/',
+    icon: <AiFillHome />,
+  },{
+      name: 'Battery',
+      link: '/battery',
+      icon: <BsBatteryFull />,
+  },{
+      name: 'Drive',
+      link: '/speed',
+      icon: <RiSteeringFill />,
+  }]
+
   const [batteries, setBattery] = useState([
     {
       status: true,
@@ -44,13 +66,6 @@ function App() {
     },
   ])
 
-  // this would be run when function called
-  useEffect(() => {
-    getData();
-    // getData called every 1s
-    setInterval(getData, 1000)
-  },[]);
-
   // update value of battery and speed
   function update(data) {
     setBattery([data.battery]);
@@ -63,6 +78,13 @@ function App() {
       .then(response => response.json())
       .then(response => update(response))
   }
+
+  // this would be run when function called
+  useEffect(() => {
+    getData();
+    // getData called every 1s
+    setInterval(getData, 1000)
+  });
 
   const postData = async(id,bool) => {
     var body = {
@@ -114,34 +136,58 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="App">
-        <Header />      
+      <div className="App" style={{display: 'grid'}}>
+        <Header onClick={Sidebar} showSidebar={showSidebar}/>      
 
-        <Switch>
-          <Route exact path="/">
-            {batteries.map(battery =>
-              <Battery battery={battery} />
-            )}
-            {speeds.map(speed =>
-              <Speed speed={speed} />
-            )}
-            <Controller positions={position} onClick={onClick} onRelease={onRelease} />
-          </Route>
+        <div style={{display: 'flex'}}>
 
-          <Route path="/battery">
-            {batteries.map(battery =>
-              <BatteryPage battery={battery} />
-            )}
-          </Route>
+          <nav className={showSidebar ? 'SidebarActive' : 'Sidebar'}>
+            <ul className='SidebarItems'>
+              {SidebarData.map((item, index) => {
+                return (
+                  <li key={index} className='SidebarItem'>
+                    <Link to={item.link}>
+                      {item.icon}
+                      <span>{showSidebar ? item.name : ''}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
 
-          <Route path="/speed">
-            {speeds.map(speed =>
-                <DrivePage speed={speed} />
-            )}
-          </Route>
+          <Switch>
+            <Route exact path="/">
+              <div className='SubPage'>
+                {batteries.map(battery =>
+                  <Battery battery={battery} />
+                )}
+                {speeds.map(speed =>
+                  <Speed speed={speed} />
+                )}
+                <Controller positions={position} onClick={onClick} onRelease={onRelease} />
+              </div>
+            </Route>
 
-        </Switch>
-      </div> 
+            <Route path="/battery">
+              {batteries.map(battery =>
+                <BatteryPage battery={battery} />
+              )}
+            </Route>
+
+            <Route path="/speed">
+              {speeds.map(speed =>
+                  <DrivePage speed={speed} />
+              )}
+            </Route>
+
+            <Route path="/test">
+              <TestingPage />
+            </Route>
+
+          </Switch>
+        </div> 
+      </div>
     </BrowserRouter>
   );
 }

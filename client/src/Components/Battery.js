@@ -7,7 +7,7 @@ function Battery({battery}) {
     return (
         <Link to="/battery" style={{ textDecoration: 'none' , textColor: 'black'}} >
         <card 
-            className='Battery' 
+            className='HomeBlock' 
             style={{ backgroundColor: battery.status ? 'rgb(70,225,70)' : 'rgb(221, 96, 96)' }}
         >
             <h2 className='card-title'>BATTERY</h2>

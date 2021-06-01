@@ -5,6 +5,7 @@ var cors = require('cors')
 app.use(cors())
 app.use(express.json())
 app.listen(5000, () => console.log("listening")); 
+app.use(express.static("public"));
 // respond with the data pack of battery and speed and 'hi'
 app.get("/data", (request, response) => {
     response.json({

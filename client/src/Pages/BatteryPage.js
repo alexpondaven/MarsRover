@@ -10,11 +10,6 @@ function BatteryPage({battery}) {
     const [data,setData] = useState();
     const [alerts,setAlerts] = useState([]);
 
-    useEffect(() => {
-        getData();
-        setInterval(getData, 1000)
-    },[]);
-
     function update(response) {
         setData(response.batteryusage);
         setBattery([response.battery])
@@ -26,6 +21,11 @@ function BatteryPage({battery}) {
           .then(response => response.json())
           .then(response => update(response))
     }
+
+    useEffect(() => {
+        getData();
+        setInterval(getData, 1000)
+    });
 
     return (
         <div className="SubPage">

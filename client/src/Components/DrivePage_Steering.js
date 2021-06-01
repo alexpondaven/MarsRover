@@ -1,14 +1,12 @@
-import React from 'react'
-
 function Steering({speed}) {
     var angle = speed.angle;
     var str = 'rotate(' + angle + 'deg)';
-    // var str = 'rotate(' + '90' + 'deg)';
     const style = {
         transform: str
     }
+    
     var turn;
-    if (angle == 0){
+    if (angle === 0){
         turn = "";
     } else if (angle < 0){
         turn = "Turning left";

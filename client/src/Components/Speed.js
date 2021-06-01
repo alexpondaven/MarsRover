@@ -5,7 +5,7 @@ function Speed({speed}) {
     return (
         <Link to="/speed" style={{ textDecoration: 'none'}} >
         <card 
-            className='Speed'         
+            className='HomeBlock'         
         >
             <h2>SPEED</h2>
             <p1>
