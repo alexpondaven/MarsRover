@@ -1,4 +1,4 @@
 .pio
 .vscode/*
 src/network/credentials.h
-
+i2s_video/*

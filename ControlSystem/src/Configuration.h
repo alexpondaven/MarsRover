@@ -11,8 +11,8 @@
 #define DRIVE_UART_TX_PIN 26
 #define DRIVE_UART_RX_PIN 27
 
-#define FPGA_UART_TX_PIN 16
-#define FPGA_UART_RX_PIN 17
+#define FPGA_UART_TX_PIN 17
+#define FPGA_UART_RX_PIN 16
 
 
 #define I2S_VIDEO_BCLK_PIN 5
