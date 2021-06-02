@@ -1,6 +1,4 @@
-#include "../comm/power_motor_spi.h"
-#include "packets.h"
-
+/*
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_event.h"
@@ -42,3 +40,5 @@ void prepare_TCP_packet(tcp_send_pkt_t *pkt) {
   }
 
 }
+
+*/

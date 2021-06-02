@@ -9,7 +9,7 @@ extern QueueHandle_t q_tcp_to_drive;
 typedef struct {
   float x;
   float y;
-} rover_coord_t;
+} __attribute__((packed)) rover_coord_t;
 
 typedef struct {
   uint32_t battery_percent;

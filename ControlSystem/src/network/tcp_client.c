@@ -22,15 +22,12 @@
 #include "lwip/err.h"
 #include "lwip/sockets.h"
 
-#include "packets.h"
 #include "../video/bitmap.h"
-
+#include "queues.h"
 
 static const char *TAGC = "tcp_command";
 static const char *TAGV = "tcp_video";
 static const char *payload = "Message from ESP32 ";
-void update_drive_SPI_data(uint8_t left, uint8_t right, uint8_t forward, uint8_t backward);
-void prepare_TCP_packet(tcp_send_pkt_t *pkt);
 extern xSemaphoreHandle s_semph_get_ip_addrs;
 extern xSemaphoreHandle mutex_video_frame_buffer;
 extern bitmap_t bitmap;
@@ -51,7 +48,6 @@ static void tcp_command(void *pvParameters)
 
     while (1) {
 
-        tcp_send_pkt_t tcp_send_pkt;
 
         struct sockaddr_in dest_addr;
         dest_addr.sin_addr.s_addr = inet_addr(host_ip);
@@ -97,12 +93,12 @@ static void tcp_command(void *pvParameters)
             else {
                 rx_buffer[len] = 0; // Null-terminate whatever we received and treat like a string
                 ESP_LOGI(TAGC, "Received %d bytes from %s:", len, host_ip);
-                motor_control_pkt_t *pkt = (motor_control_pkt_t *) rx_buffer;
+                drive_tx_data_t *pkt = (drive_tx_data_t *) rx_buffer;
                 ESP_LOGI(TAGC, "Recieved data %d, %d, %d, %d", pkt->left, pkt->right, pkt->forward, pkt->backward);
-                update_drive_SPI_data(pkt->left, pkt->right, pkt->forward, pkt->backward);
+                xQueueOverwrite(q_tcp_to_drive, pkt);
             }
 
-            vTaskDelay(TCP_INTERVAL / portTICK_PERIOD_MS);
+            vTaskDelay(TCP_COMMAND_INTERVAL / portTICK_PERIOD_MS);
         }
 
         if (sock != -1) {
@@ -130,8 +126,6 @@ static void tcp_video_frame(void *pvParameters)
 
     while (1) {
 
-        tcp_send_pkt_t tcp_send_pkt;
-
         struct sockaddr_in dest_addr;
         dest_addr.sin_addr.s_addr = inet_addr(host_ip);
         dest_addr.sin_family = AF_INET;
@@ -155,7 +149,6 @@ static void tcp_video_frame(void *pvParameters)
         ESP_LOGI(TAGV, "Successfully connected");
 
         while (1) {
-            // prepare_TCP_packet(&tcp_send_pkt);
 
             xSemaphoreTake(mutex_video_frame_buffer, portMAX_DELAY);
             // find first non zero pixel and write to BMP header
@@ -167,7 +160,7 @@ static void tcp_video_frame(void *pvParameters)
               offset >>= 8;
             }
       
-            ESP_LOGI(TAGV, "Sending TCP Packet");
+            ESP_LOGI(TAGV, "Sending Video Packet");
 
             int err = send(sock, &bitmap, sizeof(bitmap_t), 0);
 
@@ -180,7 +173,7 @@ static void tcp_video_frame(void *pvParameters)
 
             // no recieve
 
-            vTaskDelay(TCP_INTERVAL / portTICK_PERIOD_MS);
+            vTaskDelay(TCP_VIDEO_INTERVAL / portTICK_PERIOD_MS);
         }
 
         if (sock != -1) {
