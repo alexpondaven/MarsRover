@@ -1,14 +1,21 @@
+import { IconContext } from 'react-icons';
+
 function ControllerPosition({position, onClick, onRelease}) {
+    var state = false;
+    if (position.name !== '') state = true;
 
     return (
         <div>
             <button 
-                className='ControllerPosition'
-                style={{ backgroundColor: position.state ? 'rgb(255,235,205)' : 'rgb(0,255,255)' }}
+                className={state ? 'ControllerPosition' : 'ControllerPositionDisabled'}
+                style={{ backgroundColor: state ? position.state ? 'rgb(255,235,205)' : 'rgb(0,255,255)' : 'rgb(255,255,255)' }}
                 onMouseDown={() => onClick(position.id)}
                 onMouseUp={() => onRelease(position.id)}
             >
-                <h3>{position.id}</h3>
+                <IconContext.Provider value={{ color: '#535353', size: '50%' }}>
+                    {state ? position.icon : <p1/>}
+                </IconContext.Provider>
+                
             </button>
         </div>
     )

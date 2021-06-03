@@ -203,15 +203,34 @@ span {
 }
 
 .ControllerPosition {
-  height: 200px;
-  width: 100px;
+  height: 20vw;
+  max-height: 150px;
+  width: 20vw;
+  max-width: 150px;
   margin: 5px;
   padding: 10px 20px;
   cursor: pointer;
+  text-align: center;
+}
+
+.ControllerPositionDisabled {
+  height: 20vw;
+  max-height: 150px;
+  width: 20vw;
+  max-width: 150px;
+  margin: 5px;
+  border: none;
 }
 
 .Controller {
+  margin-left: 50px;
+  margin-top: 30px;
+  height: 80vw;
+  max-height: 500px;
+  width: 80vw;
+  max-width: 500px;
   display: flex;
+  column-count: 3;
 }
 
 .Map {

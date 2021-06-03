@@ -53,12 +53,7 @@ var speed = {
     angle : 0
 }
 var position = new Uint8Array([0,0,0,0]);
-var batteryusage = [
-    {
-        x: new Date(),
-        y: 34
-    }
-]
+var batteryusage = require('./data/SoC_t.js');
 var batteryalert = [
     {
         id:0,
@@ -88,10 +83,10 @@ const server = net.createServer(socket => {
         var tmp = parse(data.toString())
         if (tmp != null && tmp[0] == 'b'){
             battery.remain = String(tmp[1])+'%';
-            batteryusage.push({
-                x: new Date(),
-                y: tmp[1]
-            })
+            // batteryusage.push({
+            //     x: new Date(),
+            //     y: tmp[1]
+            // })
             console.log(battery);
         } else if (tmp != null && tmp[0] == 's'){
             speed.speed = tmp[1];
