@@ -8,8 +8,8 @@
 #define PORT_COMMAND 2000
 
 
-#define DRIVE_UART_TX_PIN 26
-#define DRIVE_UART_RX_PIN 27
+#define DRIVE_UART_TX_PIN 27
+#define DRIVE_UART_RX_PIN 26
 
 #define FPGA_UART_TX_PIN 17
 #define FPGA_UART_RX_PIN 16
