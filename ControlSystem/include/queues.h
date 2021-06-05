@@ -35,9 +35,5 @@ typedef struct {
 } obstacle_t;
 
 typedef struct {
-  obstacle_t red;
-  obstacle_t yellow;
-  obstacle_t pink;
-  obstacle_t blue;
-  obstacle_t green;
+  obstacle_t obstacles[5];
 } obstacles_t;

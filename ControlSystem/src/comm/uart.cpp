@@ -117,8 +117,9 @@ void uart_fpga(void *params) {
       for (int i=0; i<length/sizeof(recievebuff); i++) {
         uart_read_bytes(UART_NUM_1, (uint8_t *) &recievebuff, sizeof(recievebuff), 100 / portTICK_PERIOD_MS);
         // skip zero bounding boxes
+        obstacle_t obs;
         if (recievebuff.bottomright_x || recievebuff.bottomright_y) {
-          obstacle_t obs;
+          
           uint32_t height = obs.bounding_box.bottomright_y - obs.bounding_box.topleft_y;
           uint32_t width = obs.bounding_box.bottomright_x - obs.bounding_box.topleft_x;
           uint32_t mid_x = obs.bounding_box.topleft_x + width;
@@ -142,30 +143,34 @@ void uart_fpga(void *params) {
           if (mid_x < 320) {
             obs.angle = -obs.angle;
           }
-          
+
+        } // non zero bounding boxes
+        else {
+          obs.distance = 0;
+        }
           switch (obs.bounding_box.color[0])
           {
           case 'R':
-            obstacles.red = obs;
+            obstacles.obstacles[0] = obs;
             break;
 
           case 'Y':
-            obstacles.yellow = obs;
+            obstacles.obstacles[1] = obs;
             break;
 
           case 'P':
-            obstacles.pink = obs;
+            obstacles.obstacles[2] = obs;
             break;
 
           case 'B':
-            obstacles.blue = obs;
+            obstacles.obstacles[3] = obs;
             break;
 
           case 'G':
-            obstacles.green = obs;
+            obstacles.obstacles[4] = obs;
             break;
           }
-        } // non zero bounding boxes
+        
         
         
       } 

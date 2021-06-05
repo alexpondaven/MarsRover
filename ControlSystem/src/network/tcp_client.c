@@ -1,6 +1,6 @@
 
 
-#include "../Configuration.h"
+#include "Configuration.h"
 /* BSD Socket API Example
    This example code is in the Public Domain (or CC0 licensed, at your option.)
    Unless required by applicable law or agreed to in writing, this
@@ -95,7 +95,7 @@ static void tcp_command(void *pvParameters)
                 ESP_LOGI(TAGC, "Received %d bytes from %s:", len, host_ip);
                 drive_tx_data_t *pkt = (drive_tx_data_t *) rx_buffer;
                 ESP_LOGI(TAGC, "Recieved data %d, %d, %d, %d", pkt->left, pkt->right, pkt->forward, pkt->backward);
-                xQueueOverwrite(q_tcp_to_drive, pkt);
+                // xQueueOverwrite(q_tcp_to_drive, pkt);
             }
 
             vTaskDelay(TCP_COMMAND_INTERVAL / portTICK_PERIOD_MS);
