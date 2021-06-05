@@ -15,8 +15,8 @@ fs.createReadStream('./data/SoC_t.csv')
     data.push(tmp);
   })
   .on('end', () => {
-    console.log(data);
-    console.log('CSV file successfully processed');
+    // console.log(data);
+    // console.log('CSV file successfully processed');
   });
 
 module.exports = data;

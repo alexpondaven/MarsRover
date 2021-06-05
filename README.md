@@ -16,6 +16,7 @@ npm install express
 npm install cors
 npm install fs
 npm install csv-parser
+npm install request
 ```
 ### Run the Node.js Server
 ```
@@ -76,7 +77,11 @@ Data is fetched from the server (`http://localhost:5000/drive`)every 1 second an
 ### Controller Page
 The controller page provides user interface to remotely control the rover. The page is hosted on `http://localhost:3000/controller`, the `CONTROLLER` card on home page is linked to this page.
 
-![title](images/controller.png) <br>
+It provides two mode of control, `DIRECTION` or `POSITION` which can be toggle between by clicking on the blue tab. Each tab has a tooltip to briefly describe the control mode.
+
+#### Direction Mode
+
+![title](images/controllerdirection.png) <br>
 
 It has five control buttons (`left`,`right`,`forward`, `backward` and `stop`) indicated by icons to remotely control the movement of rover. The rover would be moving in the specific position once the button is clicked, a BlanchedAlmond colour of the button indicates it's being pressed.
 
@@ -85,6 +90,14 @@ It has five control buttons (`left`,`right`,`forward`, `backward` and `stop`) in
 The button can be 'deactivated' by clicking on the button again or clicking the `stop` button at the centre.
 
 Whenever there is a state change in the button, it would send a packet to the server (`http://localhost:5000/position`) to update its database.
+
+#### Position Mode
+
+![title](images/controllerposition.png) <br>
+
+A map is shown for the `POSITION` mode, user input the target x, y coordinate in the form. The coordinate will then appear as a blue dot on the map, while other data points are presented just as in the `DRIVE` page. Pressing the `submit` button would call the browser to send the coordinate to the server, and an alert will pop up.
+
+![title](images/controlleralert.png) <br>
 
 
 ## Node.js Server
@@ -135,7 +148,7 @@ It would also receive and print TCP packet received from the server on the termi
 
 ## Future Development
 1. Server receiving and updating data from control
-2. Add database to server
+2. Add database to server (optional)
 3. Video streaming
 4. Authentication/ security thing
 5. Cleaning up + foramtting the interface
@@ -148,3 +161,4 @@ It would also receive and print TCP packet received from the server on the termi
 31-May-2021: added drive subpage <br/>
 01-Jun-2021: added sidebar + simple image slideshow <br/>
 03-Jun-2021: added control subpage + simple database in server <br/>
+05-Jun-2021: added position control mode <br/>

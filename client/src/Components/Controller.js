@@ -1,9 +1,10 @@
-import ControllerPosition from './ControllerPosition.js'
 import { GridList, GridListTile } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles'
 
+import ControllerDirection from './ControllerDirection.js'
+
 function Controller({positions,onClick,onRelease}) {
-    const useStyles = makeStyles((theme) => ({
+ const useStyles = makeStyles((theme) => ({
         root: {
           display: 'flex',
           flexWrap: 'wrap',
@@ -18,14 +19,16 @@ function Controller({positions,onClick,onRelease}) {
       }));
     const classes = useStyles()
     return (
-        <div className='Controller'>
-            <GridList cols={3} cellHeight={'auto'} spacing={0} className={classes.gridList}>
-                {positions.map((position, index) => (
-                    <GridListTile key={index}>
-                        <ControllerPosition key={index} position={position} onClick={onClick} onRelease={onRelease}/>
-                    </GridListTile>
-                ))}
-            </GridList>
+        <div style={{width:'80vw', display: 'flex', alignItems: 'center'}}>
+            <div className='Controller'>
+                <GridList cols={3} cellHeight={'auto'} spacing={0} className={classes.gridList}>
+                    {positions.map((position, index) => (
+                        <GridListTile key={index}>
+                            <ControllerDirection key={index} position={position} onClick={onClick} onRelease={onRelease}/>
+                        </GridListTile>
+                    ))}
+                </GridList>
+            </div>
         </div>
     )
 }

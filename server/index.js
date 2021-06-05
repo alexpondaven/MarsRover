@@ -17,11 +17,13 @@ app.get("/data", (request, response) => {
 
 app.post("/position", (request,response) => {
     var tmp = request.body;
-    position[tmp.id] = tmp.state ? 1 : 0;
-    console.log(position)
-    response.json({
-        data: 'hey'
-    })
+    if (tmp.type === 'direction'){
+        position[tmp.id] = tmp.state ? 1 : 0;
+        console.log(position)
+    } else if (tmp.type === 'position'){
+        console.log(tmp);
+    }
+    
 })
 
 app.get("/battery", (request, response) => {
@@ -72,6 +74,17 @@ var obstacles = [{
     x: 4, y: -10, time: new Date(), type: 'obstacle'
 }]
 
+// var data;
+
+// const request = require('request');
+// request('https://api.nasa.gov/insight_weather/?api_key=DEMO_KEY&feedtype=json&ver=1.0', function (error, response, body) {
+//     data = JSON.parse(body).validity_checks;
+//     var tmp = data.sols_checked;
+//     tmp = tmp[0];
+//     console.log(data, tmp);
+//     console.log(data[tmp]);
+// });
+
 // setting up TCP server 
 var net = require('net');
 
@@ -82,11 +95,7 @@ const server = net.createServer(socket => {
         console.log(data.toString())
         var tmp = parse(data.toString())
         if (tmp != null && tmp[0] == 'b'){
-            battery.remain = String(tmp[1])+'%';
-            // batteryusage.push({
-            //     x: new Date(),
-            //     y: tmp[1]
-            // })
+            battery.remain = String(tmp[1])+'%'
             console.log(battery);
         } else if (tmp != null && tmp[0] == 's'){
             speed.speed = tmp[1];

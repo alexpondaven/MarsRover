@@ -1,6 +1,6 @@
 import { Scatter } from 'react-chartjs-2';
 
-function Map({positions, current, obstacles}) {
+function Map({positions, current, obstacles, command}) {
     console.log(positions)
     const origin = [{
         x: 0,
@@ -34,6 +34,12 @@ function Map({positions, current, obstacles}) {
             label: 'origin',
             data: origin,
             backgroundColor: 'rgb(0,0,0)',
+            pointStyle: 'circle'
+        },{
+            type: 'scatter',
+            label: 'command',
+            data: command,
+            backgroundColor: 'rgb(0,0,255)',
             pointStyle: 'circle'
         }],
       };
@@ -77,12 +83,7 @@ function Map({positions, current, obstacles}) {
     };
 
     return (
-        <div className="Card3">
-            <h3>Map</h3>
-            <div className="Map">
-                <Scatter data={data} options={options} height={370} width='100%'/>
-            </div>
-        </div>
+        <Scatter data={data} options={options} height={370} width='100%'/>
     )
 }
 

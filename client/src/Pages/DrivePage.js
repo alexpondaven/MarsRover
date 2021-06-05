@@ -54,7 +54,12 @@ function DrivePage({speed}) {
                     
                 </div>
 
-                <Map positions={positions} current={currentposition} obstacles={obstacles} />
+                <div className="Card3">
+                    <h3>Map</h3>
+                    <div className="Map">
+                        <Map positions={positions} current={currentposition} obstacles={obstacles} />
+                    </div>
+                </div>
 
             </div>
 
