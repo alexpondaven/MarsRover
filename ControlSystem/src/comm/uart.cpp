@@ -1,4 +1,4 @@
-#include "../Configuration.h"
+#include "Configuration.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -11,6 +11,7 @@
 #include "ArduinoJson.h"
 #include "queues.h"
 #include <cmath>
+#include "limits.h"
 
 QueueHandle_t q_drive_to_tcp;
 QueueHandle_t q_tcp_to_drive;
@@ -118,8 +119,9 @@ void uart_fpga(void *params) {
         uart_read_bytes(UART_NUM_1, (uint8_t *) &recievebuff, sizeof(recievebuff), 100 / portTICK_PERIOD_MS);
         // skip zero bounding boxes
         obstacle_t obs;
-        if (recievebuff.bottomright_x || recievebuff.bottomright_y) {
           
+        if (recievebuff.bottomright_x || recievebuff.bottomright_y) {
+          obs.bounding_box = recievebuff;
           uint32_t height = obs.bounding_box.bottomright_y - obs.bounding_box.topleft_y;
           uint32_t width = obs.bounding_box.bottomright_x - obs.bounding_box.topleft_x;
           uint32_t mid_x = obs.bounding_box.topleft_x + width;
@@ -137,7 +139,6 @@ void uart_fpga(void *params) {
           float dist_from_centre_mm =  (float) ((mid_x - 320) * (float) width / 38);
 
           // obs.distance = sqrtf( ((mid_x - 320) * (mid_x - 320)) + (mid_y * mid_y) ); 
-          obs.bounding_box = recievebuff;
           obs.area = width * height;
           obs.angle = asinf(dist_from_centre_mm / obs.distance);
           if (mid_x < 320) {
@@ -146,7 +147,7 @@ void uart_fpga(void *params) {
 
         } // non zero bounding boxes
         else {
-          obs.distance = 0;
+          obs.distance = UINT32_MAX;
         }
           switch (obs.bounding_box.color[0])
           {
