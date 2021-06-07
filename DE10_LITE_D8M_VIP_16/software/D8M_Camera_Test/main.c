@@ -1,5 +1,5 @@
-
-
+#include "system.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include "I2C_core.h"
 #include "terasic_includes.h"
@@ -7,6 +7,11 @@
 #include "mipi_bridge_config.h"
 
 #include "auto_focus.h"
+
+#include <fcntl.h>
+#include <unistd.h>
+
+#include <math.h>
 
 //EEE_IMGPROC defines
 #define EEE_IMGPROC_MSG_START ('R'<<16 | 'B'<<8 | 'B')
@@ -16,9 +21,21 @@
 #define EEE_IMGPROC_MSG 1
 #define EEE_IMGPROC_ID 2
 #define EEE_IMGPROC_BBCOL 3
+//#define EEE_IMGPROC_CONTRAST 4
+//#define EEE_IMGPROC_RED_THRESH 6
+//#define EEE_IMGPROC_COL_DETECT 5
+#define EEE_IMGPROC_DIST_THRESH 7
+
+#define HUE 4
+#define SAT 5
+#define VAL 6
 
 
-#define DEFAULT_LEVEL 2
+#define EXPOSURE_INIT 0x002400
+#define EXPOSURE_STEP 0x500
+#define GAIN_INIT 0x500 // or 500
+#define GAIN_STEP 0x100
+#define DEFAULT_LEVEL 3
 
 #define MIPI_REG_PHYClkCtl		0x0056
 #define MIPI_REG_PHYData0Ctl	0x0058
@@ -115,7 +132,7 @@ bool MIPI_Init(void){
 
 int main()
 {
-	int boundingBoxColour = 0;
+	fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);
 
 
   printf("DE10-LITE D8M VGA Demo\n");
@@ -179,7 +196,29 @@ int main()
         alt_u16 bin_level = DEFAULT_LEVEL;
         alt_u8  manual_focus_step = 10;
         alt_u16  current_focus = 300;
+        int boundingBoxColour = 0;
+		alt_u32 exposureTime = EXPOSURE_INIT;
+		alt_u16 gain = GAIN_INIT;
+
+		OV8865SetExposure(exposureTime);
+		OV8865SetGain(gain);
         Focus_Init();
+
+
+        //init UART for esp
+//        FILE* fp;
+//        fp = fopen ("/dev/uart_esp", "r+"); //open file for read/write UART_ESP_NAME = "/dev/uart_esp"
+
+//		if (fp==NULL){
+//			printf("didn't open");
+//			fp = fopen ("/dev/uart_esp", "r+");
+//
+//		} else {
+//			printf("opened");
+//		}
+
+
+
   while(1){
 
        // touch KEY0 to trigger Auto focus
@@ -230,24 +269,135 @@ int main()
 
        }
 	#endif
+       int word;
+	  while ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) { 	//Find out if there are words to read
+		  word = IORD(0x42000,EEE_IMGPROC_MSG); 			//Get next word from message buffer
+	   if (word == EEE_IMGPROC_MSG_START){ 					//Newline on message identifier
+		   printf("\n");
+	   }
+	   printf("%08x ",word);
+	  }
 
+//	  if (fp){
+//		  fwrite(&word,sizeof(word),1,fp);
+//	  }
+	  /*
        //Read messages from the image processor and print them on the terminal
+       int word;
+       int bb_width=0;
+       int dist_from_centre=0;
+       int distance=0;
+       int angle=0;
        while ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) { 	//Find out if there are words to read
-           int word = IORD(0x42000,EEE_IMGPROC_MSG); 			//Get next word from message buffer
+           word = IORD(0x42000,EEE_IMGPROC_MSG); 			//Get next word from message buffer
     	   if (word == EEE_IMGPROC_MSG_START){ 					//Newline on message identifier
     		   printf("\n");
     	   }
     	   printf("%08x ",word);
+    	   // read next 2 words
+    	   if ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) {
+    		   bb_width = IORD(0x42000,EEE_IMGPROC_MSG);
+    		   //printf("%08x ",bb_width);
+    		   if ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) {
+    			   dist_from_centre = IORD(0x42000,EEE_IMGPROC_MSG);
+    			   // calculation of distance from camera and angle
+    			   // ping pong balls are 38 mm = bb_width pixels wide (1 pixel = bb_width/38 mm)
+    			   int dist_from_centre_mm = dist_from_centre *bb_width / 38;
+    			   //printf("%08x ",dist_from_centre_mm);
+    			   //distance from camera values
+    			   //ratio of sizes = ratio of distances - but inversely proportional
+    			   // sx/sy=dy/dx  =>  dy = dx * sx /sy = 100 * 256 / sy
+
+    			   // 0x100 or 256 pixels is 100 mm away
+    			   // 0x80 is 200 mm
+    			   //0x54 is 300 mm
+    			   distance = 100 * 256 / bb_width;
+    			   printf("%08d ",distance);
+    			   //angle = asin(dist_from_centre_mm/distance);
+    			   angle = (dist_from_centre_mm/distance) * 57; // small angle approximation (57 is around 180/pi)
+    			   printf("%08d ", angle);
+
+//    			   if (fp){
+//					   fwrite(&distance,sizeof(distance),1,fp);
+//					   fwrite(&angle,sizeof(angle),1,fp);
+//
+//					 }
+    		   }
+    	   }
+
+
+
        }
+       */
 
-       //Update the bounding box colour
-       boundingBoxColour = (++boundingBoxColour & 0xff);
-       IOWR(0x42000, EEE_IMGPROC_BBCOL, (boundingBoxColour << 8) | (0xff - boundingBoxColour));
 
+       // Send word through I2C
+//       const alt_u8 device_address = ESP_I2C_ADDR; // needs to be defined
+//       OC_I2CL_Write(I2C_OPENCORES_ESP_BASE, device_address, Addr, (alt_u8 *)&word, sizeof(word)); // or use OC_I2C_Write
+
+       // not sure what device_address or write address will be - probably decided by ESP program?
+
+       //Update the bounding box colour - cycles from blue (0000ff) to green (00ff00)
+       //boundingBoxColour = ((boundingBoxColour + 1) & 0xff);
+       //IOWR(0x42000, EEE_IMGPROC_BBCOL, (boundingBoxColour << 8) | (0xff - boundingBoxColour));
+
+       //Process input commands
+		  int in = getchar();
+		  switch (in) {
+			   case 'e': {
+				   exposureTime += EXPOSURE_STEP;
+				   OV8865SetExposure(exposureTime);
+				   printf("\nExposure = %x ", exposureTime);
+				   break;}
+			   case 'd': {
+				   exposureTime -= EXPOSURE_STEP;
+				   OV8865SetExposure(exposureTime);
+				   printf("\nExposure = %x ", exposureTime);
+				   break;}
+			   case 't': {
+				   gain += GAIN_STEP;
+				   OV8865SetGain(gain);
+				   printf("\nGain = %x ", gain);
+				   break;}
+			   case 'g': {
+				   gain -= GAIN_STEP;
+				   OV8865SetGain(gain);
+				   printf("\nGain = %x ", gain);
+				   break;}
+			   case 'r': {
+				   current_focus += manual_focus_step;
+				   if(current_focus >1023) current_focus = 1023;
+				   OV8865_FOCUS_Move_to(current_focus);
+				   printf("\nFocus = %x ",current_focus);
+				   break;}
+			   case 'f': {
+				   if(current_focus > manual_focus_step) current_focus -= manual_focus_step;
+				   OV8865_FOCUS_Move_to(current_focus);
+				   printf("\nFocus = %x ",current_focus);
+				   break;}
+		  }
+
+		  // Update contrast of image
+		  //IOWR(0x42000, EEE_IMGPROC_CONTRAST, 0xf);
+
+		  //Update red threshold
+//		  IOWR(0x42000, EEE_IMGPROC_RED_THRESH, 0x0);
+
+		  // update colour to be detected when 3rd switch is on
+//		  IOWR(0x42000, EEE_IMGPROC_COL_DETECT, 0x4000);
+
+		  //update distance threshold between bounding boxes
+//		  IOWR(0x42000, EEE_IMGPROC_DIST_THRESH, 0x20);
+
+
+		  //Testing HSV values:
+		  IOWR(0x42000, HUE, 0x0e00);
+		  IOWR(0x42000, SAT, 0xae00);
+		  IOWR(0x42000, VAL, 0xff00);
 
 
 	   //Main loop delay
-	   usleep(10000);
+		  usleep(10000);
 
    };
   return 0;
