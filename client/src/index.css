@@ -236,6 +236,24 @@ span {
   width: 80vw;
 }
 
+.ExploreButton {
+  margin: auto;
+  height: 100vw;
+  max-height: 300px;
+  width: 100vw;
+  max-width: 300px;
+  padding: 20px;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 100%;
+}
+
+.ExploreButton:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,1);
+}
+
 .Map {
   border: 1px solid #000000;
 }
+

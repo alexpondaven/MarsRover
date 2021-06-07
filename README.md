@@ -17,6 +17,7 @@ npm install cors
 npm install fs
 npm install csv-parser
 npm install request
+npm install bmp-js
 ```
 ### Run the Node.js Server
 ```
@@ -113,7 +114,7 @@ A HTTP port is established at port 5000 (`http://localhost:5000`), and it has 3 
 `/drive` GET returns details on the properties about the drive system, including the speed, past and current position of the rover, obstacle positions.
 
 `/position` POST is fetched when there is a change in the position command on the webpage. It updates an array of 4 `unsigned_int8` elements (`'position'`) which indicates the remote control state. The array is in the seqeunce of [left,right,forward,backward]. Value of `1` means button being pressed on the webpage, and vice versa for `0` <br/>
-For example, if the user presses "right" on the webpage, the TCP packet being sent out would be:
+For example, if the user presses "right" on the webpage, the array would be:
 `[0,1,0,0]`
 
 ### Database
@@ -132,7 +133,13 @@ Input in the following format: <br/>
 
 An updated database would be printed out in the command line after a valid input.
 
-The server would also response with the above-mentioned `unsigned_int8` array that contains information of remote control from the user on the webpage.
+The server would also response with information of remote control from the user on the webpage, in the format:
+{
+    mode: int
+    direction: [byte,byte,byte,byte]
+    position: [int,int]
+}
+The int for mode represents the control mode user is using, 0-2 represents direction, position and exploration respectively. 
 
 Due to the Request/Respone nature of server, above-mentioned array would only be sent to the client if the server receives a packet (despite being a valid input or not)
 
@@ -162,3 +169,4 @@ It would also receive and print TCP packet received from the server on the termi
 01-Jun-2021: added sidebar + simple image slideshow <br/>
 03-Jun-2021: added control subpage + simple database in server <br/>
 05-Jun-2021: added position control mode <br/>
+07-Jun-2021: added exploration mode, server sends out correct format packet + added buggy video TCP port <br/>

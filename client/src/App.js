@@ -123,9 +123,9 @@ function App() {
               <ControlPage />
             </Route>
 
-            {/* <Route path="/test">
+            <Route path="/test">
               <TestingPage />
-            </Route> */}
+            </Route>
 
           </Switch>
         </div> 

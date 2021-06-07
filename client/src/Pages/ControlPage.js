@@ -1,4 +1,4 @@
-import { useState, useEffect, Component } from 'react'
+import { useState, useEffect } from 'react'
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -86,7 +86,8 @@ function ControlPage() {
     ])
 
     const postDataDir = async(id,bool) => {
-        if (id === -1) return;
+        if (explore) onClickExplore();
+        if (id === -1) return; 
         var body = {
             type: 'direction',
             id: id,
@@ -161,6 +162,23 @@ function ControlPage() {
         }
     }
 
+    const [explore,setExplore] = useState(false);
+
+    const onClickExplore = () =>{
+      setExplore(!explore);
+      var body = {
+        type: 'explore',
+        state: explore
+      }
+      fetch('http://localhost:5000/position', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      })
+    }
+
     const [positions,setRover] = useState([]);
     const [currentposition, setCurrent] = useState([]);
     const [obstacles,setObstacle] = useState([]);
@@ -209,13 +227,29 @@ function ControlPage() {
                     <Tooltip title="Give the rover a target coordinate, then sit down and wait for it to arrive!">
                         <Tab label="Position" {...a11yProps(1)} />
                     </Tooltip>
+                    <Tooltip title="Let the rover chooses where it want to go.">
+                        <Tab label="Exploration" {...a11yProps(2)} />
+                    </Tooltip>
                 </Tabs>
             </AppBar>
             <TabPanel value={value} index={0}>
                 <Controller positions={position} onClick={onClick} onRelease={onRelease} />
             </TabPanel>
             <TabPanel value={value} index={1}>
-                <ControllerPosition positions={positions} currentposition={currentposition} obstacles={obstacles} />
+                <ControllerPosition positions={positions} currentposition={currentposition} obstacles={obstacles} 
+                  explore={explore} onClickExplore={onClickExplore}
+                />
+            </TabPanel>
+            <TabPanel value={value} index={2}>
+              <div style={{width:'80vw', display: 'flex', alignItems: 'center'}}>
+                <button 
+                  className='ExploreButton' 
+                  onClick={onClickExplore} 
+                  style={{backgroundColor: explore ? 'rgb(221, 96, 96)' : 'rgb(70,225,70)'}}
+                >
+                  {explore ? 'Stop' : 'Explore!'}
+                </button>
+              </div>
             </TabPanel>
         </div>
     )

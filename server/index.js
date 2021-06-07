@@ -18,10 +18,22 @@ app.get("/data", (request, response) => {
 app.post("/position", (request,response) => {
     var tmp = request.body;
     if (tmp.type === 'direction'){
-        position[tmp.id] = tmp.state ? 1 : 0;
-        console.log(position)
+        toboard.mode = 0;
+        toboard.direction[tmp.id] = tmp.state ? 1 : 0;
+        console.log(toboard)
     } else if (tmp.type === 'position'){
-        console.log(tmp);
+        toboard.mode = 1;
+        toboard.position[0] = tmp.x;
+        toboard.position[1] = tmp.y;
+        console.log(toboard)
+    } else if (tmp.type === 'explore'){
+        if (tmp.state) {
+            toboard.mode = 2;
+        } else {
+            toboard.mode = 0;
+            toboard.direction = new Uint8Array([0,0,0,0]);
+        }
+        console.log(toboard)
     }
     
 })
@@ -44,6 +56,12 @@ app.get("/drive", (request, response) => {
     })
 })
 
+app.get("/test", (request, response) => {
+    response.json({
+        bmp: base
+    })
+})
+
 // database 
 var battery = {
     status: false,
@@ -54,7 +72,6 @@ var speed = {
     speed : 57,
     angle : 0
 }
-var position = new Uint8Array([0,0,0,0]);
 var batteryusage = require('./data/SoC_t.js');
 var batteryalert = [
     {
@@ -73,6 +90,12 @@ var obstacles = [{
 },{
     x: 4, y: -10, time: new Date(), type: 'obstacle'
 }]
+var base = '';
+var toboard = {
+    mode: 0,
+    direction: new Uint8Array([0,0,0,0]),
+    position: new Uint32Array([0,0])
+}
 
 // var data;
 
@@ -86,6 +109,7 @@ var obstacles = [{
 // });
 
 // setting up TCP server 
+
 var net = require('net');
 
 const server = net.createServer(socket => {
@@ -128,7 +152,9 @@ const server = net.createServer(socket => {
             speed.angle = tmp[1];
             console.log(speed);
         }
-        socket.write(position);
+
+        var buf = Buffer.from(JSON.stringify(toboard));
+        socket.write(buf);
     })
 
     socket.on("end",() => {
@@ -136,6 +162,41 @@ const server = net.createServer(socket => {
     })
 })
 server.listen(2000);
+
+// TCP socket for video streaming
+const bmp = require("bmp-js");
+const size = 77880;
+var datasize = 0;
+var databuffer = 0;
+
+const server_b = net.createServer(socket => {
+    socket.on("data", data => {
+        if (databuffer === 0){
+            databuffer = data
+        } else {
+            databuffer = Buffer.concat([databuffer,data]);
+        }
+        datasize += data.length;
+        if (datasize >= size){
+            socket.write("Received!");
+            console.log(datasize);
+            datasize =0;
+
+            var bmpData = bmp.decode(databuffer);
+            var rawData = bmp.encode(bmpData);
+            base = Buffer.from(rawData.data).toString('base64')
+
+            databuffer = 0;
+        }
+
+        socket.write("received!");
+    })
+
+    socket.on("end",() => {
+        console.log("client left")
+    })
+})
+server_b.listen(2001);
 
 function parse(str){
     if (str[0] == 'b' && str[1] == 'c'){

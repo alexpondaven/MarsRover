@@ -1,7 +1,7 @@
-import { useState, useEffect, Component } from 'react'
+import { useState } from 'react'
 import Map from '../Components/Map.js'
 
-function ControllerPosition({positions, currentposition, obstacles}) {
+function ControllerPosition({positions, currentposition, obstacles, explore, onClickExplore}) {
     const [command, setCommand] = useState({
         x: 0,
         y: 0,
@@ -56,6 +56,7 @@ function ControllerPosition({positions, currentposition, obstacles}) {
     }
 
     const postDataPos = async() => {
+        if (explore) onClickExplore();
         var body = {
             type: 'position',
             x: command.x,
