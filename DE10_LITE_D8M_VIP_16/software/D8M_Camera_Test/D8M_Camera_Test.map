@@ -985,8 +985,8 @@ LOAD c:/intelfpga_lite/16.1/nios2eds/bin/gnu/h-x86_64-mingw32/bin/../lib/gcc/nio
                 0x0000000000033408                __clz_tab
  .rodata        0x0000000000033508        0xa ../D8M_Camera_Test_bsp/\libhal_bsp.a(alt_dev.o)
  *fill*         0x0000000000033512        0x2 
- .rodata        0x0000000000033514        0xf ../D8M_Camera_Test_bsp/\libhal_bsp.a(alt_main.o)
- *fill*         0x0000000000033523        0x1 
+ .rodata        0x0000000000033514        0xe ../D8M_Camera_Test_bsp/\libhal_bsp.a(alt_main.o)
+ *fill*         0x0000000000033522        0x2 
  .rodata        0x0000000000033524       0x1e ../D8M_Camera_Test_bsp/\libhal_bsp.a(alt_sys_init.o)
  *(.rodata1)
                 0x0000000000033544                . = ALIGN (0x4)

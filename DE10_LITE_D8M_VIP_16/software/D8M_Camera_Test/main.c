@@ -392,8 +392,8 @@ int main()
 
 		  //Testing HSV values:
 		  IOWR(0x42000, HUE, 0x0e00);
-		  IOWR(0x42000, SAT, 0xae00);
-		  IOWR(0x42000, VAL, 0xff00);
+		  IOWR(0x42000, SAT, 0xae33);
+		  IOWR(0x42000, VAL, 0xff60);
 
 
 	   //Main loop delay

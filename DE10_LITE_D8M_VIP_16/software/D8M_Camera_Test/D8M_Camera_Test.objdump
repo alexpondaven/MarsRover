@@ -65,19 +65,19 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
  23 .sysid_time   00000004  00000000  00000000  0007dc11  2**0
                   CONTENTS, READONLY
- 24 .stderr_dev   00000009  00000000  00000000  0007dc15  2**0
+ 24 .stderr_dev   00000008  00000000  00000000  0007dc15  2**0
                   CONTENTS, READONLY
- 25 .stdin_dev    00000009  00000000  00000000  0007dc1e  2**0
+ 25 .stdin_dev    00000008  00000000  00000000  0007dc1d  2**0
                   CONTENTS, READONLY
- 26 .stdout_dev   00000009  00000000  00000000  0007dc27  2**0
+ 26 .stdout_dev   00000008  00000000  00000000  0007dc25  2**0
                   CONTENTS, READONLY
- 27 .sopc_system_name 00000004  00000000  00000000  0007dc30  2**0
+ 27 .sopc_system_name 00000004  00000000  00000000  0007dc2d  2**0
                   CONTENTS, READONLY
- 28 .quartus_project_dir 0000003b  00000000  00000000  0007dc34  2**0
+ 28 .quartus_project_dir 0000003b  00000000  00000000  0007dc31  2**0
                   CONTENTS, READONLY
- 29 .jdi          0000414a  00000000  00000000  0007dc6f  2**0
+ 29 .jdi          0000414a  00000000  00000000  0007dc6c  2**0
                   CONTENTS, READONLY
- 30 .sopcinfo     000a00f7  00000000  00000000  00081db9  2**0
+ 30 .sopcinfo     000a00f7  00000000  00000000  00081db6  2**0
                   CONTENTS, READONLY
 SYMBOL TABLE:
 00020000 l    d  .entry	00000000 .entry
@@ -3313,7 +3313,7 @@ int main()
    21858:	00890004 	movi	r2,9216
    2185c:	e0bffb15 	stw	r2,-20(fp)
 		alt_u16 gain = GAIN_INIT;
-   21860:	00818004 	movi	r2,1536
+   21860:	00814004 	movi	r2,1280
    21864:	e0bffc0d 	sth	r2,-16(fp)
 
 		OV8865SetExposure(exposureTime);
@@ -3577,13 +3577,13 @@ int main()
    21b30:	00800134 	movhi	r2,4
    21b34:	10880404 	addi	r2,r2,8208
    21b38:	10c00035 	stwio	r3,0(r2)
-		  IOWR(0x42000, SAT, 0xae00);
-   21b3c:	00eb8014 	movui	r3,44544
+		  IOWR(0x42000, SAT, 0xae33);
+   21b3c:	00eb8cd4 	movui	r3,44595
    21b40:	00800134 	movhi	r2,4
    21b44:	10880504 	addi	r2,r2,8212
    21b48:	10c00035 	stwio	r3,0(r2)
-		  IOWR(0x42000, VAL, 0xff00);
-   21b4c:	00ffc014 	movui	r3,65280
+		  IOWR(0x42000, VAL, 0xff60);
+   21b4c:	00ffd814 	movui	r3,65376
    21b50:	00800134 	movhi	r2,4
    21b54:	10880604 	addi	r2,r2,8216
    21b58:	10c00035 	stwio	r3,0(r2)
