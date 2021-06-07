@@ -15,7 +15,7 @@
 			clk_sdram_clk                             : out   std_logic;                                        -- clk
 			clk_vga_clk                               : out   std_logic;                                        -- clk
 			d8m_xclkin_clk                            : out   std_logic;                                        -- clk
-			eee_imgproc_0_conduit_mode_new_signal     : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- new_signal
+			eee_imgproc_0_conduit_mode_new_signal     : in    std_logic_vector(3 downto 0)  := (others => 'X'); -- new_signal
 			i2c_opencores_camera_export_scl_pad_io    : inout std_logic                     := 'X';             -- scl_pad_io
 			i2c_opencores_camera_export_sda_pad_io    : inout std_logic                     := 'X';             -- sda_pad_io
 			i2c_opencores_mipi_export_scl_pad_io      : inout std_logic                     := 'X';             -- scl_pad_io

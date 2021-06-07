@@ -4,7 +4,7 @@
  * Machine generated for CPU 'nios2_gen2' in SOPC Builder design 'Qsys'
  * SOPC Builder design path: ../../Qsys.sopcinfo
  *
- * Generated: Mon Jun 07 15:20:00 BST 2021
+ * Generated: Mon Jun 07 15:47:09 BST 2021
  */
 
 /*
@@ -183,24 +183,24 @@
 #define ALT_NUM_EXTERNAL_INTERRUPT_CONTROLLERS 0
 #define ALT_NUM_INTERNAL_INTERRUPT_CONTROLLERS 1
 #define ALT_NUM_INTERRUPT_CONTROLLERS 1
-#define ALT_STDERR "/dev/uart_esp"
-#define ALT_STDERR_BASE 0x42020
-#define ALT_STDERR_DEV uart_esp
-#define ALT_STDERR_IS_UART
+#define ALT_STDERR "/dev/jtag_uart"
+#define ALT_STDERR_BASE 0x410e8
+#define ALT_STDERR_DEV jtag_uart
+#define ALT_STDERR_IS_JTAG_UART
 #define ALT_STDERR_PRESENT
-#define ALT_STDERR_TYPE "altera_avalon_uart"
-#define ALT_STDIN "/dev/uart_esp"
-#define ALT_STDIN_BASE 0x42020
-#define ALT_STDIN_DEV uart_esp
-#define ALT_STDIN_IS_UART
+#define ALT_STDERR_TYPE "altera_avalon_jtag_uart"
+#define ALT_STDIN "/dev/jtag_uart"
+#define ALT_STDIN_BASE 0x410e8
+#define ALT_STDIN_DEV jtag_uart
+#define ALT_STDIN_IS_JTAG_UART
 #define ALT_STDIN_PRESENT
-#define ALT_STDIN_TYPE "altera_avalon_uart"
-#define ALT_STDOUT "/dev/uart_esp"
-#define ALT_STDOUT_BASE 0x42020
-#define ALT_STDOUT_DEV uart_esp
-#define ALT_STDOUT_IS_UART
+#define ALT_STDIN_TYPE "altera_avalon_jtag_uart"
+#define ALT_STDOUT "/dev/jtag_uart"
+#define ALT_STDOUT_BASE 0x410e8
+#define ALT_STDOUT_DEV jtag_uart
+#define ALT_STDOUT_IS_JTAG_UART
 #define ALT_STDOUT_PRESENT
-#define ALT_STDOUT_TYPE "altera_avalon_uart"
+#define ALT_STDOUT_TYPE "altera_avalon_jtag_uart"
 #define ALT_SYSTEM_NAME "Qsys"
 
 
@@ -420,8 +420,8 @@
 #define ONCHIP_MEMORY2_0_READ_DURING_WRITE_MODE "DONT_CARE"
 #define ONCHIP_MEMORY2_0_SINGLE_CLOCK_OP 0
 #define ONCHIP_MEMORY2_0_SIZE_MULTIPLE 1
-#define ONCHIP_MEMORY2_0_SIZE_VALUE 100000
-#define ONCHIP_MEMORY2_0_SPAN 100000
+#define ONCHIP_MEMORY2_0_SIZE_VALUE 131072
+#define ONCHIP_MEMORY2_0_SPAN 131072
 #define ONCHIP_MEMORY2_0_TYPE "altera_avalon_onchip_memory2"
 #define ONCHIP_MEMORY2_0_WRITABLE 1
 
@@ -465,7 +465,7 @@
 #define SYSID_QSYS_IRQ_INTERRUPT_CONTROLLER_ID -1
 #define SYSID_QSYS_NAME "/dev/sysid_qsys"
 #define SYSID_QSYS_SPAN 8
-#define SYSID_QSYS_TIMESTAMP 1623065819
+#define SYSID_QSYS_TIMESTAMP 1623076704
 #define SYSID_QSYS_TYPE "altera_avalon_sysid_qsys"
 
 

@@ -217,6 +217,13 @@ int main()
 //			printf("opened");
 //		}
 
+        FILE* ser = fopen("/dev/uart_esp", "rb+");
+		if(ser){
+			printf("Opened UART\n");
+		} else {
+			printf("Failed to open UART\n");
+			while (1);
+		}
 
 
   while(1){
@@ -269,14 +276,15 @@ int main()
 
        }
 	#endif
-       int word;
-	  while ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) { 	//Find out if there are words to read
-		  word = IORD(0x42000,EEE_IMGPROC_MSG); 			//Get next word from message buffer
-	   if (word == EEE_IMGPROC_MSG_START){ 					//Newline on message identifier
+    //Read messages from the image processor and print them on the terminal
+	while ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) { 	//Find out if there are words to read
+		int word = IORD(0x42000,EEE_IMGPROC_MSG); 			//Get next word from message buffer
+		if (fwrite(&word, 4, 1, ser) != 1)
+		   printf("Error writing to UART");
+		if (word == EEE_IMGPROC_MSG_START)				//Newline on message identifier
 		   printf("\n");
-	   }
-	   printf("%08x ",word);
-	  }
+		printf("%08x ",word);
+	}
 
 //	  if (fp){
 //		  fwrite(&word,sizeof(word),1,fp);
