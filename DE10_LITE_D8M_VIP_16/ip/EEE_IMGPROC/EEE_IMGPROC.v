@@ -225,7 +225,7 @@ end
 
 
 //Process bounding box at the end of the frame.
-reg [1:0] msg_state;
+reg [3:0] msg_state;
 reg [7:0] frame_count;
 integer i;
 always@(posedge clk) begin
@@ -271,13 +271,13 @@ always@(posedge clk) begin
 		frame_count <= frame_count - 1;
 		
 		if (frame_count == 0 && msg_buf_size < MESSAGE_BUF_MAX - 3) begin
-			msg_state <= 2'b01;
+			msg_state <= 4'b0001;
 			frame_count <= MSG_INTERVAL-1;
 		end
 	end
 	
 	//Cycle through message writer states once started
-	if (msg_state != 2'b00) msg_state <= msg_state + 2'b01;
+	if (msg_state != 4'b0000) msg_state <= msg_state + 4'b0001;
 
 end
 	
@@ -290,27 +290,84 @@ wire [7:0] msg_buf_size;
 wire msg_buf_empty;
 
 `define RED_BOX_MSG_ID "RBB"
+`define PINK_BOX_MSG_ID "PBB"
+`define YELLOW_BOX_MSG_ID "YBB"
+`define GREEN_BOX_MSG_ID "GBB"
+`define BLUE_BOX_MSG_ID "BBB"
 
 
 
 always@(*) begin	//Write words to FIFO as state machine advances
 	case(msg_state)
-		2'b00: begin
+		4'h0: begin
 			msg_buf_in = 32'b0;
 			msg_buf_wr = 1'b0;
 		end
-		2'b01: begin
+		
+		4'h1: begin
 			msg_buf_in = `RED_BOX_MSG_ID;	//Message ID
 			msg_buf_wr = 1'b1;
 		end
-		2'b10: begin
+		4'h2: begin
 //			msg_buf_in = {5'b0, x_min, 5'b0, y_min};	//Top left coordinate
-			msg_buf_in = {5'b0, left[0], 5'b0, top[0]};	//Top left coordinate - may rather be bb[i][10:0] and bb[i][32:22]
+			msg_buf_in = {5'b0, bleft_red, 5'b0, btop_red};	//Top left coordinate - may rather be bb[i][10:0] and bb[i][32:22]
 			msg_buf_wr = 1'b1;
 		end
-		2'b11: begin
+		4'h3: begin
 //			msg_buf_in = {5'b0, x_max, 5'b0, y_max}; //Bottom right coordinate
-			msg_buf_in = {5'b0, right[0], 5'b0, bottom[0]}; //Bottom right coordinate
+			msg_buf_in = {5'b0, bright_red, 5'b0, bbottom_red}; //Bottom right coordinate
+			msg_buf_wr = 1'b1;
+		end
+		
+		4'h4: begin
+			msg_buf_in = `PINK_BOX_MSG_ID;
+			msg_buf_wr = 1'b1;
+		end
+		4'h5: begin
+			msg_buf_in = {5'b0, bleft_pink, 5'b0, btop_pink};
+			msg_buf_wr = 1'b1;
+		end
+		4'h6: begin
+			msg_buf_in = {5'b0, bright_pink, 5'b0, bbottom_pink}; 
+			msg_buf_wr = 1'b1;
+		end
+		
+		4'h7: begin
+			msg_buf_in = `YELLOW_BOX_MSG_ID;
+			msg_buf_wr = 1'b1;
+		end
+		4'h8: begin
+			msg_buf_in = {5'b0, bleft_yellow, 5'b0, btop_yellow};
+			msg_buf_wr = 1'b1;
+		end
+		4'h9: begin
+			msg_buf_in = {5'b0, bright_yellow, 5'b0, bbottom_yellow}; 
+			msg_buf_wr = 1'b1;
+		end
+		
+		4'ha: begin
+			msg_buf_in = `GREEN_BOX_MSG_ID;	
+			msg_buf_wr = 1'b1;
+		end
+		4'hb: begin
+			msg_buf_in = {5'b0, bleft_green, 5'b0, btop_green};
+			msg_buf_wr = 1'b1;
+		end
+		4'hc: begin
+			msg_buf_in = {5'b0, bright_green, 5'b0, bbottom_green}; 
+			msg_buf_wr = 1'b1;
+		end
+		
+		4'hd: begin
+			msg_buf_in = `BLUE_BOX_MSG_ID;
+			msg_buf_wr = 1'b1;
+		end
+		4'he: begin
+			msg_buf_in = {5'b0, bleft_blue, 5'b0, btop_blue};
+			msg_buf_wr = 1'b1;
+		end
+		4'hf: begin
+			msg_buf_in = {5'b0, bright_blue, 5'b0, bbottom_blue}; 
 			msg_buf_wr = 1'b1;
 		end
 	endcase
