@@ -17,7 +17,7 @@
 QueueHandle_t q_drive_to_tcp;
 QueueHandle_t q_tcp_to_drive;
 QueueHandle_t q_color_obstacles;
-
+extern void process_bb(char * buff, size_t sizebuff);
 
 void uart_drive_arduino(void *params) {
 
@@ -112,7 +112,7 @@ void uart_fpga(void *params) {
   recievebuff[ (10*sizeof(bounding_box_t)) ] = 0; // null terminate
 
   uart_set_pin(UART_NUM_1, FPGA_UART_TX_PIN, FPGA_UART_RX_PIN, -1, -1);
-  obstacles_t obstacles;
+  
   
   while (1) {
 
@@ -120,76 +120,9 @@ void uart_fpga(void *params) {
       int sizeread = uart_read_bytes(UART_NUM_1, (uint8_t *) &recievebuff, sizeof(recievebuff) - 1, portMAX_DELAY);
       ESP_LOGI("FPGA UART", "Read %d bytes %s", sizeread, recievebuff);
 
-      char * msg = strtok(recievebuff, "\n");
+      process_bb(recievebuff, sizeread);
 
-      while ( (msg = strtok(NULL, "\n")) != NULL ) {
-
-        ESP_LOGI("FPGA UART", "Msg is %s", msg);
-        if (strlen(msg) != sizeof(bounding_box_t)) {
-          break;
-        }
-        bounding_box_t bbox = *((bounding_box_t *) msg);
-
-
-
-        // skip zero bounding boxes
-        obstacle_t obs;
-        ESP_LOGI("FPGA UART", "BB: %c TL: (%d, %d) BR: (%d, %d)", bbox.color,bbox.topleft_x, bbox.topleft_y, bbox.bottomright_x, bbox.bottomright_y);
-        if (bbox.bottomright_x || bbox.bottomright_y) {
-          obs.bounding_box = bbox;
-          uint32_t height = obs.bounding_box.bottomright_y - obs.bounding_box.topleft_y;
-          uint32_t width = obs.bounding_box.bottomright_x - obs.bounding_box.topleft_x;
-          uint32_t mid_x = obs.bounding_box.topleft_x + width;
-          // uint32_t mid_y = obs.bounding_box.bottomright_y + height;
-
-          //distance from camera values
-    			   //ratio of sizes = ratio of distances - but inversely proportional
-    			   // sx/sy=dy/dx  =>  dy = dx * sx /sy = 100 * 256 / sy
-    			   // 0x100 or 256 pixels is 100 mm away
-    			   // 0x80 is 200 mm
-    			   //0x54 is 300 mm
-    			obs.distance = 100 * 256 /width;
-
-          // ping pong balls are 38 mm = bb_width pixels wide (1 pixel = bb_width/38 mm)
-          float dist_from_centre_mm =  (float) ((mid_x - 320) * (float) width / 38);
-
-          // obs.distance = sqrtf( ((mid_x - 320) * (mid_x - 320)) + (mid_y * mid_y) ); 
-          obs.area = width * height;
-          obs.angle = asinf(dist_from_centre_mm / obs.distance);
-          if (mid_x < 320) {
-            obs.angle = -obs.angle;
-          }
-
-        } // non zero bounding boxes
-        else {
-          obs.distance = -1;
-        }
-          
-        switch (obs.bounding_box.color)
-        {
-        case 'R':
-          obstacles.obstacles[0] = obs;
-          break;
-
-        case 'Y':
-          obstacles.obstacles[1] = obs;
-          break;
-
-        case 'P':
-          obstacles.obstacles[2] = obs;
-          break;
-
-        case 'B':
-          obstacles.obstacles[3] = obs;
-          break;
-
-        case 'G':
-          obstacles.obstacles[4] = obs;
-          break;
-        } // switch
-      } 
-
-      xQueueOverwrite(q_color_obstacles, &obstacles);
+     
       
     vTaskDelay(FPGA_COMM_INTERVAL / portTICK_PERIOD_MS); // this is how long to delay for
   }

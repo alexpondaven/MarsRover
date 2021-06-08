@@ -21,11 +21,11 @@ typedef struct {
 
 
 typedef struct {
-  char pad1, color, pad2, pad3;
-  uint16_t topleft_x;
+  char pad1, pad2, color, pad3;
   uint16_t topleft_y;
-  uint16_t bottomright_x;
+  uint16_t topleft_x;
   uint16_t bottomright_y;
+  uint16_t bottomright_x;
 } bounding_box_t;
 
 typedef struct {
