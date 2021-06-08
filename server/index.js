@@ -114,7 +114,7 @@ var net = require('net');
 
 const server = net.createServer(socket => {
     socket.on("data", data => {
-        // console.log(JSON.parse(data.toString()))
+        // console.log((data.toString()))
         var tmp = JSON.parse(data.toString());
         
         if (lastposition.x !== tmp.position.X || lastposition.y !== tmp.position.Y){
@@ -150,9 +150,16 @@ const server = net.createServer(socket => {
         console.log(speed)
         
         var buf = Buffer.from(JSON.stringify(toboard));
-        console.log(buf.length);
-        socket.write(new Uint8Array(buf.length))
-        socket.write(buf);
+
+
+var tmp = Buffer([buf.length]);
+
+buf = Buffer.concat([tmp,buf]);
+
+console.log(tmp);
+
+socket.write(buf);
+
     })
 
     socket.on("error", error => {
