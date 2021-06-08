@@ -113,48 +113,50 @@ var toboard = {
 var net = require('net');
 
 const server = net.createServer(socket => {
-    // parse the received data and update database
-    // reply with the 'position'
     socket.on("data", data => {
-        console.log(data.toString())
-        var tmp = parse(data.toString())
-        if (tmp != null && tmp[0] == 'b'){
-            battery.remain = String(tmp[1])+'%'
-            console.log(battery);
-        } else if (tmp != null && tmp[0] == 's'){
-            speed.speed = tmp[1];
-            console.log(speed)
-        } else if (tmp != null && tmp[0] == 'bc'){
-            battery.status = tmp[1];
-            console.log(battery);
-        } else if (tmp != null && tmp[0] == 'h'){
-            battery.health = String(tmp[1])+'%';
-            console.log(battery);
-        } else if (tmp != null && tmp[0] == 'x'){
-            lastposition = {
-                x: tmp[1],
-                y: lastposition.y,
-                time: new Date(),
-                type: 'position'
-            }
-            roverposition.push(lastposition);
-            console.log(roverposition);
-        } else if (tmp != null && tmp[0] == 'y'){
-            lastposition = {
-                x: lastposition.x,
-                y: tmp[1],
-                time: new Date(),
-                type: 'position'
-            }
-            roverposition.push(lastposition);
-            console.log(roverposition);
-        } else if (tmp != null && tmp[0] == 'a'){
-            speed.angle = tmp[1];
-            console.log(speed);
-        }
+        console.log(JSON.parse(data.toString()))
+        var tmp = JSON.parse(data.toString());
 
+        if (lastposition.x !== tmp.position.X || lastposition.y !== tmp.position.Y){
+            lastposition = {
+                x: tmp.position.X,
+                y: tmp.position.Y,
+                time: new Date(),
+                type: 'position',
+            }
+            roverposition.push(lastposition)
+        }
+        console.log(roverposition);
+
+        speed.speed = tmp.position.speed;
+        switch(tmp.position.direction) {
+            case 0:
+                speed.angle = 0;
+                break;
+            case 1:
+                speed.angle = 180;
+                break;
+            case 2:
+                if (speed.angle === -175) ;
+                else if (speed.angle < 0) speed.angle -= 5;
+                else speed.angle = -5;
+                break;
+            case 3:
+                if (speed.angle === 175) ;
+                else if (speed.angle > 0) speed.angle += 5;
+                else speed.angle = 5;
+                break;
+        }
+        console.log(speed)
+        
         var buf = Buffer.from(JSON.stringify(toboard));
         socket.write(buf);
+    })
+
+    socket.on("error", error => {
+        console.log("client left")
+        if (error.message === 'read ECONNRESET') return;
+        console.log(error)
     })
 
     socket.on("end",() => {
@@ -192,96 +194,14 @@ const server_b = net.createServer(socket => {
         socket.write("received!");
     })
 
+    socket.on("error", error => {
+        console.log("client left")
+        if (error.message === 'read ECONNRESET') return;
+        console.log(error)
+    })
+
     socket.on("end",() => {
         console.log("client left")
     })
 })
 server_b.listen(2001);
-
-function parse(str){
-    if (str[0] == 'b' && str[1] == 'c'){
-        for (var i=2; i<str.length; i++){
-            if (str[i] == 'c') {
-                return ['bc',true]
-            } else if (str[i] == 'n') {
-                return ['bc',false]
-            }
-        }
-        return null
-    }else if (str[0] == 'b'){
-        for (var i =0; i<str.length; i++){
-            // treat 0-9 . - as a start of number
-            if ((str.charCodeAt(i) > 47 && str.charCodeAt(i) < 58) || (str[i] == '.') || (str[i] == '-') ){
-                var tmp = Number(str.slice(i));
-                if (isNaN(tmp)){
-                    return null;
-                } else {
-                    return ['b',tmp];
-                }
-            }
-        }
-    }else if (str[0] == 'h'){
-        for (var i =0; i<str.length; i++){
-            // treat 0-9 . - as a start of number
-            if ((str.charCodeAt(i) > 47 && str.charCodeAt(i) < 58) || (str[i] == '.') || (str[i] == '-') ){
-                var tmp = Number(str.slice(i));
-                if (isNaN(tmp)){
-                    return null;
-                } else {
-                    return ['h',tmp];
-                }
-            }
-        }
-    } else if (str[0] == 's'){
-        for (var i =0; i<str.length; i++){
-            // treat 0-9 . - as a start of number
-            if ((str.charCodeAt(i) > 47 && str.charCodeAt(i) < 58) || (str[i] == '.') || (str[i] == '-') ){
-                var tmp = Number(str.slice(i));
-                if (isNaN(tmp)){
-                    return null;
-                } else {
-                    return ['s',tmp];
-                }
-            }
-        }
-    } else if (str[0] == 'x'){
-        for (var i =0; i<str.length; i++){
-            // treat 0-9 . - as a start of number
-            if ((str.charCodeAt(i) > 47 && str.charCodeAt(i) < 58) || (str[i] == '.') || (str[i] == '-') ){
-                var tmp = Number(str.slice(i));
-                if (isNaN(tmp)){
-                    return null;
-                } else {
-                    return ['x',tmp];
-                }
-            }
-        }
-    } else if (str[0] == 'y'){
-        for (var i =0; i<str.length; i++){
-            // treat 0-9 . - as a start of number
-            if ((str.charCodeAt(i) > 47 && str.charCodeAt(i) < 58) || (str[i] == '.') || (str[i] == '-') ){
-                var tmp = Number(str.slice(i));
-                if (isNaN(tmp)){
-                    return null;
-                } else {
-                    return ['y',tmp];
-                }
-            }
-        }
-    } else if (str[0] == 'a'){
-        for (var i =0; i<str.length; i++){
-            // treat 0-9 . - as a start of number
-            if ((str.charCodeAt(i) > 47 && str.charCodeAt(i) < 58) || (str[i] == '.') || (str[i] == '-') ){
-                var tmp = Number(str.slice(i));
-                if (isNaN(tmp)){
-                    return null;
-                } else if (tmp < 180 && tmp > -180) {
-                    return ['a',tmp];
-                } else {
-                    return null;
-                }
-            }
-        }
-    } 
-    return null;
-}
