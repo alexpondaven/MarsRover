@@ -19,12 +19,14 @@ void exploration_function(void * params) {
 
   while (1) {
 
+    vTaskDelay( EXPLORATION_INTERVAL / portTICK_PERIOD_MS);
+
     // block until non zero value is obtained. Used as a more lightweight semaphore/queue
     xTaskNotifyWait(0, 0, &notification_val, portMAX_DELAY);
 
     if (notification_val == 0) {
       // just give directions
-
+      continue;
     } else if (notification_val == 1) {
       // follow position
 
@@ -74,11 +76,11 @@ void exploration_function(void * params) {
     }
 
     xQueueOverwrite(q_tcp_to_drive, &direction);
-
+    
   } // while (1)
 }
 
-inline void exploration_main() {
+void exploration_main() {
   q_tcp_to_explore = xQueueCreate(1, sizeof(rover_coord_t));
   xTaskCreate(exploration_function, "Exploration Mode", 2048, NULL, EXPLORATION_PRIORITY, &exploration_task);
 }

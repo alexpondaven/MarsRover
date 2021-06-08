@@ -44,7 +44,7 @@ void uart_drive_arduino(void *params) {
   drive_tx_data_t drive_commands;
 
   /**
-   *      1
+   *      8
    *      |
    * 4 -  3  - 5
    *      |
@@ -83,16 +83,18 @@ void uart_drive_arduino(void *params) {
       } else if (drive_commands.right) {
         op = 5;
       } else if (drive_commands.forward) {
-        op = 1;
+        op = 8;
       } else if (drive_commands.backward) {
         op = 2;
       } else {
         op = 3;
       }
 
+      
       req["opcode"] = op;
       serializeJson(req, reqbuff, reqlength);
       // send request by uart
+      ESP_LOGI("Drive UART", "Sending %s", reqbuff);
       uart_write_bytes(UART_NUM_2, reqbuff, reqlength);
 
     vTaskDelay(DRIVE_ARDUINO_COMM_INTERVAL / portTICK_PERIOD_MS);
@@ -114,13 +116,18 @@ void uart_fpga(void *params) {
   
   while (1) {
 
-      uart_flush(UART_NUM_1);
-      uart_read_bytes(UART_NUM_1, (uint8_t *) &recievebuff, sizeof(recievebuff) - 1, portMAX_DELAY);
+      // uart_flush(UART_NUM_1);
+      int sizeread = uart_read_bytes(UART_NUM_1, (uint8_t *) &recievebuff, sizeof(recievebuff) - 1, portMAX_DELAY);
+      ESP_LOGI("FPGA UART", "Read %d bytes %s", sizeread, recievebuff);
 
       char * msg = strtok(recievebuff, "\n");
 
-      do {
-        msg = strtok(NULL, "\n");
+      while ( (msg = strtok(NULL, "\n")) != NULL ) {
+
+        ESP_LOGI("FPGA UART", "Msg is %s", msg);
+        if (strlen(msg) != sizeof(bounding_box_t)) {
+          break;
+        }
         bounding_box_t bbox = *((bounding_box_t *) msg);
 
 
@@ -180,17 +187,10 @@ void uart_fpga(void *params) {
           obstacles.obstacles[4] = obs;
           break;
         } // switch
-        
-        
-      } while( strlen(msg) == sizeof(bounding_box_t));
-      
+      } 
 
       xQueueOverwrite(q_color_obstacles, &obstacles);
       
-
-      
-
-
     vTaskDelay(FPGA_COMM_INTERVAL / portTICK_PERIOD_MS); // this is how long to delay for
   }
 }

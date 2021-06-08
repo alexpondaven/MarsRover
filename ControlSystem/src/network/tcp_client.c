@@ -33,7 +33,7 @@ extern xSemaphoreHandle mutex_video_frame_buffer;
 extern bitmap_t bitmap;
 
 size_t prepare_TCP_packet(char * buff, size_t buffsize);
-size_t recieve_TCP_packet(char * msg);
+void recieve_TCP_packet(char * msg);
 
 static void tcp_command(void *pvParameters)
 {
@@ -99,7 +99,7 @@ static void tcp_command(void *pvParameters)
             // Data received
             else {
 
-                rx_buffer[len] = 0; // Null-terminate whatever we received and treat like a string
+                // rx_buffer[len] = 0; // Null-terminate whatever we received and treat like a string
                 recieve_TCP_packet(rx_buffer);
                 ESP_LOGI(TAGC, "Received %d bytes from %s:", len, host_ip);
 

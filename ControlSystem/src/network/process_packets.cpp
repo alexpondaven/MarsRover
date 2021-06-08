@@ -77,16 +77,20 @@ extern "C" size_t prepare_TCP_packet(char * buff, size_t buffsize) {
 }
 
 
-extern "C" size_t recieve_TCP_packet(char * msg) {
+extern "C" void recieve_TCP_packet(char * msg) {
 
-    StaticJsonDocument<192> recdoc;
-    if (deserializeJson(recdoc, msg)) {
+
+    // ESP_LOGI("Recieve pkts", "Message is %s", msg);
+
+
+    StaticJsonDocument<400> recdoc;
+    if (deserializeJson(recdoc, msg) != DeserializationError::Ok) {
       ESP_LOGE("Recieve TCP Packet", "Deserialisation Error with message %s", msg);
     }
     int mode = recdoc["mode"];
     drive_tx_data_t drive_commands = {recdoc["direction"]["0"], recdoc["direction"]["1"], recdoc["direction"]["2"], recdoc["direction"]["3"]};
     rover_coord_t desired_position = {recdoc["position"]["0"], recdoc["position"]["1"]};
-
+    ESP_LOGI("Recieve TCP Packet", "L: %d R: %d F: %d B: %d", drive_commands.left, drive_commands.right, drive_commands.forward, drive_commands.backward);
     xQueueOverwrite(q_tcp_to_drive, &drive_commands);
     xQueueOverwrite(q_tcp_to_explore, &desired_position);
 
