@@ -60,7 +60,7 @@ void uart_drive_arduino(void *params) {
       uint32_t length = 0;
       ESP_ERROR_CHECK(uart_get_buffered_data_len(UART_NUM_2, (size_t*)&length));
       if (length) {
-        StaticJsonDocument<JSON_OBJECT_SIZE(2)> doc;
+        StaticJsonDocument<JSON_OBJECT_SIZE(4)> doc;
         
         uart_read_bytes(UART_NUM_2, (uint8_t *) &recievebuff, length, 100 / portTICK_PERIOD_MS);
         // ESP_LOGI("Drive_UART", "received %s", recievebuff);
