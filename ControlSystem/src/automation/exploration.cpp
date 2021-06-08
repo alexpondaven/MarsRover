@@ -6,6 +6,9 @@
 #include "queues.h"
 
 TaskHandle_t exploration_task;
+
+QueueHandle_t q_tcp_to_explore;
+
 #define PI 3.1415926
 #define AVOIDANCE_ANGLE_DEG 40
 #define AVOIDANCE_ANGLE_RAD AVOIDANCE_ANGLE_DEG * PI/180
@@ -17,7 +20,18 @@ void exploration_function(void * params) {
   while (1) {
 
     // block until non zero value is obtained. Used as a more lightweight semaphore/queue
-    // xTaskNotifyWait(0, 0, &notification_val, portMAX_DELAY);
+    xTaskNotifyWait(0, 0, &notification_val, portMAX_DELAY);
+
+    if (notification_val == 0) {
+      // just give directions
+
+    } else if (notification_val == 1) {
+      // follow position
+
+    } else {
+      // exploration mode
+
+    }
 
     // check each of the obstacles
     xQueuePeek(q_color_obstacles, &obs_list, 0);
@@ -27,7 +41,7 @@ void exploration_function(void * params) {
     float max_angle = -90.0f;
     for (int i=0; i<5; i++) {
       obstacle_t obs = obs_list.obstacles[i];
-      if (obs.distance < 300) {
+      if ((obs.distance < 300) && (obs.distance > 0)) {
         min_angle = min_angle > obs.angle ? obs.angle : min_angle;
         max_angle = max_angle < obs.angle ? obs.angle : max_angle;
       }
@@ -65,6 +79,6 @@ void exploration_function(void * params) {
 }
 
 inline void exploration_main() {
-
+  q_tcp_to_explore = xQueueCreate(1, sizeof(rover_coord_t));
   xTaskCreate(exploration_function, "Exploration Mode", 2048, NULL, EXPLORATION_PRIORITY, &exploration_task);
 }

@@ -27,13 +27,13 @@
 
 static const char *TAGC = "tcp_command";
 static const char *TAGV = "tcp_video";
-static const char *payload = "Message from ESP32 ";
+
 extern xSemaphoreHandle s_semph_get_ip_addrs;
 extern xSemaphoreHandle mutex_video_frame_buffer;
 extern bitmap_t bitmap;
 
 size_t prepare_TCP_packet(char * buff, size_t buffsize);
-
+size_t recieve_TCP_packet(char * msg);
 
 static void tcp_command(void *pvParameters)
 {
@@ -88,7 +88,9 @@ static void tcp_command(void *pvParameters)
                 break;
             }
 
-            int len = recv(sock, rx_buffer, sizeof(rx_buffer) - 1, 0);
+            uint8_t recvsize;
+            recv(sock, &recvsize, 1,0);
+            int len = recv(sock, rx_buffer, recvsize, 0);
             // Error occurred during receiving
             if (len < 0) {
                 ESP_LOGE(TAGC, "recv failed: errno %d", errno);
@@ -96,11 +98,11 @@ static void tcp_command(void *pvParameters)
             }
             // Data received
             else {
+
                 rx_buffer[len] = 0; // Null-terminate whatever we received and treat like a string
+                recieve_TCP_packet(rx_buffer);
                 ESP_LOGI(TAGC, "Received %d bytes from %s:", len, host_ip);
-                drive_tx_data_t *pkt = (drive_tx_data_t *) rx_buffer;
-                ESP_LOGI(TAGC, "Recieved data %d, %d, %d, %d", pkt->left, pkt->right, pkt->forward, pkt->backward);
-                // xQueueOverwrite(q_tcp_to_drive, pkt);
+
             }
 
             vTaskDelay(TCP_COMMAND_INTERVAL / portTICK_PERIOD_MS);
@@ -194,20 +196,7 @@ static void tcp_video_frame(void *pvParameters)
 
 void tcp_client_main(void)
 {
-    
 
-    // these are done by wps.c
-    // ESP_ERROR_CHECK(nvs_flash_init());
-    // ESP_ERROR_CHECK(esp_netif_init());
-    // ESP_ERROR_CHECK(esp_event_loop_create_default());
-
-    /* This helper function configures Wi-Fi or Ethernet, as selected in menuconfig.
-     * Read "Establishing Wi-Fi or Ethernet Connection" section in
-     * examples/protocols/README.md for more information about this function.
-     */
-    
-
-
-    xTaskCreate(tcp_command, "tcp_client", 4096, NULL, TCP_PRIORITY, NULL);
-    xTaskCreate(tcp_video_frame, "tcp_client", 4096, NULL, TCP_PRIORITY, NULL);
+    xTaskCreate(tcp_command, "tcp_command", 4096, NULL, TCP_PRIORITY, NULL);
+    xTaskCreate(tcp_video_frame, "tcp_video", 4096, NULL, TCP_PRIORITY, NULL);
 }

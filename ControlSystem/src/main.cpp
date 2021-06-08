@@ -7,6 +7,7 @@
 
 extern void uart_setup();
 extern void init_i2s();
+extern void exploration_main();
 
 extern "C" void app_main() {
 
@@ -17,4 +18,5 @@ extern "C" void app_main() {
 
   uart_setup();
   init_i2s();
+  exploration_main();
 }

@@ -6,6 +6,7 @@
 extern QueueHandle_t q_drive_to_tcp;
 extern QueueHandle_t q_tcp_to_drive;
 extern QueueHandle_t q_color_obstacles;
+extern QueueHandle_t q_tcp_to_explore;
 
 typedef struct {
   int32_t x;

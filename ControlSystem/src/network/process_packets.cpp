@@ -3,6 +3,9 @@
 #include "queues.h"
 #include "esp_log.h"
 
+
+extern TaskHandle_t exploration_task;
+
 extern "C" size_t prepare_TCP_packet(char * buff, size_t buffsize) {
 
   rover_coord_t rover_coord;
@@ -26,7 +29,7 @@ extern "C" size_t prepare_TCP_packet(char * buff, size_t buffsize) {
     memset((void *) &direction, 0, sizeof(direction));
   }
 
-  StaticJsonDocument<192> doc;
+  StaticJsonDocument<384> doc;
     
     
     JsonObject coords = doc.createNestedObject("position");
@@ -36,23 +39,31 @@ extern "C" size_t prepare_TCP_packet(char * buff, size_t buffsize) {
     JsonArray dts = doc.createNestedArray("distance");
     coords["X"] = rover_coord.x;
     coords["Y"] = rover_coord.y;
-    coords["speed"] = 1;
+    
     int dir;
+    int speed = 1;
     if (direction.left) {
-        dir = 4;
-      } else if (direction.right) {
-        dir = 5;
-      } else if (direction.forward) {
-        dir = 1;
-      } else if (direction.backward) {
         dir = 2;
-      } else {
+      } else if (direction.right) {
         dir = 3;
+      } else if (direction.forward) {
+        dir = 0;
+      } else if (direction.backward) {
+        dir = 1;
+      } else {
+        speed = 0;
+        dir = 0;
       }
     coords["direction"] = dir;
+    coords["speed"] = speed;
 
     for (int i=0; i<5; i++) {
-      cls[i] = i;
+      if (obs.obstacles[i].distance < 0) {
+        cls[i] = -1;
+      } else {
+        cls[i] = i;
+      }
+      
       ags[i] = obs.obstacles[i].angle;
       dts[i] = obs.obstacles[i].distance;
     }
@@ -65,3 +76,20 @@ extern "C" size_t prepare_TCP_packet(char * buff, size_t buffsize) {
 
 }
 
+
+extern "C" size_t recieve_TCP_packet(char * msg) {
+
+    StaticJsonDocument<192> recdoc;
+    if (deserializeJson(recdoc, msg)) {
+      ESP_LOGE("Recieve TCP Packet", "Deserialisation Error with message %s", msg);
+    }
+    int mode = recdoc["mode"];
+    drive_tx_data_t drive_commands = {recdoc["direction"]["0"], recdoc["direction"]["1"], recdoc["direction"]["2"], recdoc["direction"]["3"]};
+    rover_coord_t desired_position = {recdoc["position"]["0"], recdoc["position"]["1"]};
+
+    xQueueOverwrite(q_tcp_to_drive, &drive_commands);
+    xQueueOverwrite(q_tcp_to_explore, &desired_position);
+
+    xTaskNotify(exploration_task, mode, eSetValueWithOverwrite);
+
+}
