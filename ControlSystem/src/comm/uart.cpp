@@ -155,7 +155,7 @@ void uart_fpga(void *params) {
 
         } // non zero bounding boxes
         else {
-          obs.distance = UINT32_MAX;
+          obs.distance = -1;
         }
           
         switch (obs.bounding_box.color)

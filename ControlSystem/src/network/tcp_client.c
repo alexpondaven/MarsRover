@@ -32,6 +32,8 @@ extern xSemaphoreHandle s_semph_get_ip_addrs;
 extern xSemaphoreHandle mutex_video_frame_buffer;
 extern bitmap_t bitmap;
 
+size_t prepare_TCP_packet(char * buff, size_t buffsize);
+
 
 static void tcp_command(void *pvParameters)
 {
@@ -63,7 +65,7 @@ static void tcp_command(void *pvParameters)
         }
         ESP_LOGI(TAGC, "Socket created, connecting to %s:%d", host_ip, PORT_COMMAND);
 
-        int err;
+        // int err;
         while (connect(sock, (struct sockaddr *)&dest_addr, sizeof(struct sockaddr_in6)) != 0) {
             ESP_LOGE(TAGC, "Socket unable to connect: errno %d. Will keep trying", errno);
             vTaskDelay(4000 / portTICK_PERIOD_MS);
@@ -71,19 +73,16 @@ static void tcp_command(void *pvParameters)
         }
         ESP_LOGI(TAGC, "Successfully connected");
 
-        rover_coord_t rover_coord;
-        obstacles_t obs;
-        drive_tx_data_t direction;
+        
 
         while (1) {
-            // prepare_TCP_packet(&tcp_send_pkt);
+            char sendbuff[200];
+            size_t msgsize = prepare_TCP_packet(sendbuff, sizeof(sendbuff));
+            
        
             ESP_LOGI(TAGC, "Sending TCP Packet");
-            xQueuePeek(q_drive_to_tcp, &rover_coord, 0);
-            xQueuePeek(q_color_obstacles, &obs, 0);
-            xQueuePeek(q_tcp_to_drive, &direction, 0);
 
-            int err = send(sock, payload, strlen(payload), 0);
+            int err = send(sock, sendbuff, msgsize, 0);
             if (err < 0) {
                 ESP_LOGE(TAGC, "Error occurred during sending: errno %d", errno);
                 break;
