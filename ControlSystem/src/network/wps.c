@@ -1,6 +1,6 @@
 // Taken from: https://github.com/espressif/esp-idf/blob/v4.2.1/examples/wifi/wps/main/wps.c
 
-#include "../Configuration.h"
+#include "Configuration.h"
 
 /* WiFi Connection Example using WPS
 

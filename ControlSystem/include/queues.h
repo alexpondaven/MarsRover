@@ -8,8 +8,8 @@ extern QueueHandle_t q_tcp_to_drive;
 extern QueueHandle_t q_color_obstacles;
 
 typedef struct {
-  float x;
-  float y;
+  int32_t x;
+  int32_t y;
 } __attribute__((packed)) rover_coord_t;
 
 

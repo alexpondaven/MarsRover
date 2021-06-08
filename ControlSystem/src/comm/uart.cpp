@@ -7,6 +7,7 @@
 #include "esp_log.h"
 #include "driver/uart.h"
 #include <string>
+#include <string.h>
 
 #include "ArduinoJson.h"
 #include "queues.h"
@@ -62,18 +63,19 @@ void uart_drive_arduino(void *params) {
         StaticJsonDocument<JSON_OBJECT_SIZE(2)> doc;
         
         uart_read_bytes(UART_NUM_2, (uint8_t *) &recievebuff, length, 100 / portTICK_PERIOD_MS);
+        // ESP_LOGI("Drive_UART", "received %s", recievebuff);
         deserializeJson(doc, recievebuff);
         rover_coord.x = doc["X"];
         rover_coord.y = doc["Y"];
-        ESP_LOGI("Drive UART", "x is %f, y is %f", rover_coord.x, rover_coord.y);
+        ESP_LOGI("Drive UART", "x is %d, y is %d", rover_coord.x, rover_coord.y);
 
         // put data in q
         xQueueOverwrite(q_drive_to_tcp, &rover_coord);
 
       }
-      std::string op;
+      int op;
       // recieve data from q
-      xQueuePeek(q_tcp_to_drive, &drive_commands, 0);
+      xQueuePeek(q_tcp_to_drive, &drive_commands, portMAX_DELAY);
 
       // note: Size of json should be the same
       if (drive_commands.left) {
@@ -101,11 +103,11 @@ void uart_fpga(void *params) {
   // Setup UART buffered IO with event queue
   QueueHandle_t uart_queue_fpga;
   // Enough space to queue 10 data structs
-  ESP_ERROR_CHECK(uart_driver_install(UART_NUM_1, 1024*2, 1024*2, 10, &uart_queue_fpga, 0));
+  ESP_ERROR_CHECK(uart_driver_install(UART_NUM_1, 1024, 1024, 10, &uart_queue_fpga, 0));
 
   
+  char recievebuff[sizeof(bounding_box_t)*10]; // buffer for 10 boxes
 
-  bounding_box_t recievebuff;
   uart_set_pin(UART_NUM_1, FPGA_UART_TX_PIN, FPGA_UART_RX_PIN, -1, -1);
   obstacles_t obstacles;
   
@@ -115,11 +117,19 @@ void uart_fpga(void *params) {
       uint32_t length = 0;
       ESP_ERROR_CHECK(uart_get_buffered_data_len(UART_NUM_1, (size_t*)&length));
 
-      for (int i=0; i<length/sizeof(recievebuff); i++) {
+      uart_read_bytes(UART_NUM_1, (uint8_t *) &recievebuff, sizeof(recievebuff), portMAX_DELAY);
+
+      // char * msg = strtok(recievebuff, "\n");
+
+
+
+
+
+      for (int i=0; i<(length/sizeof(recievebuff)); i++) {
         uart_read_bytes(UART_NUM_1, (uint8_t *) &recievebuff, sizeof(recievebuff), 100 / portTICK_PERIOD_MS);
         // skip zero bounding boxes
         obstacle_t obs;
-          
+        ESP_LOGI("FPGA UART", "BB: %c TL: (%d, %d) BR: (%d, %d", recievebuff.color[0],recievebuff.topleft_x, recievebuff.topleft_y, recievebuff.bottomright_x, recievebuff.bottomright_y);
         if (recievebuff.bottomright_x || recievebuff.bottomright_y) {
           obs.bounding_box = recievebuff;
           uint32_t height = obs.bounding_box.bottomright_y - obs.bounding_box.topleft_y;
@@ -226,6 +236,6 @@ void uart_setup() {
   q_tcp_to_drive = xQueueCreate(1, sizeof(drive_tx_data_t));
   q_color_obstacles = xQueueCreate(1, sizeof(obstacles_t));
 
-  xTaskCreate(uart_drive_arduino, "Drive Arduino UART", 2048, NULL, DRIVE_ARDUINO_COMM_PRIORITY, NULL);
+  xTaskCreate(uart_drive_arduino, "Drive Arduino UART", 4096, NULL, DRIVE_ARDUINO_COMM_PRIORITY, NULL);
   xTaskCreate(uart_fpga, "FPGA UART", 3072, NULL, FPGA_COMM_PRIORITY, NULL);
 }

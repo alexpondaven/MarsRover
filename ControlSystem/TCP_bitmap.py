@@ -4,7 +4,7 @@ import socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 HOST = ''
-PORT = 2000
+PORT = 2001
 
 sock.bind((HOST, PORT))
 print("Bound socket to ", HOST, ":", PORT)
