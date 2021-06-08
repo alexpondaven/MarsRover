@@ -103,39 +103,37 @@ void uart_fpga(void *params) {
   // Setup UART buffered IO with event queue
   QueueHandle_t uart_queue_fpga;
   // Enough space to queue 10 data structs
-  ESP_ERROR_CHECK(uart_driver_install(UART_NUM_1, 1024, 1024, 10, &uart_queue_fpga, 0));
+  ESP_ERROR_CHECK(uart_driver_install(UART_NUM_1, 1024, 0, 10, &uart_queue_fpga, 0));
 
   
-  char recievebuff[sizeof(bounding_box_t)*10]; // buffer for 10 boxes
+  char recievebuff[ (10*sizeof(bounding_box_t)) + 1 ]; // buffer for 10 boxes
+  recievebuff[ (10*sizeof(bounding_box_t)) ] = 0; // null terminate
 
   uart_set_pin(UART_NUM_1, FPGA_UART_TX_PIN, FPGA_UART_RX_PIN, -1, -1);
   obstacles_t obstacles;
   
   while (1) {
 
-      // get size of rx buffer
-      uint32_t length = 0;
-      ESP_ERROR_CHECK(uart_get_buffered_data_len(UART_NUM_1, (size_t*)&length));
+      uart_flush(UART_NUM_1);
+      uart_read_bytes(UART_NUM_1, (uint8_t *) &recievebuff, sizeof(recievebuff) - 1, portMAX_DELAY);
 
-      uart_read_bytes(UART_NUM_1, (uint8_t *) &recievebuff, sizeof(recievebuff), portMAX_DELAY);
+      char * msg = strtok(recievebuff, "\n");
 
-      // char * msg = strtok(recievebuff, "\n");
-
-
-
+      do {
+        msg = strtok(NULL, "\n");
+        bounding_box_t bbox = *((bounding_box_t *) msg);
 
 
-      for (int i=0; i<(length/sizeof(recievebuff)); i++) {
-        uart_read_bytes(UART_NUM_1, (uint8_t *) &recievebuff, sizeof(recievebuff), 100 / portTICK_PERIOD_MS);
+
         // skip zero bounding boxes
         obstacle_t obs;
-        ESP_LOGI("FPGA UART", "BB: %c TL: (%d, %d) BR: (%d, %d", recievebuff.color[0],recievebuff.topleft_x, recievebuff.topleft_y, recievebuff.bottomright_x, recievebuff.bottomright_y);
-        if (recievebuff.bottomright_x || recievebuff.bottomright_y) {
-          obs.bounding_box = recievebuff;
+        ESP_LOGI("FPGA UART", "BB: %c TL: (%d, %d) BR: (%d, %d)", bbox.color,bbox.topleft_x, bbox.topleft_y, bbox.bottomright_x, bbox.bottomright_y);
+        if (bbox.bottomright_x || bbox.bottomright_y) {
+          obs.bounding_box = bbox;
           uint32_t height = obs.bounding_box.bottomright_y - obs.bounding_box.topleft_y;
           uint32_t width = obs.bounding_box.bottomright_x - obs.bounding_box.topleft_x;
           uint32_t mid_x = obs.bounding_box.topleft_x + width;
-          uint32_t mid_y = obs.bounding_box.bottomright_y + height;
+          // uint32_t mid_y = obs.bounding_box.bottomright_y + height;
 
           //distance from camera values
     			   //ratio of sizes = ratio of distances - but inversely proportional
@@ -159,34 +157,36 @@ void uart_fpga(void *params) {
         else {
           obs.distance = UINT32_MAX;
         }
-          switch (obs.bounding_box.color[0])
-          {
-          case 'R':
-            obstacles.obstacles[0] = obs;
-            break;
+          
+        switch (obs.bounding_box.color)
+        {
+        case 'R':
+          obstacles.obstacles[0] = obs;
+          break;
 
-          case 'Y':
-            obstacles.obstacles[1] = obs;
-            break;
+        case 'Y':
+          obstacles.obstacles[1] = obs;
+          break;
 
-          case 'P':
-            obstacles.obstacles[2] = obs;
-            break;
+        case 'P':
+          obstacles.obstacles[2] = obs;
+          break;
 
-          case 'B':
-            obstacles.obstacles[3] = obs;
-            break;
+        case 'B':
+          obstacles.obstacles[3] = obs;
+          break;
 
-          case 'G':
-            obstacles.obstacles[4] = obs;
-            break;
-          }
+        case 'G':
+          obstacles.obstacles[4] = obs;
+          break;
+        } // switch
         
         
-        
-      } 
+      } while( strlen(msg) == sizeof(bounding_box_t));
+      
 
       xQueueOverwrite(q_color_obstacles, &obstacles);
+      
 
       
 

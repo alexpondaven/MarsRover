@@ -20,7 +20,7 @@ typedef struct {
 
 
 typedef struct {
-  char color[4];
+  char pad1, color, pad2, pad3;
   uint16_t topleft_x;
   uint16_t topleft_y;
   uint16_t bottomright_x;
