@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import { IconContext } from 'react-icons';
-import { GiConsoleController } from 'react-icons/gi';
 
 function ControlCard({icon}) {
     return (

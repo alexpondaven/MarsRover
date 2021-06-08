@@ -68,6 +68,7 @@ span {
 }
 
 .SidebarItem {
+  font-family: 'Roboto', sans-serif;
   display: flex;
   justify-content: start;
   /* align-items: center; */
@@ -94,16 +95,14 @@ span {
 
 .HomeBlock {
   display: inline-flex;
-  font-family: 'Segoe UI';
+  font-family: 'Roboto', sans-serif;
   color: black;
   align-items: center;
   justify-content: space-between;
   padding: 10px 20px;
   writing-mode: horizontal-tb;
-  height: 250px;
-  max-height: 250px;
-  width: 500px;
-  max-width: 500px;
+  height: 15vw;
+  width: 27vw;
   position: relative;
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
   border-radius: 15px;
@@ -119,7 +118,13 @@ span {
   position: relative;
   display: flex;
   overflow: auto;
-  width: 100%;
+  width: 100vw;
+}
+
+.HomePage {
+  position: relative;
+  overflow: auto;
+  width: 100vw;
 }
 
 .LeftColumn {
@@ -145,7 +150,7 @@ span {
 }
 
 .Card0 {
-  font-family: 'Segoe UI';
+  font-family: 'Roboto', sans-serif;
   padding: 10px 20px;
   writing-mode: horizontal-tb;
   height: 320px;
@@ -157,7 +162,7 @@ span {
 }
 
 .Card1 {
-  font-family: 'Segoe UI';
+  font-family: 'Roboto';
   padding: 10px 20px;
   writing-mode: horizontal-tb;
   text-align: center;
@@ -173,7 +178,7 @@ span {
 }
 
 .Card2 {
-  font-family: 'Segoe UI';
+  font-family: 'Roboto', sans-serif;
   padding: 10px 20px;
   writing-mode: horizontal-tb;
   height: 425px;
@@ -185,7 +190,7 @@ span {
 }
 
 .Card3 {
-  font-family: 'Segoe UI';
+  font-family: 'Roboto', sans-serif;
   padding: 10px 20px;
   writing-mode: horizontal-tb;
   position: relative;
@@ -196,6 +201,7 @@ span {
 }
 
 .Alert {
+  font-family: 'Roboto', sans-serif;
   border-left: 5px solid black;
   background: #f4f4f4;
   margin: 5px;

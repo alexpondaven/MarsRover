@@ -1,6 +1,6 @@
 import { useState, useEffect, Component } from 'react'
 import { BrowserRouter, Route, Switch, Link } from 'react-router-dom'
-import { AiFillHome } from 'react-icons/ai';
+import { AiFillHome, AiFillCamera } from 'react-icons/ai';
 import { BsBatteryFull } from 'react-icons/bs';
 import { RiSteeringFill } from 'react-icons/ri';
 import { GiConsoleController } from 'react-icons/gi';
@@ -13,8 +13,8 @@ import Speed from './Components/Speed.js'
 import DrivePage from './Pages/DrivePage.js'
 import ControlCard from './Components/ControlCard.js'
 import ControlPage from './Pages/ControlPage.js'
-
-import TestingPage from './Pages/TestingPage.js'
+import VideoCard from './Components/VideoCard.js'
+import VideoPage from './Pages/VideoPage.js'
 
 function App() {
   const [showSidebar, setSidebar] = useState(false);
@@ -35,6 +35,10 @@ function App() {
       name: 'Controller',
       link: '/controller',
       icon: <GiConsoleController />,
+    },{
+      name: 'Video',
+      link: '/video',
+      icon: <AiFillCamera />,
   }]
 
   const [batteries, setBattery] = useState([
@@ -96,14 +100,17 @@ function App() {
 
           <Switch>
             <Route exact path="/">
-              <div className='SubPage'>
-                {batteries.map(battery =>
-                  <Battery battery={battery} />
-                )}
-                {speeds.map(speed =>
-                  <Speed speed={speed} />
-                )}
-                <ControlCard icon={<GiConsoleController />} />
+              <div className='HomePage'>
+                <div>
+                  {batteries.map(battery =>
+                    <Battery battery={battery} />
+                  )}
+                  {speeds.map(speed =>
+                    <Speed speed={speed} />
+                  )}
+                  <ControlCard icon={<GiConsoleController />} />
+                  <VideoCard icon={<AiFillCamera />} />
+                </div>
               </div>
             </Route>
 
@@ -123,8 +130,8 @@ function App() {
               <ControlPage />
             </Route>
 
-            <Route path="/test">
-              <TestingPage />
+            <Route path="/video">
+              <VideoPage />
             </Route>
 
           </Switch>

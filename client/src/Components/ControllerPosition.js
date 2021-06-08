@@ -104,7 +104,7 @@ function ControllerPosition({positions, currentposition, obstacles, explore, onC
                     </form>
                 </div>
 
-                <p1>{err}</p1>
+                <p1 style={{ color: 'red', fontFamily: 'sans-serif', fontSize: 'small' }}>{err}</p1>
 
                 <br/>
                 <input

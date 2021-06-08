@@ -34,13 +34,15 @@ function Map({positions, current, obstacles, command}) {
             label: 'origin',
             data: origin,
             backgroundColor: 'rgb(0,0,0)',
-            pointStyle: 'circle'
+            pointStyle: 'circle',
+            radius: 3,
         },{
             type: 'scatter',
             label: 'command',
             data: command,
-            backgroundColor: 'rgb(0,0,255)',
-            pointStyle: 'circle'
+            backgroundColor: 'rgb(83,173,203)',
+            pointStyle: 'circle',
+            radius: 5,
         }],
       };
     
@@ -67,7 +69,8 @@ function Map({positions, current, obstacles, command}) {
                             label = ["time: " + raw.time];
                             label.push(["(" + raw.x + "," + raw.y + ")"]) ;
                         } else {
-                            label = "(" + raw.x + "," + raw.y + ")";
+                            label = [raw.type + ":"]
+                            label.push(["(" + raw.x + "," + raw.y + ")"]);
                         }
                         
                         return label

@@ -215,7 +215,7 @@ function ControlPage() {
 
     return (
         <div>
-            <AppBar position="static">
+            <AppBar position="static" style={{fontFamily: 'Roboto'}}>
                 <Tabs 
                     value={value} 
                     onChange={handleChange} 
@@ -245,7 +245,8 @@ function ControlPage() {
                 <button 
                   className='ExploreButton' 
                   onClick={onClickExplore} 
-                  style={{backgroundColor: explore ? 'rgb(221, 96, 96)' : 'rgb(70,225,70)'}}
+                  style={{backgroundColor: explore ? 'rgb(221, 96, 96)' : 'rgb(70,225,70)', 
+                          fontFamily: 'Press Start 2P' , fontSize: '300%'}}
                 >
                   {explore ? 'Stop' : 'Explore!'}
                 </button>
