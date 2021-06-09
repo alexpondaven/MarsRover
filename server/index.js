@@ -1,10 +1,15 @@
 // setting up HTTP server
 const express = require("express");
+const react = express();
+react.use(express.json())
+react.listen(3001, () => console.log("listening at port 3001"));
+react.use(express.static("client"))
+
 const app = express(); 
 var cors = require('cors')
 app.use(cors())
 app.use(express.json())
-app.listen(5000, () => console.log("listening")); 
+app.listen(5000, () => console.log("listening at port 5000")); 
 app.use(express.static("public"));
 // respond with the data pack of battery and speed and 'hi'
 app.get("/data", (request, response) => {
@@ -35,6 +40,7 @@ app.post("/position", (request,response) => {
         }
         console.log(toboard)
     }
+    response.json("Received");
     
 })
 
@@ -56,7 +62,7 @@ app.get("/drive", (request, response) => {
     })
 })
 
-app.get("/test", (request, response) => {
+app.get("/video", (request, response) => {
     response.json({
         bmp: base
     })
@@ -115,7 +121,16 @@ var net = require('net');
 const server = net.createServer(socket => {
     socket.on("data", data => {
         // console.log((data.toString()))
-        var tmp = JSON.parse(data.toString());
+        // var tmp = JSON.parse(data.toString());
+
+        var tmp;
+        try {
+            tmp = JSON.parse(data.toString());
+            console.log(tmp)
+        } catch(e) { 
+            // console.log(e);
+            return;
+        }
         
         if (lastposition.x !== tmp.position.X || lastposition.y !== tmp.position.Y){
             lastposition = {
@@ -150,15 +165,10 @@ const server = net.createServer(socket => {
         console.log(speed)
         
         var buf = Buffer.from(JSON.stringify(toboard));
-
-
-var tmp = Buffer([buf.length]);
-
-buf = Buffer.concat([tmp,buf]);
-
-console.log(tmp);
-
-socket.write(buf);
+        var tmp = Buffer.alloc(1, buf.length);
+        buf = Buffer.concat([tmp,buf]);
+        socket.write(buf);
+        console.log("sent message: ", toboard);
 
     })
 

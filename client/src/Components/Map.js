@@ -1,7 +1,6 @@
 import { Scatter } from 'react-chartjs-2';
 
 function Map({positions, current, obstacles, command}) {
-    console.log(positions)
     const origin = [{
         x: 0,
         y: 0,

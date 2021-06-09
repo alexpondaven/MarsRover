@@ -3,7 +3,7 @@ import { IconContext } from 'react-icons';
 
 function VideoCard({icon}) {
     return (
-        <Link to="/controller" style={{ textDecoration: 'none' , textColor: 'black'}} >
+        <Link to="/video" style={{ textDecoration: 'none' , textColor: 'black'}} >
             <div 
                 className='HomeBlock' 
             >

@@ -5,8 +5,13 @@ import Speed from '../Components/DrivePage_Speed.js'
 import Steering from '../Components/DrivePage_Steering.js'
 import Alerts from '../Components/Alerts.js'
 
-function DrivePage({speed}) {
-    const [speeds,setSpeed] = useState([speed]);
+function DrivePage() {
+    const [speeds,setSpeed] = useState([
+        {
+          speed : 43,
+          angle : 0
+        }
+      ]);
     const [positions,setPosition] = useState([]);
     const [currentposition, setCurrent] = useState([]);
     const [obstacles,setObstacle] = useState([]);
@@ -14,8 +19,8 @@ function DrivePage({speed}) {
 
     useEffect(() => {
         getData();
-        setInterval(getData,1000)
-    })
+        setInterval(getData,5000)
+    },[])
 
     function update(response) {
         setSpeed([response.speed]);
@@ -28,7 +33,7 @@ function DrivePage({speed}) {
     const getData = async() => {
         fetch('http://localhost:5000/drive')
           .then(response => response.json())
-          .then(response => update(response))
+          .then(response => update(response) )
     }
 
     return (
@@ -44,12 +49,12 @@ function DrivePage({speed}) {
             <div className="RightColumn">
 
                 <div style={{ display: 'flex' }}>
-                    {speeds.map(speed =>
-                        <Speed speed={speed} />
+                    {speeds.map((speed,index) =>
+                        <Speed key={index} speed={speed} />
                     )}
 
-                    {speeds.map(speed =>
-                        <Steering speed={speed} />
+                    {speeds.map((speed,index) =>
+                        <Steering key={index} speed={speed} />
                     )}
                     
                 </div>

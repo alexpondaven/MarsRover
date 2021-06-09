@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -85,10 +85,11 @@ function ControlPage() {
         }
     ])
 
+    var bodydir;
     const postDataDir = async(id,bool) => {
-        if (explore) onClickExplore();
+        if (explore) setExplore(false);
         if (id === -1) return; 
-        var body = {
+        bodydir = {
             type: 'direction',
             id: id,
             state: bool
@@ -98,14 +99,13 @@ function ControlPage() {
           headers: {
             'Content-type': 'application/json',
           },
-          body: JSON.stringify(body),
-          
-        })
+          body: JSON.stringify(bodydir),
+        }).then(response => console.log(response.json()))
       }
     
     const [curr_dir,setDir] = useState(-1);
 
-    const onClick = (id) => {
+    const onClick = async(id) => {
         console.log("clicked id: " + id);
         console.log("current dir: " + curr_dir)
         setPosition(
@@ -115,8 +115,8 @@ function ControlPage() {
         )
     
         if (id === 4 && curr_dir !== -1 ){
-          var tmp = curr_dir;
-          postDataDir(int_to_int(tmp), false);
+          let tmp = curr_dir;
+          let result = await postDataDir(int_to_int(tmp), false);
           setPosition(
             position.map((position) =>
               position.id === tmp ? { ...position, state: false } : position
@@ -124,7 +124,7 @@ function ControlPage() {
           )
           setDir(-1);
         } else if ( id === curr_dir && id !== 4 ) {
-            postDataDir(int_to_int(id), false);
+          let result = await postDataDir(int_to_int(id), false);
           setPosition(
             position.map((position) =>
               position.id === id ? { ...position, state: false } : position
@@ -132,8 +132,8 @@ function ControlPage() {
           )
           setDir(-1);
         } else if ( id !== 4 ) {
+          let result = await postDataDir(int_to_int(id),true);
           setDir(id);
-          postDataDir(int_to_int(id),true);
         }
     }
 
@@ -164,40 +164,20 @@ function ControlPage() {
 
     const [explore,setExplore] = useState(false);
 
-    const onClickExplore = () =>{
-      setExplore(!explore);
-      var body = {
+    var bodyexplore;
+    const onClickExplore = async(explore) =>{
+      bodyexplore = {
         type: 'explore',
-        state: explore
+        state: !explore
       }
       fetch('http://localhost:5000/position', {
         method: 'POST',
         headers: {
           'Content-type': 'application/json',
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify(bodyexplore),
       })
-    }
-
-    const [positions,setRover] = useState([]);
-    const [currentposition, setCurrent] = useState([]);
-    const [obstacles,setObstacle] = useState([]);
-
-    useEffect(() => {
-        getData();
-        setInterval(getData,1000)
-    })
-
-    function update(response) {
-        setRover(response.position);
-        setCurrent(response.current);
-        setObstacle(response.obstacles);
-    }
-
-    const getData = async() => {
-        fetch('http://localhost:5000/drive')
-          .then(response => response.json())
-          .then(response => update(response))
+      setExplore(!explore);
     }
 
     const [value, setValue] = useState(0);
@@ -236,15 +216,15 @@ function ControlPage() {
                 <Controller positions={position} onClick={onClick} onRelease={onRelease} />
             </TabPanel>
             <TabPanel value={value} index={1}>
-                <ControllerPosition positions={positions} currentposition={currentposition} obstacles={obstacles} 
-                  explore={explore} onClickExplore={onClickExplore}
+                <ControllerPosition  
+                  explore={explore} setExplore={setExplore}
                 />
             </TabPanel>
             <TabPanel value={value} index={2}>
               <div style={{width:'80vw', display: 'flex', alignItems: 'center'}}>
                 <button 
                   className='ExploreButton' 
-                  onClick={onClickExplore} 
+                  onClick={() => onClickExplore(explore)} 
                   style={{backgroundColor: explore ? 'rgb(221, 96, 96)' : 'rgb(70,225,70)', 
                           fontFamily: 'Press Start 2P' , fontSize: '300%'}}
                 >

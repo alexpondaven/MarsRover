@@ -6,16 +6,16 @@ function Battery({battery}) {
 
     return (
         <Link to="/battery" style={{ textDecoration: 'none' , textColor: 'black'}} >
-        <card 
+        <div 
             className='HomeBlock' 
             style={{ backgroundColor: battery.status ? 'rgb(70,225,70)' : 'rgb(221, 96, 96)' }}
         >
             <h2 className='card-title'>BATTERY</h2>
-            <p1>
+            <p>
                 STATUS:{battery.status ? 'Charging' : 'Not Charging'}
                 <br/>
                 ESTIMATED TIME: NA
-            </p1>
+            </p>
             <div style={{ width: 200, height: 200 }}>
                 <CircularProgressbar 
                     value={x} text={battery.remain} 
@@ -28,7 +28,7 @@ function Battery({battery}) {
                     })}
                 />
             </div>
-       </card>
+       </div>
        </Link>
     )
 }

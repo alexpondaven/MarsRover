@@ -13,7 +13,7 @@ function ControllerDirection({position, onClick, onRelease}) {
                 onMouseUp={() => onRelease(position.id)}
             >
                 <IconContext.Provider value={{ color: '#535353', size: '50%' }}>
-                    {state ? position.icon : <p1/>}
+                    {state ? position.icon : ''}
                 </IconContext.Provider>
                 
             </button>

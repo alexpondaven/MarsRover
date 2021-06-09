@@ -1,7 +1,7 @@
 function Alert({alert}) {
     return (
         <div className="Alert">
-            <p1>{alert.text}</p1>
+            <p>{alert.text}</p>
         </div>
     )
 }

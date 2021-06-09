@@ -1,13 +1,18 @@
-import { useState, useEffect, Component } from 'react'
+import { useState, useEffect } from 'react'
 
 import Battery from '../Components/BatteryPage_Battery.js'
 import Health from '../Components/BatteryPage_Health.js'
 import Alerts from '../Components/Alerts.js'
 import Linechart from '../Components/Linechart.js'
 
-function BatteryPage({battery}) {
-    const [batteries,setBattery] = useState([battery]);
-    const [data,setData] = useState();
+function BatteryPage() {
+    const [batteries,setBattery] = useState([{
+        status: true,
+        remain : '34%',
+        health: '30%',
+      }
+    ]);
+    const [data,setData] = useState([]);
     const [alerts,setAlerts] = useState([]);
 
     function update(response) {
@@ -24,15 +29,15 @@ function BatteryPage({battery}) {
 
     useEffect(() => {
         getData();
-        setInterval(getData, 1000)
-    });
+        setInterval(getData, 5000)
+    },[]);
 
     return (
         <div className="SubPage">
             <div className="LeftColumn" >
                 <div className="Card0">
                     <h3>BATTERY</h3>
-                    <p1>some properties to be added</p1>
+                    <p>some properties to be added</p>
                 </div>
                 <Alerts alerts={alerts} />
             </div>
@@ -40,12 +45,12 @@ function BatteryPage({battery}) {
             <div className="RightColumn">
 
                 <div style={{ display: 'flex' }}>
-                    {batteries.map(battery =>
-                        <Battery battery={battery} />
+                    {batteries.map((battery,index) =>
+                        <Battery key={index} battery={battery} />
                     )}
 
-                    {batteries.map(battery =>
-                        <Health battery={battery} />
+                    {batteries.map((battery,index) =>
+                        <Health key={index} battery={battery} />
                     )}
                 </div>
 

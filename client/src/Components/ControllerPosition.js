@@ -1,7 +1,28 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Map from '../Components/Map.js'
 
-function ControllerPosition({positions, currentposition, obstacles, explore, onClickExplore}) {
+function ControllerPosition({explore, setExplore}) {
+    const [positions,setRover] = useState([]);
+    const [currentposition, setCurrent] = useState([]);
+    const [obstacles,setObstacle] = useState([]);
+
+    function update(response) {
+        setRover(response.position);
+        setCurrent(response.current);
+        setObstacle(response.obstacles);
+    }
+
+    const getData = async() => {
+        fetch('http://localhost:5000/drive')
+          .then(response => response.json())
+          .then(response => update(response) )
+    }
+
+    useEffect(() => {
+        getData();
+        setInterval(getData,10000)
+    },[])
+
     const [command, setCommand] = useState({
         x: 0,
         y: 0,
@@ -55,9 +76,10 @@ function ControllerPosition({positions, currentposition, obstacles, explore, onC
         }
     }
 
+    var bodypos;
     const postDataPos = async() => {
-        if (explore) onClickExplore();
-        var body = {
+        if (explore) setExplore(false);
+        bodypos = {
             type: 'position',
             x: command.x,
             y: command.y
@@ -67,7 +89,7 @@ function ControllerPosition({positions, currentposition, obstacles, explore, onC
           headers: {
             'Content-type': 'application/json',
           },
-          body: JSON.stringify(body),
+          body: JSON.stringify(bodypos),
         })
     }
 
@@ -75,7 +97,7 @@ function ControllerPosition({positions, currentposition, obstacles, explore, onC
         event.preventDefault();
         if (err === "") {
             alert("Coordinate (" + command.x + "," + command.y + ") is submitted");
-            postDataPos();
+            postDataPos(command.x,command.y);
         }
     }
 
