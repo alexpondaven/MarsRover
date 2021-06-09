@@ -12,6 +12,9 @@ QueueHandle_t q_tcp_to_explore;
 #define PI 3.1415926
 #define AVOIDANCE_ANGLE_DEG 40
 #define AVOIDANCE_ANGLE_RAD AVOIDANCE_ANGLE_DEG * PI/180
+#define CENTRE_LINE_X 320
+#define RIGHT_LINE_X (CENTRE_LINE_X*2)
+#define CENTRE_LINE_Y 240
 
 void exploration_function(void * params) {
   obstacles_t obs_list;
@@ -39,34 +42,37 @@ void exploration_function(void * params) {
     xQueuePeek(q_color_obstacles, &obs_list, 0);
 
     // worry about obstacles within 30 cm (300mm)
-    float min_angle = 90.0f;
-    float max_angle = -90.0f;
+    // float min_angle = 90.0f;
+    // float max_angle = -90.0f;
+    // for (int i=0; i<5; i++) {
+    //   obstacle_t obs = obs_list.obstacles[i];
+    //   if ((obs.distance < 300) && (obs.distance > 0)) {
+    //     min_angle = min_angle > obs.angle ? obs.angle : min_angle;
+    //     max_angle = max_angle < obs.angle ? obs.angle : max_angle;
+    //   }
+    // }
+
+    uint16_t min_x = RIGHT_LINE_X;
+    uint16_t max_x = 0;
     for (int i=0; i<5; i++) {
       obstacle_t obs = obs_list.obstacles[i];
-      if ((obs.distance < 300) && (obs.distance > 0)) {
-        min_angle = min_angle > obs.angle ? obs.angle : min_angle;
-        max_angle = max_angle < obs.angle ? obs.angle : max_angle;
+      if ((obs.distance > 0) && (obs.distance < 600)) {
+        min_x = min_x > obs.bounding_box.topleft_x ? obs.bounding_box.topleft_x : min_x;
+        max_x = max_x < obs.bounding_box.bottomright_x ? obs.bounding_box.bottomright_x : max_x;
       }
     }
 
-    float turning_angle = 0;
     drive_tx_data_t direction;
     // {left, right, forward, backward}
 
-    if (min_angle < max_angle) {
-      if ((min_angle > AVOIDANCE_ANGLE_RAD) || (max_angle <-AVOIDANCE_ANGLE_RAD)) {
-        // can go straight ahead
-        direction = {0,0,1,0};
-
-      } else if (abs(min_angle) < max_angle) {
+    if (min_x < max_x) {
+      if (min_x > (RIGHT_LINE_X - max_x)) {
         // go left
         direction = {1,0,0,0};
-        turning_angle = abs(min_angle) + AVOIDANCE_ANGLE_RAD;
 
       } else {
         // go right
         direction = {0,1,0,0};
-        turning_angle = abs(max_angle) + AVOIDANCE_ANGLE_RAD;
 
       }
     } else {

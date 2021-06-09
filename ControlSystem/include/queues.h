@@ -33,6 +33,7 @@ typedef struct {
   float angle;
   float distance;
   uint32_t area;
+  uint16_t mid_x, mid_y;
 } obstacle_t;
 
 typedef struct {

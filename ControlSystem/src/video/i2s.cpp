@@ -71,7 +71,7 @@ void get_frame_i2s(void* params) {
 
 
     ESP_LOGI(TAG, "Done reading frame (%d bytes)", total_bytes_read);
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    vTaskDelay(I2S_VIDEO_INTERVAL / portTICK_PERIOD_MS);
   }
 }
 
