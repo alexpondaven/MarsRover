@@ -24,7 +24,8 @@
 #define EEE_IMGPROC_STATUS 0
 #define EEE_IMGPROC_MSG 1
 #define EEE_IMGPROC_ID 2
-#define EEE_IMGPROC_BBCOL 3
+//#define EEE_IMGPROC_BBCOL 3
+#define COL_SEL 3
 //#define EEE_IMGPROC_CONTRAST 4
 //#define EEE_IMGPROC_RED_THRESH 6
 //#define EEE_IMGPROC_COL_DETECT 5
@@ -283,11 +284,17 @@ int main()
     //Read messages from the image processor and print them on the terminal
 	while ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) { 	//Find out if there are words to read
 		int word = IORD(0x42000,EEE_IMGPROC_MSG); 			//Get next word from message buffer
-		if (fwrite(&word, 4, 1, ser) != 1)
-		   printf("Error writing to UART");
+
 		if (word==RED_MSG_START || word==PINK_MSG_START || word==YELLOW_MSG_START
-			|| word==GREEN_MSG_START || word==BLUE_MSG_START)	//Newline on message identifier
+			|| word==GREEN_MSG_START || word==BLUE_MSG_START){	//Newline on message identifier
 		   printf("\n");
+		   //send new line through uart
+		   int nl = '\n';
+		   if (fwrite(&nl, 1, 1, ser) != 1)
+		   		   printf("Error writing to UART");
+		}
+		if (fwrite(&word, 4, 1, ser) != 1)
+			printf("Error writing to UART");
 		printf("%08x ",word);
 	}
 
@@ -346,6 +353,13 @@ int main()
 		  //update distance threshold between bounding boxes
 //		  IOWR(0x42000, EEE_IMGPROC_DIST_THRESH, 0x20);
 
+		  //select colour
+		  // 1: RED
+		  // 2: PINK
+		  // 3: YELLOW
+		  // 4: GREEN
+		  // 5: BLUE
+//		  IOWR(0x42000, COL_SEL, 0x2);
 
 		  //Testing HSV values:
 		  IOWR(0x42000, HUE, 0x0e00);

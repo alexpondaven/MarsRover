@@ -78,6 +78,42 @@ parameter HUE_DEFAULT = 16'hff00;
 parameter SAT_DEFAULT = 16'hff00;
 parameter VAL_DEFAULT = 16'hff00;
 
+//colour parameters
+parameter HUE_MIN_Y = 8'h20;
+parameter HUE_MAX_Y = 8'h35;
+parameter SAT_MIN_Y = 8'h90;
+parameter SAT_MAX_Y = 8'hff;
+parameter VAL_MIN_Y = 8'h00;
+parameter VAL_MAX_Y = 8'hff;
+
+parameter HUE_MIN_P = 8'h00;
+parameter HUE_MAX_P = 8'h0e;
+parameter SAT_MIN_P = 8'h33;
+parameter SAT_MAX_P = 8'hae;
+parameter VAL_MIN_P = 8'h60;
+parameter VAL_MAX_P = 8'hff;
+
+parameter HUE_MIN_R = 8'h00;
+parameter HUE_MAX_R = 8'h0e;
+parameter SAT_MIN_R = 8'ha6;
+parameter SAT_MAX_R = 8'hff;
+parameter VAL_MIN_R = 8'h00;
+parameter VAL_MAX_R = 8'hff;
+
+parameter HUE_MIN_G = 8'h55;
+parameter HUE_MAX_G = 8'h6a;
+parameter SAT_MIN_G = 8'h4c;
+parameter SAT_MAX_G = 8'hb3;
+parameter VAL_MIN_G = 8'h00;
+parameter VAL_MAX_G = 8'hb3;
+
+parameter HUE_MIN_B = 8'h80;
+parameter HUE_MAX_B = 8'hff;
+parameter SAT_MIN_B = 8'h00;
+parameter SAT_MAX_B = 8'h60;
+parameter VAL_MIN_B = 8'h10;
+parameter VAL_MAX_B = 8'hb0;
+
 
 parameter STORE_ROWS = 2; // number of previous pixel rows to store
 
@@ -94,16 +130,116 @@ wire red_detect, pink_detect, green_detect, blue_detect, yellow_detect, var_dete
 //using hsv
 wire [7:0] hue,sat,value;
 wire hsv_valid;
+reg [7:0] hue_min_r,hue_max_r,sat_min_r,sat_max_r,val_min_r,val_max_r;
+reg [7:0] hue_min_p,hue_max_p,sat_min_p,sat_max_p,val_min_p,val_max_p;
+reg [7:0] hue_min_y,hue_max_y,sat_min_y,sat_max_y,val_min_y,val_max_y;
+reg [7:0] hue_min_g,hue_max_g,sat_min_g,sat_max_g,val_min_g,val_max_g;
+reg [7:0] hue_min_b,hue_max_b,sat_min_b,sat_max_b,val_min_b,val_max_b;
+
+always @ (posedge clk) begin
+	if (~reset_n) begin
+	//set default value for HSV thresholds
+		hue_min_r <= HUE_MIN_R;
+		hue_max_r <= HUE_MAX_R;
+		sat_min_r <= SAT_MIN_R;
+		sat_max_r <= SAT_MAX_R;
+		val_min_r <= VAL_MIN_R;
+		val_max_r <= VAL_MAX_R;
+		
+		hue_min_p <= HUE_MIN_P;
+		hue_max_p <= HUE_MAX_P;
+		sat_min_p <= SAT_MIN_P;
+		sat_max_p <= SAT_MAX_P;
+		val_min_p <= VAL_MIN_P;
+		val_max_p <= VAL_MAX_P;
+		
+		hue_min_y <= HUE_MIN_Y;
+		hue_max_y <= HUE_MAX_Y;
+		sat_min_y <= SAT_MIN_Y;
+		sat_max_y <= SAT_MAX_Y;
+		val_min_y <= VAL_MIN_Y;
+		val_max_y <= VAL_MAX_Y;
+		
+		hue_min_g <= HUE_MIN_G;
+		hue_max_g <= HUE_MAX_G;
+		sat_min_g <= SAT_MIN_G;
+		sat_max_g <= SAT_MAX_G;
+		val_min_g <= VAL_MIN_G;
+		val_max_g <= VAL_MAX_G;
+		
+		hue_min_b <= HUE_MIN_B;
+		hue_max_b <= HUE_MAX_B;
+		sat_min_b <= SAT_MIN_B;
+		sat_max_b <= SAT_MAX_B;
+		val_min_b <= VAL_MIN_B;
+		val_max_b <= VAL_MAX_B;
+	end
+	else begin
+		//update HSV thresholds according to memory mapped registers
+		case(color_select)
+			3'h1: begin
+				hue_min_r <= hue_bound[7:0];
+				hue_max_r <= hue_bound[15:8];
+				sat_min_r <= sat_bound[7:0];
+				sat_max_r <= sat_bound[15:8];
+				val_min_r <= val_bound[7:0];
+				val_max_r <= val_bound[15:8];
+			end
+			3'h2: begin
+				hue_min_p <= hue_bound[7:0];
+				hue_max_p <= hue_bound[15:8];
+				sat_min_p <= sat_bound[7:0];
+				sat_max_p <= sat_bound[15:8];
+				val_min_p <= val_bound[7:0];
+				val_max_p <= val_bound[15:8];
+			end
+			3'h3: begin
+				hue_min_y <= hue_bound[7:0];
+				hue_max_y <= hue_bound[15:8];
+				sat_min_y <= sat_bound[7:0];
+				sat_max_y <= sat_bound[15:8];
+				val_min_y <= val_bound[7:0];
+				val_max_y <= val_bound[15:8];
+			end
+			3'h4: begin
+				hue_min_g <= hue_bound[7:0];
+				hue_max_g <= hue_bound[15:8];
+				sat_min_g <= sat_bound[7:0];
+				sat_max_g <= sat_bound[15:8];
+				val_min_g <= val_bound[7:0];
+				val_max_g <= val_bound[15:8];
+			end
+			3'h5: begin
+				hue_min_b <= hue_bound[7:0];
+				hue_max_b <= hue_bound[15:8];
+				sat_min_b <= sat_bound[7:0];
+				sat_max_b <= sat_bound[15:8];
+				val_min_b <= val_bound[7:0];
+				val_max_b <= val_bound[15:8];
+			
+			end
+		endcase
+	end
+end
+
+
 
 //use memory mapped parameters to control colour being detected - used for rapid testing of colours that work
 assign var_detect = (hue>=hue_bound[7:0]) & (hue<=hue_bound[15:8]) & (sat>=sat_bound[7:0]) & (sat<=sat_bound[15:8]) & (value>=val_bound[7:0]) & (value<=val_bound[15:8]);
 
 //Detected colours using HSV - values found experimentally
-assign yellow_detect = (hue>=8'h20) & (hue<=8'h35) & (sat>=8'h90) & (sat<=8'hff) & (value>=8'h00) & (value<=8'hff);
-assign pink_detect = (hue>=8'h00) & (hue<=8'h0e) & (sat>=8'h33) & (sat<=8'hae) & (value>=8'h60) & (value<=8'hff);
-assign red_detect = (hue>=8'h00) & (hue<=8'h0e) & (sat>=8'ha6) & (sat<=8'hff) & (value>=8'h00) & (value<=8'hff);
-assign green_detect = (hue>=8'h55) & (hue<=8'h6a) & (sat>=8'h4c) & (sat<=8'hb3) & (value>=8'h00) & (value<=8'hb3);
-assign blue_detect = (hue>=8'h80) & (hue<=8'hff) & (sat>=8'h00) & (sat<=8'h60) & (value>=8'h10) & (value<=8'hb0);
+//assign yellow_detect = (hue>=8'h20) & (hue<=8'h35) & (sat>=8'h90) & (sat<=8'hff) & (value>=8'h00) & (value<=8'hff);
+//assign pink_detect = (hue>=8'h00) & (hue<=8'h0e) & (sat>=8'h33) & (sat<=8'hae) & (value>=8'h60) & (value<=8'hff);
+//assign red_detect = (hue>=8'h00) & (hue<=8'h0e) & (sat>=8'ha6) & (sat<=8'hff) & (value>=8'h00) & (value<=8'hff);
+//assign green_detect = (hue>=8'h55) & (hue<=8'h6a) & (sat>=8'h4c) & (sat<=8'hb3) & (value>=8'h00) & (value<=8'hb3);
+//assign blue_detect = (hue>=8'h80) & (hue<=8'hff) & (sat>=8'h00) & (sat<=8'h60) & (value>=8'h10) & (value<=8'hb0);
+
+assign red_detect = (hue>=hue_min_r) & (hue<=hue_max_r) & (sat>=sat_min_r) & (sat<=sat_max_r) & (value>=val_min_r) & (value<=val_max_r);
+assign pink_detect = (hue>=hue_min_p) & (hue<=hue_max_p) & (sat>=sat_min_p) & (sat<=sat_max_p) & (value>=val_min_p) & (value<=val_max_p);
+assign yellow_detect = (hue>=hue_min_y) & (hue<=hue_max_y) & (sat>=sat_min_y) & (sat<=sat_max_y) & (value>=val_min_y) & (value<=val_max_y);
+assign green_detect = (hue>=hue_min_g) & (hue<=hue_max_g) & (sat>=sat_min_g) & (sat<=sat_max_g) & (value>=val_min_g) & (value<=val_max_g);
+assign blue_detect = (hue>=hue_min_b) & (hue<=hue_max_b) & (sat>=sat_min_b) & (sat<=sat_max_b) & (value>=val_min_b) & (value<=val_max_b);
+
 
 // Find boundary of cursor box
 
@@ -130,17 +266,22 @@ wire [7:0] blur_out;
 wire [7:0] blur_red_high,blur_pink_high,blur_yellow_high,blur_green_high,blur_blue_high; // blurred boolean image
 
 //blob detection
-wire [23:0] red_bb,red_bb1,red_bb2,red_bb3,red_bb4, red_bbb, pink_bbb, yellow_bbb,green_bbb,blue_bbb,bbb;
+wire [23:0] red_bb,red_bb1,red_bb2,red_bb3,red_bb4, red_bbb, pink_bbb, yellow_bbb,green_bbb,blue_bbb,bbb, red_bbb_filled;
 wire bb_active,bb_active1,bb_active2,bb_active3,bb_active4;
 wire bbb_active_red, bbb_active_pink,bbb_active_yellow,bbb_active_green,bbb_active_blue;
+//Outputs of bb_detect
 wire [43:0] bb[3:0];
 wire [43:0] bbb_red,bbb_pink,bbb_yellow,bbb_green,bbb_blue;
+wire [43:0] bbb_red_inter, bbb_pink_inter; // intermediate wires to go into red_pink_decide module
+//Bounds
 reg [10:0] left[3:0], right[3:0], top[3:0], bottom[3:0];
 reg [10:0] bleft_red, bright_red, btop_red, bbottom_red; //best boundary box boundaries
 reg [10:0] bleft_pink, bright_pink, btop_pink, bbottom_pink;
 reg [10:0] bleft_yellow, bright_yellow, btop_yellow, bbottom_yellow;
 reg [10:0] bleft_green, bright_green, btop_green, bbottom_green;
 reg [10:0] bleft_blue, bright_blue, btop_blue, bbottom_blue;
+//bb_filled
+wire [7:0] bb_filled_red,bb_filled_pink,bb_filled_yellow,bb_filled_green,bb_filled_blue;
 
 assign bb_active1 = (x == left[0]) | (x == right[0]) | (y == top[0]) | (y == bottom[0]);
 assign bb_active2  = (x == left[1]) | (x == right[1]) | (y == top[1]) | (y == bottom[1]);
@@ -148,6 +289,7 @@ assign bb_active3  = (x == left[2]) | (x == right[2]) | (y == top[2]) | (y == bo
 assign bb_active4  = (x == left[3]) | (x == right[3]) | (y == top[3]) | (y == bottom[3]);
 assign bb_active = bb_active1 | bb_active2 | bb_active3 | bb_active4;
 
+//draw bounding boxes as closed rectangles
 assign bbb_active_red = (x == bleft_red | x == bright_red)&(y>=btop_red)&(y<=bbottom_red)
 								| (y == btop_red | y == bbottom_red)&(x<=bright_red)&(x>=bleft_red);
 assign bbb_active_pink = (x == bleft_pink | x == bright_pink)&(y>=btop_pink)&(y<=bbottom_pink)
@@ -175,7 +317,7 @@ assign bbb = bbb_active_red ? {8'hff, 8'h0, 8'h0} :
 				 bbb_active_green ? {8'h0, 8'hff, 8'h0} :
 				 bbb_active_blue ? {8'h0, 8'h0, 8'hff} :
 										{red,green,blue};
-
+assign red_bbb_filled = bbb_active_red ? {bb_filled_red,bb_filled_red,bb_filled_red} : red_high;
 
 
 // Switch output pixels depending on mode switch
@@ -193,7 +335,7 @@ assign bbb = bbb_active_red ? {8'hff, 8'h0, 8'h0} :
 //HSV: {hue,hue,hue},{value,value,value},{sat,sat,sat}
 assign {red_out, green_out, blue_out} = ((mode==3'b001) & ~sop & packet_video) ? bbb:
 														((mode==3'b011) & ~sop & packet_video) ? red_bbb:
-														((mode==3'b010) & ~sop & packet_video) ? pink_bbb:
+														((mode==3'b010) & ~sop & packet_video) ? red_bbb_filled:
 														((mode==3'b110) & ~sop & packet_video) ? {sat,sat,sat}:
 														((mode==3'b111) & ~sop & packet_video) ? {value,value,value}:
 														((mode==3'b101) & ~sop & packet_video) ? {hue,hue,hue}:
@@ -493,7 +635,8 @@ BB_DETECT bb_detect_red (
 	.bb2(bb[1]),
 	.bb3(bb[2]),
 	.bb4(bb[3]),
-	.bb_out(bbb_red)
+	.bb_out(bbb_red_inter),
+	.bb_filled_out(bb_filled_red)
 );
 BB_DETECT bb_detect_pink (
 	.clk(clk),
@@ -504,7 +647,8 @@ BB_DETECT bb_detect_pink (
 	.in(blur_pink_high>250), // find boundary box on red_detect
 	.x(x),
 	.y(y),
-	.bb_out(bbb_pink)
+	.bb_out(bbb_pink_inter),
+	.bb_filled_out(bb_filled_pink)
 );
 BB_DETECT bb_detect_yellow (
 	.clk(clk),
@@ -515,7 +659,8 @@ BB_DETECT bb_detect_yellow (
 	.in(blur_yellow_high>250), // find boundary box on red_detect
 	.x(x),
 	.y(y),
-	.bb_out(bbb_yellow)
+	.bb_out(bbb_yellow),
+	.bb_filled_out(bb_filled_yellow)
 );
 BB_DETECT bb_detect_green (
 	.clk(clk),
@@ -526,7 +671,8 @@ BB_DETECT bb_detect_green (
 	.in(blur_green_high>250), // find boundary box on red_detect
 	.x(x),
 	.y(y),
-	.bb_out(bbb_green)
+	.bb_out(bbb_green),
+	.bb_filled_out(bb_filled_green)
 );
 BB_DETECT bb_detect_blue (
 	.clk(clk),
@@ -537,10 +683,19 @@ BB_DETECT bb_detect_blue (
 	.in(blur_blue_high>250), // find boundary box on red_detect
 	.x(x),
 	.y(y),
-	.bb_out(bbb_blue)
+	.bb_out(bbb_blue),
+	.bb_filled_out(bb_filled_blue)
 );
 
+RED_PINK_DECIDE red_pink_decide (
+	.clk(clk),
+	.rst_n(reset_n),
+	.bbb_red(bbb_red_inter),
+	.bbb_pink(bbb_pink_inter),
+	.bbb_red_out(bbb_red),
+	.bbb_pink_out(bbb_pink)
 
+);
 
 
 /////////////////////////////////
@@ -551,7 +706,8 @@ BB_DETECT bb_detect_blue (
 `define REG_STATUS    			0
 `define READ_MSG    				1
 `define READ_ID    				2
-`define REG_BBCOL					3 // bounding box colour
+//`define REG_BBCOL					3 // bounding box colour
+`define REG_COLSEL 				3
 //`define REG_CONTRAST				4
 //`define REG_RED_THRESH			6
 //`define REG_COL_DETECT 			5 // colour detect
@@ -578,6 +734,9 @@ reg [14:0] col_detect;
 reg [10:0] dist_thresh;
 reg [15:0] hue_bound,sat_bound,val_bound;
 
+reg [2:0] color_select; //select what colour is being selected for hsv bounds
+
+
 
 always @ (posedge clk)
 begin
@@ -592,11 +751,13 @@ begin
 		hue_bound <= HUE_DEFAULT;
 		sat_bound <= SAT_DEFAULT;
 		val_bound <= VAL_DEFAULT;
+		
+		color_select <= 0;
 	end
 	else begin
 		if(s_chipselect & s_write) begin
 		   if      (s_address == `REG_STATUS)	reg_status <= s_writedata[7:0];
-		   if      (s_address == `REG_BBCOL)	bb_col <= s_writedata[23:0];
+//		   if      (s_address == `REG_BBCOL)	bb_col <= s_writedata[23:0];
 //			if 	  (s_address == `REG_CONTRAST)	contrast <= s_writedata[7:0];
 //			if 	  (s_address == `REG_RED_THRESH)	red_thresh <= s_writedata[7:0];
 //			if 	  (s_address == `REG_COL_DETECT)	col_detect <= s_writedata[14:0];
@@ -605,6 +766,7 @@ begin
 			if 	  (s_address == `REG_HUE)	hue_bound <= s_writedata[15:0];
 			if 	  (s_address == `REG_SAT)	sat_bound <= s_writedata[15:0];
 			if 	  (s_address == `REG_VAL)	val_bound <= s_writedata[15:0];
+			if 	  (s_address == `REG_COLSEL)	color_select <= s_writedata[2:0];
 		end
 	end
 end
@@ -629,7 +791,7 @@ begin
 		if   (s_address == `REG_STATUS) s_readdata <= {16'b0,msg_buf_size,reg_status};
 		if   (s_address == `READ_MSG) s_readdata <= {msg_buf_out};
 		if   (s_address == `READ_ID) s_readdata <= 32'h1234EEE2;
-		if   (s_address == `REG_BBCOL) s_readdata <= {8'h0, bb_col};
+//		if   (s_address == `REG_BBCOL) s_readdata <= {8'h0, bb_col};
 //		if   (s_address == `REG_CONTRAST) s_readdata <= {24'h0, contrast};
 //		if   (s_address == `REG_RED_THRESH) s_readdata <= {24'h0, red_thresh};
 //		if   (s_address == `REG_COL_DETECT) s_readdata <= {17'h0, col_detect};
@@ -638,6 +800,7 @@ begin
 		if   (s_address == `REG_HUE) s_readdata <= {16'h0, hue_bound};
 		if   (s_address == `REG_SAT) s_readdata <= {16'h0, sat_bound};
 		if   (s_address == `REG_VAL) s_readdata <= {16'h0, val_bound};
+		if   (s_address == `REG_COLSEL) s_readdata <= {29'h0, color_select};
 	end
 	
 	read_d <= s_read;

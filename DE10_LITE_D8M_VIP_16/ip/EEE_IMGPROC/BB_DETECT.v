@@ -1,4 +1,4 @@
-module BB_DETECT(clk,rst_n,in_valid,sop,dist_thresh,in,x,y,bb1,bb2,bb3,bb4,bb_out);
+module BB_DETECT(clk,rst_n,in_valid,sop,dist_thresh,in,x,y,bb1,bb2,bb3,bb4,bb_out, bb_filled_out);
 
 	input clk,rst_n,in_valid,sop;
 	input [10:0] dist_thresh; // distance threshold between bounding boxes
@@ -6,6 +6,7 @@ module BB_DETECT(clk,rst_n,in_valid,sop,dist_thresh,in,x,y,bb1,bb2,bb3,bb4,bb_ou
 	input [10:0] x,y;
 	output [43:0] bb1,bb2,bb3,bb4;
 	output [43:0] bb_out; // best bounding box
+	output [7:0] bb_filled_out; //percentage of pixels in best bounding box
 	
 	
 	parameter NUM_BB = 4;
@@ -18,9 +19,18 @@ module BB_DETECT(clk,rst_n,in_valid,sop,dist_thresh,in,x,y,bb1,bb2,bb3,bb4,bb_ou
 	//bounding box bb[0]=xmin,bb[1]=xmax,bb[2]=ymin,bb[3]=ymax
 	reg [10:0]  bb [3:0][NUM_BB-1:0];
 	reg [10:0] bbb [3:0]; //best bounding box
+	//accumulator for pixels in bounding box
+	reg [18:0] bb_acc [NUM_BB-1:0]; // number of pixels in bounding box
+	reg [26:0] bb_acc_255 [NUM_BB-1:0]; //bb_acc*255
+	reg [7:0] bb_filled [NUM_BB-1:0]; // bb_acc*255/area
+	reg [7:0] bbb_filled; //best bounding box accumulator
+	
+	assign bb_filled_out = bbb_filled;
+	
+	
 	wire [NUM_BB-1:0] close;
 	reg [NUM_BB-1:0] bb_used; // 1 if bounding box is stored, 0 if not
-	reg [10:0] dist_y[NUM_BB-1:0], dist_y1[NUM_BB-1:0], dist_y2[NUM_BB-1:0]; // 11 bit or 1 bit?
+	reg dist_y[NUM_BB-1:0], dist_y1[NUM_BB-1:0], dist_y2[NUM_BB-1:0]; // 11 bit or 1 bit?
 	
 	reg [10:0] xwidth [NUM_BB-1:0]; // store x widths of all bounding boxes
 	reg [10:0] ywidth [NUM_BB-1:0]; // store y widths of all bounding boxes
@@ -35,6 +45,8 @@ module BB_DETECT(clk,rst_n,in_valid,sop,dist_thresh,in,x,y,bb1,bb2,bb3,bb4,bb_ou
 	reg more_square [NUM_BB-1:0];
 	reg square_like [NUM_BB-1:0];
 	reg bigger [NUM_BB-1:0];
+	
+	reg [18:0] area[NUM_BB-1:0];
 	
 	
 	//assign 2d array of bounding box limits to large bus for each bounding box (less output ports to worry about)
@@ -99,8 +111,10 @@ module BB_DETECT(clk,rst_n,in_valid,sop,dist_thresh,in,x,y,bb1,bb2,bb3,bb4,bb_ou
 				bb[1][0] <= x;
 				bb[2][0] <= y;
 				bb[3][0] <= y;
-//				bb_cnt <= bb_cnt + 1;
-				bb_used[0] <= 1;
+				
+				bb_acc[0] <= 1; //1 pixel in new bounding box
+				bb_used[0] <= 1; // 0th bounding box being used
+				
 				xwidth[0] <=0;
 				ywidth[0] <= 0;
 				diff_width[0] <=0;
@@ -118,8 +132,10 @@ module BB_DETECT(clk,rst_n,in_valid,sop,dist_thresh,in,x,y,bb1,bb2,bb3,bb4,bb_ou
 						bb[1][i] <= x;
 						bb[2][i] <= y;
 						bb[3][i] <= y;
-//						bb_cnt <= bb_cnt + 1;
+						
+						bb_acc[i] <= 1;
 						bb_used[i] <= 1;
+						
 						xwidth[i] <=0;
 						ywidth[i] <= 0;
 						diff_width[i] <=0;
@@ -142,6 +158,7 @@ module BB_DETECT(clk,rst_n,in_valid,sop,dist_thresh,in,x,y,bb1,bb2,bb3,bb4,bb_ou
 						if (x > bb[1][j]) bb[1][j] <= x;
 						if (y < bb[2][j]) bb[2][j] <= y;
 						bb[3][j] <= y;
+						bb_acc[j] <= bb_acc[j] + 1; //accumulate number of pixels in bounding box
 						found = 1;
 					end
 				end
@@ -168,14 +185,16 @@ module BB_DETECT(clk,rst_n,in_valid,sop,dist_thresh,in,x,y,bb1,bb2,bb3,bb4,bb_ou
 			dist_y1[k] <= dist_y[k];
 			dist_y2[k] <= dist_y1[k];
 			
+			//Majority pixel
+			bb_acc_255[k] <= bb_acc[k]*255;
+			area[k] <= xwidth[k] * ywidth[k];
+			bb_filled[k] <= (area[k]==0) ? 0 : (bb_acc_255[k] / area[k]);
 			
 			if ((~dist_y2[k] | y==(IMAGE_H-1)) & bb_used[k]) begin //done adding new pixels to bounding box
 				//decide whether to keep bounding box or remove it
-				//compare area with bb_area
-				//xwidth and ywidth are greater
-				//could compute criteria in a register beforehand i.e. every pixel - but needs to be sequential
+				//Computing criteria for best bounding box to be replaced
+//				if ((bdiff_width>50) ? (more_square[k] & min_size[k]) : ((bigger[k] | (bb_filled[k] >= bbb_filled)) & square_like[k] & min_size[k])) begin
 				if ((bdiff_width>50) ? (more_square[k] & min_size[k]) : (bigger[k] & square_like[k] & min_size[k])) begin
-//				if (bigger[k] & square_like[k] & min_size[k]) begin
 					//set bbb to bb[k]
 					bbb[0] <= bb[0][k];
 					bbb[1] <= bb[1][k];
@@ -184,6 +203,8 @@ module BB_DETECT(clk,rst_n,in_valid,sop,dist_thresh,in,x,y,bb1,bb2,bb3,bb4,bb_ou
 					bxwidth <= xwidth[k];
 					bywidth <= ywidth[k];
 					bdiff_width <= diff_width[k];
+					
+					bbb_filled <= bb_filled[k];
 				end
 				//bb[k] is basically done updating, not used anymore
 				bb_used[k]<=0;
@@ -219,6 +240,8 @@ module BB_DETECT(clk,rst_n,in_valid,sop,dist_thresh,in,x,y,bb1,bb2,bb3,bb4,bb_ou
 			bxwidth<=0;
 			bywidth<=0;
 			bdiff_width<=0;
+			
+			bbb_filled <= 0;
 			
 //			bb_cnt <=0; // reset number of bounding boxes
 			bb_used <=0;
