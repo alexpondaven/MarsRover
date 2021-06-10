@@ -41,7 +41,7 @@ function VideoPage_Setting({setState}) {
     }
 
     const onClick = (str,bool) => {
-        var body = {
+        let body = {
             name: 'add',
             type: str,
             state: bool
@@ -53,6 +53,23 @@ function VideoPage_Setting({setState}) {
           },
           body: JSON.stringify(body),
         })
+    }
+
+    const [forcefetch, setFetch] = useState(false);
+
+    const onReset = (color) => {
+        let body = {
+            name: 'reset',
+            color: color
+        }
+        fetch('http://localhost:5000/videosetting', {
+          method: 'POST',
+          headers: {
+            'Content-type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        })
+        setFetch(!forcefetch);
     }
 
     return (
@@ -91,7 +108,7 @@ function VideoPage_Setting({setState}) {
                     <MenuItem value='pink'>Pink</MenuItem>
                     <MenuItem value='blue'>Blue</MenuItem>
                     <MenuItem value='green'>Green</MenuItem>
-                </Select>
+                </Select> 
 
                 <Tooltip title='Determine the HSV range for each color to achieve better bounding boxes'>
                     <div style={{padding: '15px 20px'}}>
@@ -100,10 +117,18 @@ function VideoPage_Setting({setState}) {
                         </IconContext.Provider>           
                     </div>
                 </Tooltip>
+
+                <button onClick={() => onReset(color)} style={{
+                    position: 'absolute',
+                    right: '10px',
+                    marginTop: '12px',
+                }}>
+                    Reset
+                </button>
                 
             </div>
 
-            <VideoPage_Sliders color={color} />
+            <VideoPage_Sliders color={color} forcefetch={forcefetch} />
         </div>
     )
 }

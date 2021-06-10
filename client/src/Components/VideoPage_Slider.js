@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Tooltip from "@material-ui/core/Tooltip";
 import Slider from '@material-ui/core/Slider';
 
-function Video_Slider({name, color, onChange, tooltip}) {
+function Video_Slider({name, color, onChange, forcefetch, tooltip}) {
     const [value, setValue] = useState([]);
 
     const handleChange = (event, newValue) => {
@@ -19,16 +19,15 @@ function Video_Slider({name, color, onChange, tooltip}) {
         setValue(response.value)
     }
 
-    const getData = (bool) => {
+    const getData = () => {
         fetch('http://localhost:5000/videosetting/' + color + '/' + name)
             .then(response => response.json())
             .then(response => update(response))
     }
 
     useEffect(() => {
-        getData(true);
-        // setInterval(getData(true),1000)
-    },[color])
+        getData();
+    },[color,forcefetch])
 
     return (
         <div style={{ width: '400px'}}>

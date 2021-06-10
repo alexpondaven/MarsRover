@@ -6,9 +6,12 @@ function ControllerPosition({explore, setExplore}) {
     const [currentposition, setCurrent] = useState([]);
     const [obstacles,setObstacle] = useState([]);
 
+    var current_var = null;
+
     function update(response) {
-        if (currentposition !== [response.current]){
+        if (current_var === null || current_var.x !== response.current.x || current_var.y !== response.current.y){
             setRover(positions => [...positions, response.current]);
+            current_var = response.current;
         }
         setCurrent([response.current]);
         setObstacle(response.obstacles);
@@ -95,6 +98,21 @@ function ControllerPosition({explore, setExplore}) {
         })
     }
 
+    const onStop = () => {
+        var body = {
+            type: 'explore',
+            state: false
+        }
+        fetch('http://localhost:5000/position', {
+          method: 'POST',
+          headers: {
+            'Content-type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        })
+        alert("Rover stopped")
+    }
+
     const onSubmit = (event) => {
         event.preventDefault();
         if (err === "") {
@@ -116,7 +134,7 @@ function ControllerPosition({explore, setExplore}) {
             <div style={{position: 'relative'}}>
                 <button className="ClearButton" style={{margin: '5px'}}onClick={onClear}>Clear</button>
             </div>
-            <form onSubmit={onSubmit} style={{marginTop: '30px'}}>
+            <div style={{marginTop: '30px'}}>
                 <h4>Please enter the target coordinate: </h4>
                 <div style={{display: 'flex'}}>   
                     <form> 
@@ -138,10 +156,9 @@ function ControllerPosition({explore, setExplore}) {
                 <p1 style={{ color: 'red', fontFamily: 'sans-serif', fontSize: 'small' }}>{err}</p1>
 
                 <br/>
-                <input
-                    type='submit'
-                />
-            </form>
+                <button onClick={onStop} style={{width: '60px', margin: '10px'}}>Stop</button>
+                <button onClick={onSubmit} style={{width: '60px', margin: '10px'}}>Submit</button>
+            </div>
         </div>
     )
 }
