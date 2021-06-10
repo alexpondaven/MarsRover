@@ -1,4 +1,9 @@
 import { useState, useEffect } from 'react'
+import { AiOutlineSetting } from 'react-icons/ai';
+
+import VideoPage_Setting from '../Components/VideoPage_Setting.js'
+import { IconContext } from 'react-icons';
+
 var interval = 5000;
 
 function VideoPage() {
@@ -17,7 +22,7 @@ function VideoPage() {
 
     useEffect(() => {
         getData();
-        setInterval(update,interval);
+        setInterval(getData,interval);
     },[])
 
     const getData = async() => {
@@ -26,9 +31,24 @@ function VideoPage() {
           .then(response => update(response.bmp))
     }
 
+    const [setting, setSetting] = useState(false);
+
     return (
         <div>
-            <img src={src} sytle={{width: '80vw'}}/>
+            <div style={{width:'80vh'}}>
+                <img src={src} width='100%'/> 
+            </div>
+            {setting ? <VideoPage_Setting setState={setSetting}/> : ''}
+            <div className='ClearButton' style={{
+                position: 'absolute',
+                top: '120px',
+                right: '0',
+            }}>
+                <IconContext.Provider value={{ color: '#808080', size: '30px'}}>
+                    {setting ? '' : <AiOutlineSetting onClick={() => setSetting(true)}/> }
+                </IconContext.Provider>
+            </div>
+        
         </div>
     )
 }

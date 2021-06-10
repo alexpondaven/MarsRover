@@ -7,8 +7,10 @@ function ControllerPosition({explore, setExplore}) {
     const [obstacles,setObstacle] = useState([]);
 
     function update(response) {
-        setRover(response.position);
-        setCurrent(response.current);
+        if (currentposition !== [response.current]){
+            setRover(positions => [...positions, response.current]);
+        }
+        setCurrent([response.current]);
         setObstacle(response.obstacles);
     }
 
@@ -101,13 +103,20 @@ function ControllerPosition({explore, setExplore}) {
         }
     }
 
+    const onClear = () => {
+        setRover(currentposition);
+    }
+
 
     return (
         <div className="PositionControl">
             <div style={{border: '1px solid black', width: '100%'}}>
                 <Map positions={positions} current={currentposition} obstacles={obstacles} command={[command]}/>
             </div>
-            <form onSubmit={onSubmit}>
+            <div style={{position: 'relative'}}>
+                <button className="ClearButton" style={{margin: '5px'}}onClick={onClear}>Clear</button>
+            </div>
+            <form onSubmit={onSubmit} style={{marginTop: '30px'}}>
                 <h4>Please enter the target coordinate: </h4>
                 <div style={{display: 'flex'}}>   
                     <form> 

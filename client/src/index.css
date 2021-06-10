@@ -239,6 +239,7 @@ span {
 }
 
 .PositionControl {
+  display: inline-block;
   width: 80vw;
 }
 
@@ -263,3 +264,25 @@ span {
   border: 1px solid #000000;
 }
 
+.ClearButton {
+  margin-top: 30px;
+  margin-right: 30px;
+  position:absolute;
+  top:0;
+  right:0;
+  cursor: pointer;
+}
+
+.VideoSetting {
+  font-family: 'Roboto', sans-serif;
+  padding: 10px 20px;
+  background-color: whitesmoke;
+  width: 500px;
+  height: 100vh;
+  justify-content: left;
+  align-items: left;
+  position: absolute;
+  top: 120px;
+  right:0;
+  transition: 850ms;
+}

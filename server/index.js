@@ -56,7 +56,7 @@ app.get("/drive", (request, response) => {
     response.json({
         speed: speed,
         position: roverposition,
-        current: [lastposition],
+        current: lastposition,
         obstacles: obstacles,
         alert: batteryalert,
     })
@@ -66,6 +66,35 @@ app.get("/video", (request, response) => {
     response.json({
         bmp: base
     })
+})
+
+app.get("/videosetting/:color/:type", (request,response) => {
+    var tmp = request.params;
+    var rtn = null;
+    for (let i=0; i<videocolor.length; i++){
+        if (videocolor[i].color === tmp.color){
+            rtn = videocolor[i]
+        }
+    }
+    if (rtn === null) return;
+    rtn = rtn[tmp.type];
+    if (rtn === undefined) return;
+
+    response.json({
+        value: rtn
+    })
+})
+
+app.post("/videosetting", (request, response) => {
+    var tmp = request.body;
+    console.log(tmp);
+    if (tmp.name === 'hsv'){
+        for (let i=0; i<videocolor.length; i++){
+            if (videocolor[i].color === tmp.color){
+                videocolor[i][tmp.type] = tmp.value;
+            }
+        }
+    }
 })
 
 // database 
@@ -102,17 +131,40 @@ var toboard = {
     direction: new Uint8Array([0,0,0,0]),
     position: new Uint32Array([0,0])
 }
+var videocolor = [
+    {
+        color: 'red',
+        Hue: [40,60],
+        Saturation: [40,60],
+        Value: [40,60],
+    },
+    {
+        color: 'yellow',
+        Hue: [40,60],
+        Saturation: [40,60],
+        Value: [40,60],
+    },
+    {
+        color: 'pink',
+        Hue: [40,60],
+        Saturation: [40,60],
+        Value: [40,60],
+    },
+    {
+        color: 'blue',
+        Hue: [40,60],
+        Saturation: [40,60],
+        Value: [40,60],
+    },
+    {
+        color: 'green',
+        Hue: [40,60],
+        Saturation: [40,60],
+        Value: [40,60],
+    },
+]
 
-// var data;
 
-// const request = require('request');
-// request('https://api.nasa.gov/insight_weather/?api_key=DEMO_KEY&feedtype=json&ver=1.0', function (error, response, body) {
-//     data = JSON.parse(body).validity_checks;
-//     var tmp = data.sols_checked;
-//     tmp = tmp[0];
-//     console.log(data, tmp);
-//     console.log(data[tmp]);
-// });
 
 // setting up TCP server 
 

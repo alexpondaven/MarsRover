@@ -24,8 +24,10 @@ function DrivePage() {
 
     function update(response) {
         setSpeed([response.speed]);
-        setPosition(response.position);
-        setCurrent(response.current);
+        if (currentposition !== [response.current]){
+            setPosition(positions => [...positions, response.current]);
+        }
+        setCurrent([response.current]);
         setObstacle(response.obstacles);
         setAlerts(response.alert);
     }
@@ -34,6 +36,10 @@ function DrivePage() {
         fetch('http://localhost:5000/drive')
           .then(response => response.json())
           .then(response => update(response) )
+    }
+
+    const onClick = () => {
+        setPosition(currentposition);
     }
 
     return (
@@ -61,6 +67,7 @@ function DrivePage() {
 
                 <div className="Card3">
                     <h3>Map</h3>
+                    <button className="ClearButton" onClick={onClick}>Clear</button>
                     <div className="Map">
                         <Map positions={positions} current={currentposition} obstacles={obstacles} />
                     </div>
