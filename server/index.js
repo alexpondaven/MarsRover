@@ -25,12 +25,12 @@ app.post("/position", (request,response) => {
     if (tmp.type === 'direction'){
         toboard.mode = 0;
         toboard.direction[tmp.id] = tmp.state ? 1 : 0;
-        console.log(toboard)
+        // console.log(toboard)
     } else if (tmp.type === 'position'){
         toboard.mode = 1;
         toboard.position[0] = tmp.x;
         toboard.position[1] = tmp.y;
-        console.log(toboard)
+        // console.log(toboard)
     } else if (tmp.type === 'explore'){
         if (tmp.state) {
             toboard.mode = 2;
@@ -38,7 +38,7 @@ app.post("/position", (request,response) => {
             toboard.mode = 0;
             toboard.direction = new Uint8Array([0,0,0,0]);
         }
-        console.log(toboard)
+        // console.log(toboard)
     }
     response.json("Received");
     
@@ -62,7 +62,20 @@ app.get("/drive", (request, response) => {
     })
 })
 
+const fs = require('fs')
 app.get("/video", (request, response) => {
+    var file;
+    try {
+        file = fs.readFileSync('./public/bitmap.bmp')
+    } catch (err) {
+        // console.log(err);
+        return;
+    }
+    var bmpData = bmp.decode(file);
+    var rawData = bmp.encode(bmpData);
+    base = Buffer.from(rawData.data).toString('base64')
+    // console.log("done")
+
     response.json({
         bmp: base
     })
@@ -111,7 +124,7 @@ app.post("/videosetting", (request, response) => {
         for (let i=0; i<videocolor.length; i++){
             if (videocolor[i].color === tmp.color){
                 videocolor[i] = videocolordefault[i];
-                console.log(videocolor[i])
+                // console.log(videocolor[i])
             }
         }
     } else if (tmp.name === 'add') {
@@ -279,7 +292,7 @@ const server = net.createServer(socket => {
         var tmp;
         try {
             tmp = JSON.parse(data.toString());
-            console.log(tmp)
+            // console.log(tmp)
         } catch(e) { 
             // console.log(e);
             return;
@@ -294,7 +307,7 @@ const server = net.createServer(socket => {
             }
             roverposition.push(lastposition)
         }
-        console.log(roverposition);
+        // console.log(roverposition);
 
         speed.speed = tmp.position.speed;
         switch(tmp.position.direction) {

@@ -10,19 +10,19 @@ SERVER = 2002
 
 sock.bind((HOST, PORT))
 print("Bound socket to ", HOST, ":", PORT)
-s.connect((HOST,SERVER))
+s.connect(('127.0.0.1',SERVER))
 
 # listen
 sock.listen()
 print("Listening for connections")
 
 def savebitmap(data):
-    f = open('bitmap.bmp', 'wb')
+    f = open('./public/bitmap.bmp', 'wb')
     try:
         f.write(data)
     finally:
         f.close()
-    s.send(data)
+    # s.send(data)
     
 
 while True:

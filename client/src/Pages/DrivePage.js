@@ -19,7 +19,7 @@ function DrivePage() {
 
     useEffect(() => {
         getData();
-        setInterval(getData,5000)
+        setInterval(getData,3000)
     },[])
 
     function update(response) {

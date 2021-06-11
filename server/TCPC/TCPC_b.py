@@ -7,7 +7,7 @@ PORT = 2001        # The port used by the server
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     def local():
-        f = open("../public/bitmap.bmp","rb")
+        f = open("../public/bitmap4.bmp","rb")
         data = f.read()
 
         print("TCP target IP: %s" % IP)
