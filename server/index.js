@@ -63,6 +63,18 @@ app.get("/drive", (request, response) => {
 })
 
 app.get("/video", (request, response) => {
+    var bmpData;
+    try {
+        let file = fs.readFileSync('./public/bitmap.bmp')
+        bmpData = bmp.decode(file);
+    } catch (err) {
+        console.log(err);
+        return;
+    }
+    // var bmpData = bmp.decode(file);
+    var rawData = bmp.encode(bmpData);
+    base = Buffer.from(rawData.data).toString('base64');
+
     response.json({
         bmp: base
     })
@@ -273,9 +285,6 @@ var net = require('net');
 
 const server = net.createServer(socket => {
     socket.on("data", data => {
-        // console.log((data.toString()))
-        // var tmp = JSON.parse(data.toString());
-
         var tmp;
         try {
             tmp = JSON.parse(data.toString());
@@ -346,29 +355,15 @@ const bmp = require("bmp-js");
 const size = 77880;
 var datasize = 0;
 var databuffer = 0;
+const fs = require('fs');
+// const stream = fs.createWriteStream('hey.bmp');
 
 const server_b = net.createServer(socket => {
     socket.on("data", data => {
-        if (databuffer === 0){
-            databuffer = data
-        } else {
-            databuffer = Buffer.concat([databuffer,data]);
-        }
-        datasize += data.length;
-        if (datasize >= size){
-            socket.write("Received!");
-            console.log(datasize);
-            datasize =0;
-
-            var bmpData = bmp.decode(databuffer);
-            var rawData = bmp.encode(bmpData);
-            base = Buffer.from(rawData.data).toString('base64')
-
-            databuffer = 0;
-        }
-
         socket.write("received!");
     })
+
+    socket.pipe(fs.createWriteStream('./public/bitmap.bmp'))
 
     socket.on("error", error => {
         console.log("client left")
