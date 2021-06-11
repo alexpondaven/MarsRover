@@ -4,7 +4,7 @@
  * Machine generated for CPU 'nios2_gen2' in SOPC Builder design 'Qsys'
  * SOPC Builder design path: ../../Qsys.sopcinfo
  *
- * Generated: Fri May 28 11:35:07 BST 2021
+ * Generated: Sat May 29 19:09:56 BST 2021
  */
 
 /*

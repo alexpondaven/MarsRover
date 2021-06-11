@@ -2,9 +2,9 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>29-May-2021 11:26:14</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1622283974077</BspGeneratedUnixTimeStamp>
-        <BspGeneratedLocation>C:\work_files\rover_alexpc\EEE2Rover\DE10_LITE_D8M_VIP_16\software\D8M_Camera_Test_bsp</BspGeneratedLocation>
+        <BspGeneratedTimeStamp>10-Jun-2021 15:36:36</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1623335796071</BspGeneratedUnixTimeStamp>
+        <BspGeneratedLocation>C:\work_files\rover_boxes_video\EEE2Rover\DE10_LITE_D8M_VIP_16\software\D8M_Camera_Test_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>..\..\Qsys.sopcinfo</SopcDesignFile>
         <JdiFile>default</JdiFile>
@@ -924,8 +924,8 @@
         </Setting>
         <MemoryMap>
                 <slaveDescriptor>onchip_memory2_0</slaveDescriptor>
-                <addressRange>0x00020000 - 0x0003869F</addressRange>
-                <addressSpan>100000</addressSpan>
+                <addressRange>0x00020000 - 0x00038CDF</addressRange>
+                <addressSpan>101600</addressSpan>
                 <attributes>memory</attributes>
         </MemoryMap>
         <MemoryMap>

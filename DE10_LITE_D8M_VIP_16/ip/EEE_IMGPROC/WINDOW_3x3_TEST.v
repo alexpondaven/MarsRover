@@ -28,6 +28,7 @@ WINDOW_3x3 window_inst (
 	.clk(clk),
 	.rst_n(rst_n),
 	.in_grey(in_grey),
+	.in_valid(1'b1),
 	.p00(p00),
 	.p01(p01),
 	.p02(p02),

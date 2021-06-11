@@ -14,20 +14,31 @@
 #include <math.h>
 
 //EEE_IMGPROC defines
-#define EEE_IMGPROC_MSG_START ('R'<<16 | 'B'<<8 | 'B')
+#define RED_MSG_START ('R'<<16 | 'B'<<8 | 'B')
+#define PINK_MSG_START ('P'<<16 | 'B'<<8 | 'B')
+#define YELLOW_MSG_START ('Y'<<16 | 'B'<<8 | 'B')
+#define GREEN_MSG_START ('G'<<16 | 'B'<<8 | 'B')
+#define BLUE_MSG_START ('B'<<16 | 'B'<<8 | 'B')
 
 //offsets
 #define EEE_IMGPROC_STATUS 0
 #define EEE_IMGPROC_MSG 1
 #define EEE_IMGPROC_ID 2
-#define EEE_IMGPROC_BBCOL 3
-#define EEE_IMGPROC_CONTRAST 4
-#define EEE_IMGPROC_RED_THRESH 5
+//#define EEE_IMGPROC_BBCOL 3
+#define COL_SEL 3
+//#define EEE_IMGPROC_CONTRAST 4
+//#define EEE_IMGPROC_RED_THRESH 6
+//#define EEE_IMGPROC_COL_DETECT 5
+#define EEE_IMGPROC_DIST_THRESH 7
+
+#define HUE 4
+#define SAT 5
+#define VAL 6
 
 
-#define EXPOSURE_INIT 0x001f00
+#define EXPOSURE_INIT 0x002400
 #define EXPOSURE_STEP 0x500
-#define GAIN_INIT 0x300
+#define GAIN_INIT 0x500 // or 500
 #define GAIN_STEP 0x100
 #define DEFAULT_LEVEL 3
 
@@ -211,6 +222,13 @@ int main()
 //			printf("opened");
 //		}
 
+//        FILE* ser = fopen("/dev/uart_esp", "rb+");
+//		if(ser){
+//			printf("Opened UART\n");
+//		} else {
+//			printf("Failed to open UART\n");
+//			while (1);
+//		}
 
 
   while(1){
@@ -263,73 +281,22 @@ int main()
 
        }
 	#endif
-       int word;
-	  while ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) { 	//Find out if there are words to read
-		  word = IORD(0x42000,EEE_IMGPROC_MSG); 			//Get next word from message buffer
-	   if (word == EEE_IMGPROC_MSG_START){ 					//Newline on message identifier
+    //Read messages from the image processor and print them on the terminal
+	while ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) { 	//Find out if there are words to read
+		int word = IORD(0x42000,EEE_IMGPROC_MSG); 			//Get next word from message buffer
+
+		if (word==RED_MSG_START || word==PINK_MSG_START || word==YELLOW_MSG_START
+			|| word==GREEN_MSG_START || word==BLUE_MSG_START){	//Newline on message identifier
 		   printf("\n");
-	   }
-	   printf("%08x ",word);
-	  }
-
-//	  if (fp){
-//		  fwrite(&word,sizeof(word),1,fp);
-//	  }
-	  /*
-       //Read messages from the image processor and print them on the terminal
-       int word;
-       int bb_width=0;
-       int dist_from_centre=0;
-       int distance=0;
-       int angle=0;
-       while ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) { 	//Find out if there are words to read
-           word = IORD(0x42000,EEE_IMGPROC_MSG); 			//Get next word from message buffer
-    	   if (word == EEE_IMGPROC_MSG_START){ 					//Newline on message identifier
-    		   printf("\n");
-    	   }
-    	   printf("%08x ",word);
-    	   // read next 2 words
-    	   if ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) {
-    		   bb_width = IORD(0x42000,EEE_IMGPROC_MSG);
-    		   //printf("%08x ",bb_width);
-    		   if ((IORD(0x42000,EEE_IMGPROC_STATUS)>>8) & 0xff) {
-    			   dist_from_centre = IORD(0x42000,EEE_IMGPROC_MSG);
-    			   // calculation of distance from camera and angle
-    			   // ping pong balls are 38 mm = bb_width pixels wide (1 pixel = bb_width/38 mm)
-    			   int dist_from_centre_mm = dist_from_centre *bb_width / 38;
-    			   //printf("%08x ",dist_from_centre_mm);
-    			   //distance from camera values
-    			   //ratio of sizes = ratio of distances - but inversely proportional
-    			   // sx/sy=dy/dx  =>  dy = dx * sx /sy = 100 * 256 / sy
-
-    			   // 0x100 or 256 pixels is 100 mm away
-    			   // 0x80 is 200 mm
-    			   //0x54 is 300 mm
-    			   distance = 100 * 256 / bb_width;
-    			   printf("%08d ",distance);
-    			   //angle = asin(dist_from_centre_mm/distance);
-    			   angle = (dist_from_centre_mm/distance) * 57; // small angle approximation (57 is around 180/pi)
-    			   printf("%08d ", angle);
-
-//    			   if (fp){
-//					   fwrite(&distance,sizeof(distance),1,fp);
-//					   fwrite(&angle,sizeof(angle),1,fp);
-//
-//					 }
-    		   }
-    	   }
-
-
-
-       }
-       */
-
-
-       // Send word through I2C
-//       const alt_u8 device_address = ESP_I2C_ADDR; // needs to be defined
-//       OC_I2CL_Write(I2C_OPENCORES_ESP_BASE, device_address, Addr, (alt_u8 *)&word, sizeof(word)); // or use OC_I2C_Write
-
-       // not sure what device_address or write address will be - probably decided by ESP program?
+//		   //send new line through uart
+//		   int nl = '\n';
+//		   if (fwrite(&nl, 1, 1, ser) != 1)
+//		   		   printf("Error writing to UART");
+		}
+//		if (fwrite(&word, 4, 1, ser) != 1)
+//			printf("Error writing to UART");
+		printf("%08x ",word);
+	}
 
        //Update the bounding box colour - cycles from blue (0000ff) to green (00ff00)
        //boundingBoxColour = ((boundingBoxColour + 1) & 0xff);
@@ -337,6 +304,9 @@ int main()
 
        //Process input commands
 		  int in = getchar();
+		  //reading through uart:
+//		  if (fread(&in,1,1,ser) != 1)
+//			  printf("Error reading from UART");
 		  switch (in) {
 			   case 'e': {
 				   exposureTime += EXPOSURE_STEP;
@@ -371,12 +341,30 @@ int main()
 				   break;}
 		  }
 
-       // Update contrast of image
-       //IOWR(0x42000, EEE_IMGPROC_CONTRAST, 0xf);
+		  // Update contrast of image
+		  //IOWR(0x42000, EEE_IMGPROC_CONTRAST, 0xf);
 
-       //Update red threshold
-		  IOWR(0x42000, EEE_IMGPROC_RED_THRESH, 0x0);
+		  //Update red threshold
+//		  IOWR(0x42000, EEE_IMGPROC_RED_THRESH, 0x0);
 
+		  // update colour to be detected when 3rd switch is on
+//		  IOWR(0x42000, EEE_IMGPROC_COL_DETECT, 0x4000);
+
+		  //update distance threshold between bounding boxes
+//		  IOWR(0x42000, EEE_IMGPROC_DIST_THRESH, 0x20);
+
+		  //select colour
+		  // 1: RED
+		  // 2: PINK
+		  // 3: YELLOW
+		  // 4: GREEN
+		  // 5: BLUE
+//		  IOWR(0x42000, COL_SEL, 0x2);
+
+		  //Testing HSV values:
+		  IOWR(0x42000, HUE, 0x0e00);
+		  IOWR(0x42000, SAT, 0xae33);
+		  IOWR(0x42000, VAL, 0xff60);
 
 
 	   //Main loop delay

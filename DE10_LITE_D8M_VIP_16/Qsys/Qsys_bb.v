@@ -9,15 +9,6 @@ module Qsys (
 	alt_vip_cl_cvo_0_clocked_video_vid_f,
 	alt_vip_cl_cvo_0_clocked_video_vid_h,
 	alt_vip_cl_cvo_0_clocked_video_vid_v,
-	alt_vip_itc_0_clocked_video_vid_clk,
-	alt_vip_itc_0_clocked_video_vid_data,
-	alt_vip_itc_0_clocked_video_underflow,
-	alt_vip_itc_0_clocked_video_vid_datavalid,
-	alt_vip_itc_0_clocked_video_vid_v_sync,
-	alt_vip_itc_0_clocked_video_vid_h_sync,
-	alt_vip_itc_0_clocked_video_vid_f,
-	alt_vip_itc_0_clocked_video_vid_h,
-	alt_vip_itc_0_clocked_video_vid_v,
 	altpll_0_areset_conduit_export,
 	altpll_0_locked_conduit_export,
 	clk_clk,
@@ -63,15 +54,6 @@ module Qsys (
 	output	[3:0]	alt_vip_cl_cvo_0_clocked_video_vid_f;
 	output	[3:0]	alt_vip_cl_cvo_0_clocked_video_vid_h;
 	output	[3:0]	alt_vip_cl_cvo_0_clocked_video_vid_v;
-	input		alt_vip_itc_0_clocked_video_vid_clk;
-	output	[23:0]	alt_vip_itc_0_clocked_video_vid_data;
-	output		alt_vip_itc_0_clocked_video_underflow;
-	output		alt_vip_itc_0_clocked_video_vid_datavalid;
-	output		alt_vip_itc_0_clocked_video_vid_v_sync;
-	output		alt_vip_itc_0_clocked_video_vid_h_sync;
-	output		alt_vip_itc_0_clocked_video_vid_f;
-	output		alt_vip_itc_0_clocked_video_vid_h;
-	output		alt_vip_itc_0_clocked_video_vid_v;
 	input		altpll_0_areset_conduit_export;
 	output		altpll_0_locked_conduit_export;
 	input		clk_clk;

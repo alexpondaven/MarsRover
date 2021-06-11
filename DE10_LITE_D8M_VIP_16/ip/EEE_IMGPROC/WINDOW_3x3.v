@@ -1,10 +1,11 @@
-module WINDOW_3x3(in_grey, clk, rst_n ,p00,p01,p02,p10,p11,p12,p20,p21,p22, full, empty, used, almost_full, rdreq, wrreq, fifo_out);
+module WINDOW_3x3(in_grey,in_valid, clk, rst_n ,p00,p01,p02,p10,p11,p12,p20,p21,p22, full, empty, used, almost_full, rdreq, wrreq, fifo_out);
 
 	// produce a 3x3 window to convolve over
 	
 
 	//Input
 	input clk, rst_n;
+	input in_valid;
 	input [7:0] in_grey;
 	output reg [7:0] p00,p01,p02,p10,p11,p12,p20,p21,p22; // 3x3 window
 	output full;
@@ -30,37 +31,46 @@ module WINDOW_3x3(in_grey, clk, rst_n ,p00,p01,p02,p10,p11,p12,p20,p21,p22, full
 			p22 <= 0;
 		end
 		else begin
-			//assigning registers
-			p22 <= in_grey;
-			p21 <= p22;
-			p20 <= p21;
-			p12 <= out_1;
-			p11 <= p12;
-			p10 <= p11;
-			p02 <= out_2;
-			p01 <= p02;
-			p00 <= p01;
-			
-			// read when almost full (639 words in buffer since it takes 2 cycles to go from almost_full -> rdreq -> out)
-			if (almost_full_1) begin // if buffer1 is full - read and write
-				rdreq_1 <= 1'b1;
-				wrreq_1 <= 1'b1;
-			end
-			else begin // if not full, just write
-				rdreq_1 <= 1'b0;
-				wrreq_1 <= 1'b1;
-			end
-			
-			//row buffer 2
-			if (almost_full_2) begin // if buffer1 is full - read and write
-				rdreq_2 <= 1'b1;
-				wrreq_2 <= 1'b1;
-			end
-			else if (almost_full_1) begin //if not full, only write if buffer 1 is full
-				rdreq_2 <= 1'b0;
-				wrreq_2 <= 1'b1;
+			if (in_valid) begin
+				//assigning registers
+				p22 <= in_grey;
+				p21 <= p22;
+				p20 <= p21;
+				p12 <= out_1;
+				p11 <= p12;
+				p10 <= p11;
+				p02 <= out_2;
+				p01 <= p02;
+				p00 <= p01;
+				
+				// read when almost full (639 words in buffer since it takes 2 cycles to go from almost_full -> rdreq -> out)
+				if (almost_full_1) begin // if buffer1 is full - read and write
+					rdreq_1 <= 1'b1;
+					wrreq_1 <= 1'b1;
+				end
+				else begin // if not full, just write
+					rdreq_1 <= 1'b0;
+					wrreq_1 <= 1'b1;
+				end
+				
+				//row buffer 2
+				if (almost_full_2) begin // if buffer1 is full - read and write
+					rdreq_2 <= 1'b1;
+					wrreq_2 <= 1'b1;
+				end
+				else if (almost_full_1) begin //if not full, only write if buffer 1 is full
+					rdreq_2 <= 1'b0;
+					wrreq_2 <= 1'b1;
+				end
+				else begin
+					rdreq_2 <= 1'b0;
+					wrreq_2 <= 1'b0;
+				end
 			end
 			else begin
+				// don't read or write if pixel is not valid
+				rdreq_1 <= 1'b0;
+				wrreq_1 <= 1'b0;
 				rdreq_2 <= 1'b0;
 				wrreq_2 <= 1'b0;
 			end

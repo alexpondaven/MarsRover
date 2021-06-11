@@ -1,3 +1,46 @@
+/*<simulation_settings>
+<ftestbench_cmd>quartus_eda --gen_testbench --tool=modelsim_oem --format=verilog --write_settings_files=off DE10_LITE_D8M_VIP -c DE10_LITE_D8M_VIP --vector_source="C:/work_files/bbrover_alexpc/EEE2Rover/DE10_LITE_D8M_VIP_16/ip/EEE_IMGPROC/WINDOW_3x3_TEST.vwf" --testbench_file="C:/work_files/bbrover_alexpc/EEE2Rover/DE10_LITE_D8M_VIP_16/simulation/qsim/WINDOW_3x3_TEST.vwf.vt"</ftestbench_cmd>
+<ttestbench_cmd>quartus_eda --gen_testbench --tool=modelsim_oem --format=verilog --write_settings_files=off DE10_LITE_D8M_VIP -c DE10_LITE_D8M_VIP --vector_source="C:/work_files/bbrover_alexpc/EEE2Rover/DE10_LITE_D8M_VIP_16/ip/EEE_IMGPROC/WINDOW_3x3_TEST.vwf" --testbench_file="C:/work_files/bbrover_alexpc/EEE2Rover/DE10_LITE_D8M_VIP_16/simulation/qsim/ip/EEE_IMGPROC/WINDOW_3x3_TEST.vwf.vt"</ttestbench_cmd>
+<fnetlist_cmd>quartus_eda --write_settings_files=off --simulation --functional=on --flatten_buses=off --tool=modelsim_oem --format=verilog --output_directory="C:/work_files/bbrover_alexpc/EEE2Rover/DE10_LITE_D8M_VIP_16/simulation/qsim/" DE10_LITE_D8M_VIP -c DE10_LITE_D8M_VIP</fnetlist_cmd>
+<tnetlist_cmd>quartus_eda --write_settings_files=off --simulation --functional=off --flatten_buses=off --timescale=1ps --tool=modelsim_oem --format=verilog --output_directory="C:/work_files/bbrover_alexpc/EEE2Rover/DE10_LITE_D8M_VIP_16/simulation/qsim/" DE10_LITE_D8M_VIP -c DE10_LITE_D8M_VIP</tnetlist_cmd>
+<modelsim_script>onerror {exit -code 1}
+vlib work
+vlog -work work DE10_LITE_D8M_VIP.vo
+vlog -work work WINDOW_3x3_TEST.vwf.vt
+vsim -novopt -c -t 1ps -L fiftyfivenm_ver -L altera_ver -L altera_mf_ver -L 220model_ver -L sgate_ver -L altera_lnsim_ver work.WINDOW_3x3_TEST_vlg_vec_tst
+vcd file -direction DE10_LITE_D8M_VIP.msim.vcd
+vcd add -internal WINDOW_3x3_TEST_vlg_vec_tst/*
+vcd add -internal WINDOW_3x3_TEST_vlg_vec_tst/i1/*
+proc simTimestamp {} {
+    echo "Simulation time: $::now ps"
+    if { [string equal running [runStatus]] } {
+        after 2500 simTimestamp
+    }
+}
+after 2500 simTimestamp
+run -all
+quit -f
+</modelsim_script>
+<modelsim_script_timing>onerror {exit -code 1}
+vlib work
+vlog -work work DE10_LITE_D8M_VIP.vo
+vlog -work work ip/EEE_IMGPROC/WINDOW_3x3_TEST.vwf.vt
+vsim -novopt -c -t 1ps -L fiftyfivenm_ver -L altera_ver -L altera_mf_ver -L 220model_ver -L sgate_ver -L altera_lnsim_ver work.WINDOW_3x3_TEST_vlg_vec_tst
+vcd file -direction DE10_LITE_D8M_VIP.msim.vcd
+vcd add -internal WINDOW_3x3_TEST_vlg_vec_tst/*
+vcd add -internal WINDOW_3x3_TEST_vlg_vec_tst/i1/*
+proc simTimestamp {} {
+    echo "Simulation time: $::now ps"
+    if { [string equal running [runStatus]] } {
+        after 2500 simTimestamp
+    }
+}
+after 2500 simTimestamp
+run -all
+quit -f
+</modelsim_script_timing>
+<hdl_lang>verilog</hdl_lang>
+</simulation_settings>*/
 /*
 WARNING: Do NOT edit the input and output ports in this file in a text
 editor if you plan to continue editing the block that represents it in
@@ -5,18 +48,18 @@ the Block Editor! File corruption is VERY likely to occur.
 */
 
 /*
-Copyright (C) 1991-2016 Altera Corporation. All rights reserved.
-Your use of Altera Corporation's design tools, logic functions 
+Copyright (C) 2016  Intel Corporation. All rights reserved.
+Your use of Intel Corporation's design tools, logic functions 
 and other software and tools, and its AMPP partner logic 
 functions, and any output files from any of the foregoing 
 (including device programming or simulation files), and any 
 associated documentation or information are expressly subject 
-to the terms and conditions of the Altera Program License 
-Subscription Agreement, the Altera Quartus Prime License Agreement,
-the Altera MegaCore Function License Agreement, or other 
+to the terms and conditions of the Intel Program License 
+Subscription Agreement, the Intel Quartus Prime License Agreement,
+the Intel MegaCore Function License Agreement, or other 
 applicable license agreement, including, without limitation, 
 that your use is for the sole purpose of programming logic 
-devices manufactured by Altera and sold by Altera or its 
+devices manufactured by Intel and sold by Intel or its 
 authorized distributors.  Please refer to the applicable 
 agreement for further details.
 */

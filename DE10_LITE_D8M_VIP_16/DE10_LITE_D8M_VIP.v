@@ -162,15 +162,15 @@ Qsys u0 (
 		.terasic_auto_focus_0_conduit_clk50        (MAX10_CLK1_50),        		//                                 .clk50
 		.terasic_auto_focus_0_conduit_vcm_i2c_scl  (CAMERA_I2C_SCL),  			//                                 .vcm_i2c_scl
 		
-		.alt_vip_itc_0_clocked_video_vid_clk       (disp_clk),       			//      alt_vip_itc_0_clocked_video.vid_clk
-		.alt_vip_itc_0_clocked_video_vid_data      (disp_data),      			//                                 .vid_data
-		.alt_vip_itc_0_clocked_video_underflow     (),     						//                                 .underflow
-		.alt_vip_itc_0_clocked_video_vid_datavalid (), 							//                                 .vid_datavalid
-		.alt_vip_itc_0_clocked_video_vid_v_sync    (disp_vs),    				//                                 .vid_v_sync
-		.alt_vip_itc_0_clocked_video_vid_h_sync    (disp_hs),    				//                                 .vid_h_sync
-		.alt_vip_itc_0_clocked_video_vid_f         (),         					//                                 .vid_f
-		.alt_vip_itc_0_clocked_video_vid_h         (),         					//                                 .vid_h
-		.alt_vip_itc_0_clocked_video_vid_v         (),         					//                                 .vid_v
+//		.alt_vip_itc_0_clocked_video_vid_clk       (disp_clk),       			//      alt_vip_itc_0_clocked_video.vid_clk
+//		.alt_vip_itc_0_clocked_video_vid_data      (disp_data),      			//                                 .vid_data
+//		.alt_vip_itc_0_clocked_video_underflow     (),     						//                                 .underflow
+//		.alt_vip_itc_0_clocked_video_vid_datavalid (), 							//                                 .vid_datavalid
+//		.alt_vip_itc_0_clocked_video_vid_v_sync    (disp_vs),    				//                                 .vid_v_sync
+//		.alt_vip_itc_0_clocked_video_vid_h_sync    (disp_hs),    				//                                 .vid_h_sync
+//		.alt_vip_itc_0_clocked_video_vid_f         (),         					//                                 .vid_f
+//		.alt_vip_itc_0_clocked_video_vid_h         (),         					//                                 .vid_h
+//		.alt_vip_itc_0_clocked_video_vid_v         (),         					//                                 .vid_v
 		
 		.altpll_0_areset_conduit_export            (),            				//          altpll_0_areset_conduit.export
 		.altpll_0_locked_conduit_export            (),            				//          altpll_0_locked_conduit.export
