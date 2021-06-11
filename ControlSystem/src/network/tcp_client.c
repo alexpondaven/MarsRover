@@ -43,7 +43,7 @@ static void tcp_command(void *pvParameters)
     // block indefinitely until ip address obtained
     xSemaphoreTake(s_semph_get_ip_addrs, portMAX_DELAY);
     xSemaphoreGive(s_semph_get_ip_addrs);
-    char rx_buffer[128];
+    char rx_buffer[256];
     char host_ip[] = HOST_IP_ADDR;
     int addr_family = 0;
     int ip_protocol = 0;
@@ -158,14 +158,14 @@ static void tcp_video_frame(void *pvParameters)
         while (1) {
 
             xSemaphoreTake(mutex_video_frame_buffer, portMAX_DELAY);
-            // // find first non zero pixel and write to BMP header
-            // char * first_pixel = &bitmap.FRAME_BUFFER[0];
-            // while (!*first_pixel++) {}
-            // uint32_t offset = first_pixel - &bitmap.FRAME_BUFFER[0];
-            // for (int i=0; i<4; i++) {
-            //   bitmap.BITMAPFILEHEADER[10+i] = (char) offset;
-            //   offset >>= 8;
-            // }
+            // find first non zero pixel and write to BMP header
+            char * first_pixel = &bitmap.FRAME_BUFFER[0];
+            while (!*first_pixel++) {}
+            uint32_t offset = first_pixel - &bitmap.FRAME_BUFFER[0];
+            for (int i=0; i<4; i++) {
+              bitmap.BITMAPFILEHEADER[10+i] = (char) offset;
+              offset >>= 8;
+            }
       
             ESP_LOGI(TAGV, "Sending Video Packet");
 
@@ -197,6 +197,6 @@ static void tcp_video_frame(void *pvParameters)
 void tcp_client_main(void)
 {
 
-    xTaskCreate(tcp_command, "tcp_command", 4096, NULL, TCP_PRIORITY, NULL);
-    xTaskCreate(tcp_video_frame, "tcp_video", 4096, NULL, TCP_PRIORITY, NULL);
+    xTaskCreate(tcp_command, "tcp_command", 5120, NULL, TCP_COMMAND_PRIORITY, NULL);
+    xTaskCreate(tcp_video_frame, "tcp_video", 4096, NULL, TCP_VIDEO_PRIORITY, NULL);
 }

@@ -17,6 +17,7 @@
 QueueHandle_t q_drive_to_tcp;
 QueueHandle_t q_tcp_to_drive;
 QueueHandle_t q_color_obstacles;
+QueueHandle_t q_tcp_to_fpga;
 extern void process_bb(char * buff, size_t sizebuff);
 
 void uart_drive_arduino(void *params) {
@@ -105,7 +106,7 @@ void uart_fpga(void *params) {
   // Setup UART buffered IO with event queue
   QueueHandle_t uart_queue_fpga;
   // Enough space to queue 10 data structs
-  ESP_ERROR_CHECK(uart_driver_install(UART_NUM_1, 1024, 0, 10, &uart_queue_fpga, 0));
+  ESP_ERROR_CHECK(uart_driver_install(UART_NUM_1, 1024, 1024, 10, &uart_queue_fpga, 0));
 
   
   char recievebuff[ (10*sizeof(bounding_box_t)) + 1 ]; // buffer for 10 boxes
@@ -113,8 +114,27 @@ void uart_fpga(void *params) {
 
   uart_set_pin(UART_NUM_1, FPGA_UART_TX_PIN, FPGA_UART_RX_PIN, -1, -1);
   
-  
+  struct send_hsv_t {
+    hsv_t hsv_change;
+    char padding;
+  } send_hsv;
+  send_hsv.padding = '\n';
+
   while (1) {
+
+      while (xQueueReceive(q_tcp_to_fpga, &send_hsv.hsv_change, 0) != errQUEUE_EMPTY) {
+        if ( (send_hsv.hsv_change.type == 'e') || (send_hsv.hsv_change.type == 'g') ) {
+          for (int i=0; i<send_hsv.hsv_change.value; i++) {
+            ESP_LOGI("Drive UART", "Sending %s", (char *) &send_hsv);
+            uart_write_bytes(UART_NUM_2, (char *) &send_hsv, sizeof(send_hsv_t));
+          }
+        } else {
+          ESP_LOGI("Drive UART", "Sending %s", (char *) &send_hsv);
+          uart_write_bytes(UART_NUM_2, (char *) &send_hsv, sizeof(send_hsv_t));
+        }
+        
+        
+      }
 
       // uart_flush(UART_NUM_1);
       int sizeread = uart_read_bytes(UART_NUM_1, (uint8_t *) &recievebuff, sizeof(recievebuff) - 1, portMAX_DELAY);
@@ -168,6 +188,8 @@ void uart_setup() {
   q_drive_to_tcp = xQueueCreate(1, sizeof(rover_coord_t));
   q_tcp_to_drive = xQueueCreate(1, sizeof(drive_tx_data_t));
   q_color_obstacles = xQueueCreate(1, sizeof(obstacles_t));
+
+  q_tcp_to_fpga = xQueueCreate(20, sizeof(hsv_t));
 
   xTaskCreate(uart_drive_arduino, "Drive Arduino UART", 4096, NULL, DRIVE_ARDUINO_COMM_PRIORITY, NULL);
   xTaskCreate(uart_fpga, "FPGA UART", 3072, NULL, FPGA_COMM_PRIORITY, NULL);

@@ -66,19 +66,19 @@ void process_bb(char * buff, size_t buffsize) {
           break;
 
         case 'Y':
-          obstacles.obstacles[1] = obs;
-          break;
-
-        case 'P':
           obstacles.obstacles[2] = obs;
           break;
 
+        case 'P':
+          obstacles.obstacles[1] = obs;
+          break;
+
         case 'B':
-          obstacles.obstacles[3] = obs;
+          obstacles.obstacles[4] = obs;
           break;
 
         case 'G':
-          obstacles.obstacles[4] = obs;
+          obstacles.obstacles[3] = obs;
           break;
         } // switch
   } 

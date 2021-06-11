@@ -7,6 +7,7 @@ extern QueueHandle_t q_drive_to_tcp;
 extern QueueHandle_t q_tcp_to_drive;
 extern QueueHandle_t q_color_obstacles;
 extern QueueHandle_t q_tcp_to_explore;
+extern QueueHandle_t q_tcp_to_fpga;
 
 typedef struct {
   int32_t x;
@@ -18,7 +19,13 @@ typedef struct {
   uint8_t left, right, forward, backward;
 } drive_tx_data_t;
 
+typedef struct {
+  char color; // 0 to 5
+  char type; //     'h'|'s'|'v'|               'e'|'g'
+  char option; //  (true is max, false is min)|(true is add, false is minus)
+  uint8_t value;
 
+} hsv_t;
 
 typedef struct {
   char pad1, pad2, color, pad3;
