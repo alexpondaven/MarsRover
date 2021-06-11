@@ -380,7 +380,7 @@ const server_b = net.createServer(socket => {
         console.log("client left")
     })
 })
-server_b.listen(2001);
+server_b.listen(2002);
 
 const colortoint = (str) => {
     switch(str){

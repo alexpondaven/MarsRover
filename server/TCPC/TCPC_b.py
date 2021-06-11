@@ -15,10 +15,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         print("Message: %s" % data)
 
         s.send(data)
-        data = s.recv(1024)
-        
-        print('Received %s' %list(data))
-        print()
 
     s.connect((IP, PORT))
 
