@@ -34,6 +34,7 @@ function HomePage() {
         fetch('http://localhost:5000/data')
           .then(response => response.json())
           .then(response => update(response) )
+          .then(console.log("fetched"))
       }
     
       // this would be run when function called
