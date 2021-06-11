@@ -68,7 +68,7 @@ void uart_drive_arduino(void *params) {
         deserializeJson(doc, recievebuff);
         rover_coord.x = doc["X"];
         rover_coord.y = doc["Y"];
-        ESP_LOGI("Drive UART", "x is %d, y is %d", rover_coord.x, rover_coord.y);
+        // ESP_LOGI("Drive UART", "x is %d, y is %d", rover_coord.x, rover_coord.y);
 
         // put data in q
         xQueueOverwrite(q_drive_to_tcp, &rover_coord);
@@ -95,7 +95,7 @@ void uart_drive_arduino(void *params) {
       req["opcode"] = op;
       serializeJson(req, reqbuff, reqlength);
       // send request by uart
-      ESP_LOGI("Drive UART", "Sending %s", reqbuff);
+      // ESP_LOGI("Drive UART", "Sending %s", reqbuff);
       uart_write_bytes(UART_NUM_2, reqbuff, reqlength);
 
     vTaskDelay(DRIVE_ARDUINO_COMM_INTERVAL / portTICK_PERIOD_MS);
@@ -125,11 +125,11 @@ void uart_fpga(void *params) {
       while (xQueueReceive(q_tcp_to_fpga, &send_hsv.hsv_change, 0) != errQUEUE_EMPTY) {
         if ( (send_hsv.hsv_change.type == 'e') || (send_hsv.hsv_change.type == 'g') ) {
           for (int i=0; i<send_hsv.hsv_change.value; i++) {
-            ESP_LOGI("Drive UART", "Sending %s", (char *) &send_hsv);
+            // ESP_LOGI("Drive UART", "Sending %s", (char *) &send_hsv);
             uart_write_bytes(UART_NUM_2, (char *) &send_hsv, sizeof(send_hsv_t));
           }
         } else {
-          ESP_LOGI("Drive UART", "Sending %s", (char *) &send_hsv);
+          // ESP_LOGI("Drive UART", "Sending %s", (char *) &send_hsv);
           uart_write_bytes(UART_NUM_2, (char *) &send_hsv, sizeof(send_hsv_t));
         }
         
@@ -138,7 +138,7 @@ void uart_fpga(void *params) {
 
       // uart_flush(UART_NUM_1);
       int sizeread = uart_read_bytes(UART_NUM_1, (uint8_t *) &recievebuff, sizeof(recievebuff) - 1, portMAX_DELAY);
-      ESP_LOGI("FPGA UART", "Read %d bytes %s", sizeread, recievebuff);
+      // ESP_LOGI("FPGA UART", "Read %d bytes %s", sizeread, recievebuff);
 
       process_bb(recievebuff, sizeread);
 

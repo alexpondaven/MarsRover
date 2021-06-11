@@ -56,7 +56,7 @@ void get_frame_i2s(void* params) {
     for (int i=0; i<(FRAME_SIZE_BYTES/(READ_BUFFER_SIZE)) ; i++ ) {
 
       // wait until half the buffer has data and read
-      i2s_read(I2S_NUM_0, (void *) (&bitmap.FRAME_BUFFER[total_bytes_read]), READ_BUFFER_SIZE, &bytes_read, 2000 / portTICK_PERIOD_MS); // TODO: change timeout
+      i2s_read(I2S_NUM_0, (void *) (&bitmap.FRAME_BUFFER[total_bytes_read]), READ_BUFFER_SIZE, &bytes_read, 500 / portTICK_PERIOD_MS); // TODO: change timeout
       
       // ESP_LOGI(TAG, "Bytes Read: %d, First pixel: %d %d %d, Last pixel: %d %d %d", bytes_read, video_frame_buff[total_bytes_read], video_frame_buff[total_bytes_read+1], video_frame_buff[total_bytes_read+2], video_frame_buff[READ_BUFFER_SIZE-3], video_frame_buff[READ_BUFFER_SIZE-2], video_frame_buff[READ_BUFFER_SIZE-1]);
       

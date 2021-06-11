@@ -77,7 +77,7 @@ extern "C" size_t prepare_TCP_packet(char * buff, size_t buffsize) {
 }
 
 
-extern "C" void recieve_TCP_packet(char * msg) {
+extern "C" bool recieve_TCP_packet(char * msg) {
 
 
     // ESP_LOGI("Recieve pkts", "Message is %s", msg);
@@ -87,11 +87,12 @@ extern "C" void recieve_TCP_packet(char * msg) {
     DeserializationError err = deserializeJson(recdoc, msg);
     if (err) {
       ESP_LOGE("Recieve TCP Packet", "Deserialisation Error %s with message %s",err.c_str(), msg);
+      return 1;
     }
     int mode = recdoc["mode"];
     drive_tx_data_t drive_commands = {recdoc["direction"]["0"], recdoc["direction"]["1"], recdoc["direction"]["2"], recdoc["direction"]["3"]};
     rover_coord_t desired_position = {recdoc["position"]["0"], recdoc["position"]["1"]};
-    ESP_LOGI("Recieve TCP Packet", "L: %d R: %d F: %d B: %d", drive_commands.left, drive_commands.right, drive_commands.forward, drive_commands.backward);
+    // ESP_LOGI("Recieve TCP Packet", "L: %d R: %d F: %d B: %d", drive_commands.left, drive_commands.right, drive_commands.forward, drive_commands.backward);
 
     hsv_t hsv_change;
     for (JsonObject elem : recdoc["videodetail"].as<JsonArray>()) {
@@ -109,6 +110,6 @@ extern "C" void recieve_TCP_packet(char * msg) {
 
     xTaskNotify(exploration_task, mode, eSetValueWithOverwrite);
 
-
+    return 0;
 
 }

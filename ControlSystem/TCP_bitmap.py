@@ -40,14 +40,14 @@ while True:
         print('received data of size %d', len(data))
         savebitmap(data)
 
-        num = input("Enter data to send to client")
+        # num = input("Enter data to send to client")
 
-        if num != 'q':
-          data_to_send = bytes(num, 'utf-8')
-          connection.sendall(data_to_send)
-        
-        else:
-          print("Closing connection")
+        # if num != 'q':
+        #   pass
+
+        # else:
+        #   print("Closing connection")
+        #   break
 
   finally:
       # Clean up the connection
