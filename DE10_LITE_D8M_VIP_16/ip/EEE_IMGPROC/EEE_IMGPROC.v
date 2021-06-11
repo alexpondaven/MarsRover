@@ -288,15 +288,25 @@ assign bb_active = bb_active1 | bb_active2 | bb_active3 | bb_active4;
 
 //draw bounding boxes as closed rectangles
 assign bbb_active_red = (x == bleft_red | x == bright_red)&(y>=btop_red)&(y<=bbottom_red)
-								| (y == btop_red | y == bbottom_red)&(x<=bright_red)&(x>=bleft_red);
+								| (y == btop_red | y == bbottom_red)&(x<=bright_red)&(x>=bleft_red)
+								| (x == (bleft_red-1) | x == (bright_red-1))&(y>=(btop_red-1))&(y<=(bbottom_red-1))
+								| (y == (btop_red-1) | y == (bbottom_red-1))&(x<=(bright_red-1))&(x>=(bleft_red-1));
 assign bbb_active_pink = (x == bleft_pink | x == bright_pink)&(y>=btop_pink)&(y<=bbottom_pink)
-								| (y == btop_pink | y == bbottom_pink)&(x<=bright_pink)&(x>=bleft_pink);
+								| (y == btop_pink | y == bbottom_pink)&(x<=bright_pink)&(x>=bleft_pink)
+								| (x == (bleft_pink-1) | x == (bright_pink-1))&(y>=(btop_pink-1))&(y<=(bbottom_pink-1))
+								| (y == (btop_pink-1) | y == (bbottom_pink-1))&(x<=(bright_pink-1))&(x>=(bleft_pink-1));
 assign bbb_active_yellow = (x == bleft_yellow | x == bright_yellow)&(y>=btop_yellow)&(y<=bbottom_yellow)
-								| (y == btop_yellow | y == bbottom_yellow)&(x<=bright_yellow)&(x>=bleft_yellow);
+								| (y == btop_yellow | y == bbottom_yellow)&(x<=bright_yellow)&(x>=bleft_yellow)
+								| (x == (bleft_yellow-1) | x == (bright_yellow-1))&(y>=(btop_yellow-1))&(y<=(bbottom_yellow-1))
+								| (y == (btop_yellow-1) | y == (bbottom_yellow-1))&(x<=(bright_yellow-1))&(x>=(bleft_yellow-1));
 assign bbb_active_green = (x == bleft_green | x == bright_green)&(y>=btop_green)&(y<=bbottom_green)
-								| (y == btop_green | y == bbottom_green)&(x<=bright_green)&(x>=bleft_green);
+								| (y == btop_green | y == bbottom_green)&(x<=bright_green)&(x>=bleft_green)
+								| (x == (bleft_green-1) | x == (bright_green-1))&(y>=(btop_green-1))&(y<=(bbottom_green-1))
+								| (y == (btop_green-1) | y == (bbottom_green-1))&(x<=(bright_green-1))&(x>=(bleft_green-1));
 assign bbb_active_blue = (x == bleft_blue | x == bright_blue)&(y>=btop_blue)&(y<=bbottom_blue)
-								| (y == btop_blue | y == bbottom_blue)&(x<=bright_blue)&(x>=bleft_blue);
+								| (y == btop_blue | y == bbottom_blue)&(x<=bright_blue)&(x>=bleft_blue)
+								| (x == (bleft_blue-1) | x == (bright_blue-1))&(y>=(btop_blue-1))&(y<=(bbottom_blue-1))
+								| (y == (btop_blue-1) | y == (bbottom_blue-1))&(x<=(bright_blue-1))&(x>=(bleft_blue-1));
 
 assign red_bb1 = bb_active1 ? bb_col : red_high;
 assign red_bb2 = bb_active2 ? bb_col : red_high;
