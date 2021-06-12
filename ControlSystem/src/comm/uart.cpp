@@ -80,9 +80,9 @@ void uart_drive_arduino(void *params) {
 
       // note: Size of json should be the same
       if (drive_commands.left) {
-        op = 4;
-      } else if (drive_commands.right) {
         op = 5;
+      } else if (drive_commands.right) {
+        op = 4;
       } else if (drive_commands.forward) {
         op = 8;
       } else if (drive_commands.backward) {
@@ -115,23 +115,24 @@ void uart_fpga(void *params) {
   uart_set_pin(UART_NUM_1, FPGA_UART_TX_PIN, FPGA_UART_RX_PIN, -1, -1);
   
   struct send_hsv_t {
-    hsv_t hsv_change;
     char padding;
+    hsv_t hsv_change;
+   
   } send_hsv;
   send_hsv.padding = '\n';
 
   while (1) {
 
       while (xQueueReceive(q_tcp_to_fpga, &send_hsv.hsv_change, 0) != errQUEUE_EMPTY) {
-        if ( (send_hsv.hsv_change.type == 'e') || (send_hsv.hsv_change.type == 'g') ) {
-          for (int i=0; i<send_hsv.hsv_change.value; i++) {
-            // ESP_LOGI("Drive UART", "Sending %s", (char *) &send_hsv);
-            uart_write_bytes(UART_NUM_2, (char *) &send_hsv, sizeof(send_hsv_t));
-          }
-        } else {
-          // ESP_LOGI("Drive UART", "Sending %s", (char *) &send_hsv);
+        // if ( (send_hsv.hsv_change.type == 'e') || (send_hsv.hsv_change.type == 'g') ) {
+        //   for (int i=0; i<send_hsv.hsv_change.value; i++) {
+        //     // ESP_LOGI("Drive UART", "Sending %s", (char *) &send_hsv);
+        //     uart_write_bytes(UART_NUM_2, (char *) &send_hsv, sizeof(send_hsv_t));
+        //   }
+        // } else {
+          ESP_LOGI("Drive UART", "Sending %s", (char *) &send_hsv);
           uart_write_bytes(UART_NUM_2, (char *) &send_hsv, sizeof(send_hsv_t));
-        }
+        // }
         
         
       }
