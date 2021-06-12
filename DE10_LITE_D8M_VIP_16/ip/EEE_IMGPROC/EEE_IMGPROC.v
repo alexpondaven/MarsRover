@@ -176,46 +176,46 @@ always @ (posedge clk) begin
 	end
 	else begin
 		//update HSV thresholds according to memory mapped registers
-		case(color_select)
-			3'h1: begin
-				hue_min_r <= hue_bound[7:0];
-				hue_max_r <= hue_bound[15:8];
-				sat_min_r <= sat_bound[7:0];
-				sat_max_r <= sat_bound[15:8];
-				val_min_r <= val_bound[7:0];
-				val_max_r <= val_bound[15:8];
+		case(color_select[3:0])
+			4'h1: begin
+				if (color_select[7:4]==2) hue_min_r <= hue_bound[7:0];
+				else if (color_select[7:4]==1) hue_max_r <= hue_bound[15:8];
+				else if (color_select[7:4]==4) sat_min_r <= sat_bound[7:0];
+				else if (color_select[7:4]==3) sat_max_r <= sat_bound[15:8];
+				else if (color_select[7:4]==6) val_min_r <= val_bound[7:0];
+				else if (color_select[7:4]==5) val_max_r <= val_bound[15:8];
 			end
-			3'h2: begin
-				hue_min_p <= hue_bound[7:0];
-				hue_max_p <= hue_bound[15:8];
-				sat_min_p <= sat_bound[7:0];
-				sat_max_p <= sat_bound[15:8];
-				val_min_p <= val_bound[7:0];
-				val_max_p <= val_bound[15:8];
+			4'h2: begin
+				if (color_select[7:4]==2) hue_min_p <= hue_bound[7:0];
+				else if (color_select[7:4]==1) hue_max_p <= hue_bound[15:8];
+				else if (color_select[7:4]==4) sat_min_p <= sat_bound[7:0];
+				else if (color_select[7:4]==3) sat_max_p <= sat_bound[15:8];
+				else if (color_select[7:4]==6) val_min_p <= val_bound[7:0];
+				else if (color_select[7:4]==5) val_max_p <= val_bound[15:8];
 			end
-			3'h3: begin
-				hue_min_y <= hue_bound[7:0];
-				hue_max_y <= hue_bound[15:8];
-				sat_min_y <= sat_bound[7:0];
-				sat_max_y <= sat_bound[15:8];
-				val_min_y <= val_bound[7:0];
-				val_max_y <= val_bound[15:8];
+			4'h3: begin
+				if (color_select[7:4]==2) hue_min_y <= hue_bound[7:0];
+				else if (color_select[7:4]==1) hue_max_y <= hue_bound[15:8];
+				else if (color_select[7:4]==4) sat_min_y <= sat_bound[7:0];
+				else if (color_select[7:4]==3) sat_max_y <= sat_bound[15:8];
+				else if (color_select[7:4]==6) val_min_y <= val_bound[7:0];
+				else if (color_select[7:4]==5) val_max_y <= val_bound[15:8];
 			end
-			3'h4: begin
-				hue_min_g <= hue_bound[7:0];
-				hue_max_g <= hue_bound[15:8];
-				sat_min_g <= sat_bound[7:0];
-				sat_max_g <= sat_bound[15:8];
-				val_min_g <= val_bound[7:0];
-				val_max_g <= val_bound[15:8];
+			4'h4: begin
+				if (color_select[7:4]==2) hue_min_g <= hue_bound[7:0];
+				else if (color_select[7:4]==1) hue_max_g <= hue_bound[15:8];
+				else if (color_select[7:4]==4) sat_min_g <= sat_bound[7:0];
+				else if (color_select[7:4]==3) sat_max_g <= sat_bound[15:8];
+				else if (color_select[7:4]==6) val_min_g <= val_bound[7:0];
+				else if (color_select[7:4]==5) val_max_g <= val_bound[15:8];
 			end
-			3'h5: begin
-				hue_min_b <= hue_bound[7:0];
-				hue_max_b <= hue_bound[15:8];
-				sat_min_b <= sat_bound[7:0];
-				sat_max_b <= sat_bound[15:8];
-				val_min_b <= val_bound[7:0];
-				val_max_b <= val_bound[15:8];
+			4'h5: begin
+				if (color_select[7:4]==2) hue_min_b <= hue_bound[7:0];
+				else if (color_select[7:4]==1) hue_max_b <= hue_bound[15:8];
+				else if (color_select[7:4]==4) sat_min_b <= sat_bound[7:0];
+				else if (color_select[7:4]==3) sat_max_b <= sat_bound[15:8];
+				else if (color_select[7:4]==6) val_min_b <= val_bound[7:0];
+				else if (color_select[7:4]==5) val_max_b <= val_bound[15:8];
 			
 			end
 		endcase
@@ -734,7 +734,7 @@ reg [14:0] col_detect;
 reg [10:0] dist_thresh;
 reg [15:0] hue_bound,sat_bound,val_bound;
 
-reg [2:0] color_select; //select what colour is being selected for hsv bounds
+reg [7:0] color_select; //select what colour is being selected for hsv bounds
 
 
 
@@ -766,7 +766,7 @@ begin
 			if 	  (s_address == `REG_HUE)	hue_bound <= s_writedata[15:0];
 			if 	  (s_address == `REG_SAT)	sat_bound <= s_writedata[15:0];
 			if 	  (s_address == `REG_VAL)	val_bound <= s_writedata[15:0];
-			if 	  (s_address == `REG_COLSEL)	color_select <= s_writedata[2:0];
+			if 	  (s_address == `REG_COLSEL)	color_select <= s_writedata[7:0];
 		end
 	end
 end
@@ -800,7 +800,7 @@ begin
 		if   (s_address == `REG_HUE) s_readdata <= {16'h0, hue_bound};
 		if   (s_address == `REG_SAT) s_readdata <= {16'h0, sat_bound};
 		if   (s_address == `REG_VAL) s_readdata <= {16'h0, val_bound};
-		if   (s_address == `REG_COLSEL) s_readdata <= {29'h0, color_select};
+		if   (s_address == `REG_COLSEL) s_readdata <= {24'h0, color_select};
 	end
 	
 	read_d <= s_read;

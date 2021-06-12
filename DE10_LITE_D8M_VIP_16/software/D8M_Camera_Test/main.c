@@ -303,43 +303,125 @@ int main()
        //IOWR(0x42000, EEE_IMGPROC_BBCOL, (boundingBoxColour << 8) | (0xff - boundingBoxColour));
 
        //Process input commands
-		  int in = getchar();
+
+		  char in;
 		  //reading through uart:
 //		  if (fread(&in,1,1,ser) != 1)
 //			  printf("Error reading from UART");
-		  switch (in) {
-			   case 'e': {
-				   exposureTime += EXPOSURE_STEP;
-				   OV8865SetExposure(exposureTime);
-				   printf("\nExposure = %x ", exposureTime);
-				   break;}
-			   case 'd': {
-				   exposureTime -= EXPOSURE_STEP;
-				   OV8865SetExposure(exposureTime);
-				   printf("\nExposure = %x ", exposureTime);
-				   break;}
-			   case 't': {
-				   gain += GAIN_STEP;
-				   OV8865SetGain(gain);
-				   printf("\nGain = %x ", gain);
-				   break;}
-			   case 'g': {
-				   gain -= GAIN_STEP;
-				   OV8865SetGain(gain);
-				   printf("\nGain = %x ", gain);
-				   break;}
-			   case 'r': {
-				   current_focus += manual_focus_step;
-				   if(current_focus >1023) current_focus = 1023;
-				   OV8865_FOCUS_Move_to(current_focus);
-				   printf("\nFocus = %x ",current_focus);
-				   break;}
-			   case 'f': {
-				   if(current_focus > manual_focus_step) current_focus -= manual_focus_step;
-				   OV8865_FOCUS_Move_to(current_focus);
-				   printf("\nFocus = %x ",current_focus);
-				   break;}
+
+		  //read until newline
+		  do {
+			  fread(&in,1,1,ser);
 		  }
+		  while (in!='\n');
+
+
+		  char colour,type,option,value;
+		  char hsv_struct[4];
+		  int col_sel,hsv_sel;
+		  int hue_min,hue_max,sat_min,sat_max,val_min,val_max;
+
+		  //read struct (4 bytes) from esp
+		  if (fread(&hsv_struct,4,1,ser) != 1)
+			  printf("Error reading from UART");
+
+		  //check this is the right order
+		  colour=hsv_struct[0];
+		  type=hsv_struct[1];
+		  option=hsv_struct[2];
+		  value=hsv_struct[3];
+
+		  //parse struct
+		  if (type=='e'){
+			  col_sel=0;
+			  if (option){ // Increase exposure
+				  exposureTime += EXPOSURE_STEP;
+				  OV8865SetExposure(exposureTime);
+				  printf("\nExposure = %x ", exposureTime);
+			  } else { // Decrease exposure
+				  exposureTime -= EXPOSURE_STEP;
+				  OV8865SetExposure(exposureTime);
+				  printf("\nExposure = %x ", exposureTime);
+			  }
+		  } else if (type=='g'){
+			  col_sel=0;
+			  if (option){ // Increase gain
+				  gain += GAIN_STEP;
+				  OV8865SetGain(gain);
+				  printf("\nGain = %x ", gain);
+			  } else { // Decrease gain
+				  gain -= GAIN_STEP;
+				  OV8865SetGain(gain);
+				  printf("\nGain = %x ", gain);
+			  }
+		  } else if (type=='h'){
+			  col_sel = colour;
+			  if (option){ // Change maximum hue
+				  hsv_sel=1;
+				  hue_max = value;
+				  printf("\nMax Hue = %x ", value);
+			  } else { // Change minimum hue
+				  hsv_sel=2;
+				  hue_min = value;
+				  printf("\nMin Hue = %x ", value);
+			  }
+		  } else if (type=='s'){
+			  col_sel = colour;
+			  if (option){ // Change maximum saturation
+				  hsv_sel=3;
+				  sat_max = value;
+				  printf("\nMax Sat = %x ", value);
+			  } else { // Change minimum saturation
+				  hsv_sel=4;
+				  sat_min = value;
+				  printf("\nMin Sat = %x ", value);
+			  }
+		  } else if (type=='v'){
+			  col_sel = colour;
+			  if (option){ // Change maximum value
+				  hsv_sel=5;
+				  val_max = value;
+				  printf("\nMax Val = %x ", value);
+			  } else { // Change minimum value
+				  hsv_sel=6;
+				  val_min = value;
+				  printf("\nMin Val = %x ", value);
+			  }
+		  }
+//			int in = getchar();
+//		  switch (in) {
+//			   case 'e': {
+//				   exposureTime += EXPOSURE_STEP;
+//				   OV8865SetExposure(exposureTime);
+//				   printf("\nExposure = %x ", exposureTime);
+//				   break;}
+//			   case 'd': {
+//				   exposureTime -= EXPOSURE_STEP;
+//				   OV8865SetExposure(exposureTime);
+//				   printf("\nExposure = %x ", exposureTime);
+//				   break;}
+//			   case 't': {
+//				   gain += GAIN_STEP;
+//				   OV8865SetGain(gain);
+//				   printf("\nGain = %x ", gain);
+//				   break;}
+//			   case 'g': {
+//				   gain -= GAIN_STEP;
+//				   OV8865SetGain(gain);
+//				   printf("\nGain = %x ", gain);
+//				   break;}
+//			   case 'r': {
+//				   current_focus += manual_focus_step;
+//				   if(current_focus >1023) current_focus = 1023;
+//				   OV8865_FOCUS_Move_to(current_focus);
+//				   printf("\nFocus = %x ",current_focus);
+//				   break;}
+//			   case 'f': {
+//				   if(current_focus > manual_focus_step) current_focus -= manual_focus_step;
+//				   OV8865_FOCUS_Move_to(current_focus);
+//				   printf("\nFocus = %x ",current_focus);
+//				   break;}
+//		  }
 
 		  // Update contrast of image
 		  //IOWR(0x42000, EEE_IMGPROC_CONTRAST, 0xf);
@@ -359,12 +441,15 @@ int main()
 		  // 3: YELLOW
 		  // 4: GREEN
 		  // 5: BLUE
-//		  IOWR(0x42000, COL_SEL, 0x2);
+		  IOWR(0x42000, COL_SEL, col_sel+(hsv_sel<<4));
 
 		  //Testing HSV values:
-		  IOWR(0x42000, HUE, 0x0e00);
-		  IOWR(0x42000, SAT, 0xae33);
-		  IOWR(0x42000, VAL, 0xff60);
+		  IOWR(0x42000, HUE, hue_min+(hue_max<<8));
+		  IOWR(0x42000, SAT, sat_min+(sat_max<<8));
+		  IOWR(0x42000, VAL, val_min+(val_max<<8));
+//		  IOWR(0x42000, HUE, 0x0e00);
+//		  IOWR(0x42000, SAT, 0xae33);
+//		  IOWR(0x42000, VAL, 0xff60);
 
 
 	   //Main loop delay
