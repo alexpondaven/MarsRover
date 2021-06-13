@@ -119,26 +119,34 @@ void uart_fpga(void *params) {
     hsv_t hsv_change;
    
   } send_hsv;
+  struct send_hsv_t empty_hsv;
+  empty_hsv.padding = '\n';
+  empty_hsv.hsv_change.color = 0;
+  empty_hsv.hsv_change.option = 0;
+  empty_hsv.hsv_change.type = 0;
+  empty_hsv.hsv_change.value = 0;
   send_hsv.padding = '\n';
 
   while (1) {
 
-      while (xQueueReceive(q_tcp_to_fpga, &send_hsv.hsv_change, 0) != errQUEUE_EMPTY) {
+      while (xQueueReceive(q_tcp_to_fpga, &send_hsv.hsv_change, 0)) {
         // if ( (send_hsv.hsv_change.type == 'e') || (send_hsv.hsv_change.type == 'g') ) {
         //   for (int i=0; i<send_hsv.hsv_change.value; i++) {
         //     // ESP_LOGI("Drive UART", "Sending %s", (char *) &send_hsv);
         //     uart_write_bytes(UART_NUM_2, (char *) &send_hsv, sizeof(send_hsv_t));
         //   }
         // } else {
-          ESP_LOGI("Drive UART", "Sending %s", (char *) &send_hsv);
+          ESP_LOGI("FPGA UART", "Sending %s", (char *) &send_hsv);
           uart_write_bytes(UART_NUM_2, (char *) &send_hsv, sizeof(send_hsv_t));
         // }
         
         
-      }
+      } 
+      // empty hsv
+      uart_write_bytes(UART_NUM_2, (char *) &empty_hsv, sizeof(send_hsv_t));
 
       // uart_flush(UART_NUM_1);
-      int sizeread = uart_read_bytes(UART_NUM_1, (uint8_t *) &recievebuff, sizeof(recievebuff) - 1, portMAX_DELAY);
+      int sizeread = uart_read_bytes(UART_NUM_1, (uint8_t *) &recievebuff, sizeof(recievebuff) - 1, 20 / portTICK_PERIOD_MS);
       // ESP_LOGI("FPGA UART", "Read %d bytes %s", sizeread, recievebuff);
 
       process_bb(recievebuff, sizeread);

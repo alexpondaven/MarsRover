@@ -102,7 +102,8 @@ extern "C" bool recieve_TCP_packet(char * msg) {
       hsv_change.option = elem["state"];
       hsv_change.value = (int) elem["value"];
       if (hsv_change.value == 10 ) {hsv_change.value = 11;} // make sure '\n' is not accidentally the value
-      xQueueSendToFront(q_tcp_to_fpga, &hsv_change, 0);
+      ESP_LOGI("Process Packets", "HSV Values: %d, %d, %d, %d", (int) hsv_change.color, (int)hsv_change.type, (int)hsv_change.option, (int)hsv_change.value);
+      xQueueSendToBack(q_tcp_to_fpga, &hsv_change, 0);
     }
 
     xQueueOverwrite(q_tcp_to_drive, &drive_commands);
