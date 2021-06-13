@@ -10,6 +10,8 @@ function VideoPage() {
     // const [src, setSrc] = useState('http://localhost:5000/bitmap.bmp?' + new Date().getTime());
     const [src, setSrc] = useState('data:image/png;base64,')
 
+    var i = 0;
+
     const update = (data) => {
         if (data === undefined) {
             interval = 5000;
@@ -18,6 +20,8 @@ function VideoPage() {
         interval = 1000;
         setSrc('data:image/png;base64,' + data) 
         // setSrc('http://localhost:5000/bitmap.bmp?' + new Date().getTime())
+        console.log("fetched for video " + i);
+        i++;
     }
 
     useEffect(() => {

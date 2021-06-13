@@ -55,18 +55,36 @@ app.get("/battery", (request, response) => {
 app.get("/drive", (request, response) => {
     response.json({
         speed: speed,
-        position: roverposition,
         current: lastposition,
         obstacles: obstacles,
         alert: batteryalert,
     })
 })
 
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+const csv = createCsvWriter({
+    path: './data/roverpositions.csv',
+    header: [
+        {id: 'time', title: 'TIME'},
+        {id: 'x', title: 'x'},
+        {id: 'y', title:'y'}
+    ]
+});
+
+app.get("/drivedata", (request, response) => {
+    csv.writeRecords(roverposition)       
+    .then(() => {
+        console.log('...Done');
+        response.download('./data/roverpositions.csv')
+    });
+    // response.download('./data/roverpositions.csv')
+})
+
 const fs = require('fs')
 app.get("/video", (request, response) => {
     var file;
     try {
-        file = fs.readFileSync('./public/bitmap.bmp')
+        file = fs.readFileSync('bitmap.bmp')
     } catch (err) {
         // console.log(err);
         return;
@@ -74,7 +92,7 @@ app.get("/video", (request, response) => {
     var bmpData = bmp.decode(file);
     var rawData = bmp.encode(bmpData);
     base = Buffer.from(rawData.data).toString('base64')
-    // console.log("done")
+    console.log("done")
 
     response.json({
         bmp: base
@@ -356,6 +374,7 @@ server.listen(2000);
 
 // TCP socket for video streaming
 const bmp = require("bmp-js");
+const { response } = require("express");
 const size = 77880;
 var datasize = 0;
 var databuffer = 0;

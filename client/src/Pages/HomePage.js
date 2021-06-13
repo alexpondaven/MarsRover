@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { AiFillCamera } from 'react-icons/ai';
 import { GiConsoleController } from 'react-icons/gi';
+import { BsFillPeopleFill } from 'react-icons/bs';
 
 import Battery from '../Components/Battery.js'
 import Speed from '../Components/Speed.js'
 import ControlCard from '../Components/ControlCard.js'
 import VideoCard from '../Components/VideoCard.js'
+import AboutUsCard from '../Components/AboutUsCard.js'
 
 function HomePage() {
     const [batteries, setBattery] = useState([
@@ -55,6 +57,7 @@ function HomePage() {
               )}
               <ControlCard icon={<GiConsoleController />} />
               <VideoCard icon={<AiFillCamera />} />
+              <AboutUsCard icon={<BsFillPeopleFill />}/>
             </div>
         </div>
     )

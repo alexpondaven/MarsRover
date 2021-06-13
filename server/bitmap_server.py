@@ -17,7 +17,7 @@ sock.listen()
 print("Listening for connections")
 
 def savebitmap(data):
-    f = open('./public/bitmap.bmp', 'wb')
+    f = open('bitmap.bmp', 'wb')
     try:
         f.write(data)
     finally:

@@ -19,7 +19,7 @@ function DrivePage() {
 
     useEffect(() => {
         getData();
-        setInterval(getData,3000)
+        setInterval(getData,5000)
     },[])
 
     function update(response) {
@@ -67,6 +67,14 @@ function DrivePage() {
 
                 <div className="Card3">
                     <h3>Map</h3>
+                    <button className="ClearButton" style={{margin: '30px 100px'}}>
+                    <a  
+                        style={{textDecoration: 'none', color: '#000'}}
+                        href='http://localhost:5000/drivedata' download
+                    >
+                        Download
+                    </a>
+                    </button>
                     <button className="ClearButton" onClick={onClick}>Clear</button>
                     <div className="Map">
                         <Map positions={positions} current={currentposition} obstacles={obstacles} />

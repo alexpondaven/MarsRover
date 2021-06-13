@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { BrowserRouter, Route, Switch, Link } from 'react-router-dom'
 import { AiFillHome, AiFillCamera } from 'react-icons/ai';
-import { BsBatteryFull } from 'react-icons/bs';
+import { BsBatteryFull, BsFillPeopleFill } from 'react-icons/bs';
 import { RiSteeringFill } from 'react-icons/ri';
 import { GiConsoleController } from 'react-icons/gi';
 import { IconContext } from 'react-icons';
@@ -12,6 +12,7 @@ import BatteryPage from './Pages/BatteryPage.js'
 import DrivePage from './Pages/DrivePage.js'
 import ControlPage from './Pages/ControlPage.js'
 import VideoPage from './Pages/VideoPage.js'
+import AboutUs from './Pages/AboutUs.js'
 
 function App() {
   const [showSidebar, setSidebar] = useState(false);
@@ -36,6 +37,10 @@ function App() {
       name: 'Video',
       link: '/video',
       icon: <AiFillCamera />,
+    },{
+      name: 'About Us',
+      link: '/aboutus',
+      icon: <BsFillPeopleFill />
   }]
 
   return (
@@ -81,6 +86,10 @@ function App() {
 
             <Route path="/video">
               <VideoPage />
+            </Route>
+
+            <Route path="/aboutus">
+              <AboutUs />
             </Route>
 
           </Switch>
