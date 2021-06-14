@@ -1,10 +1,13 @@
 import ReactApexChart from "react-apexcharts"
 
-function Linechart({data,name}) {
+function Linechart({data1,name1, data2,name2,name,limit}) {
     const state = {
         series: [{
-            name: "Charge",
-            data: data
+            name: name1,
+            data: data1
+        },{
+          name: name2,
+          data: data2,
         }],
         options: {
           chart: {
@@ -34,10 +37,10 @@ function Linechart({data,name}) {
           xaxis: {
             type: 'datetime',
           },
-          yaxis: {
-            max: 100,
-            min: 0
-          }
+          // yaxis: {
+          //   max: limit ? 100: function(max) { return max },
+          //   min: 0
+          // }
         },
       
       
@@ -45,9 +48,9 @@ function Linechart({data,name}) {
 
 
     return (
-        <div className="Card3">
+        <div>
             <h3>{name}</h3>
-            <ReactApexChart options={state.options} series={state.series} type="area" height={350} />
+            <ReactApexChart options={state.options} series={state.series} type="area" height={350} width='100%'/>
         </div>
     )
 }

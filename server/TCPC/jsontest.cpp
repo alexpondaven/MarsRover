@@ -35,7 +35,7 @@ int main() {
     
     
 
-    int x_coord=0, y_coord=0, speed=10, direction=0;
+    int x_coord=1, y_coord=7, speed=10, direction=0;
     int cols[5]={1,2,3,4,5};
     float angles[5]={1.0f,2.0f,3.0f,4.0f,5.0f}, dists[5]={6.0f,7.0f,8.0f,9.0f,0.0f};
 

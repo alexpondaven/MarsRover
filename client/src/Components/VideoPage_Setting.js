@@ -68,8 +68,7 @@ function VideoPage_Setting({setState}) {
             'Content-type': 'application/json',
           },
           body: JSON.stringify(body),
-        })
-        setFetch(!forcefetch);
+        }).then(setFetch(!forcefetch))
     }
 
     return (

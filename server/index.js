@@ -48,7 +48,8 @@ app.get("/battery", (request, response) => {
     response.json({
         battery: battery,
         batteryusage: batteryusage,
-        alert: batteryalert
+        alert: batteryalert,
+        mppt: mppt,
     })
 })
 
@@ -92,7 +93,7 @@ app.get("/video", (request, response) => {
     var bmpData = bmp.decode(file);
     var rawData = bmp.encode(bmpData);
     base = Buffer.from(rawData.data).toString('base64')
-    console.log("done")
+    // console.log("done")
 
     response.json({
         bmp: base
@@ -120,7 +121,7 @@ var exposure = -1;
 var gain = -1;
 app.post("/videosetting", (request, response) => {
     var tmp = request.body;
-    // console.log(tmp);
+    console.log(tmp);
     if (tmp.name === 'hsv'){
         for (let i=0; i<videocolor.length; i++){
             if (videocolor[i].color === tmp.color){
@@ -142,7 +143,7 @@ app.post("/videosetting", (request, response) => {
         for (let i=0; i<videocolor.length; i++){
             if (videocolor[i].color === tmp.color){
                 videocolor[i] = videocolordefault[i];
-                // console.log(videocolor[i])
+                console.log(videocolor[i])
             }
         }
     } else if (tmp.name === 'add') {
@@ -217,6 +218,7 @@ var batteryalert = [
         text: "world"
     }
 ]
+const mppt = require('./data/MPPT.js');
 var lastposition = {x: 10, y:-1, time: new Date(), type: 'position'};
 var roverposition = [lastposition];
 var obstacles = [{
@@ -235,67 +237,67 @@ var toboard = {
 const videocolordefault = [
     {
         color: 'red',
-        Hue: [40,60],
-        Saturation: [40,60],
-        Value: [40,60],
+        Hue: [0,14],
+        Saturation: [166,255],
+        Value: [0,255],
     },
     {
         color: 'yellow',
-        Hue: [40,60],
-        Saturation: [40,60],
-        Value: [40,60],
+        Hue: [32,53],
+        Saturation: [144,255],
+        Value: [0,255],
     },
     {
         color: 'pink',
-        Hue: [40,60],
-        Saturation: [40,60],
-        Value: [40,60],
+        Hue: [0,14],
+        Saturation: [51,174],
+        Value: [96,255],
     },
     {
         color: 'blue',
-        Hue: [40,60],
-        Saturation: [40,60],
-        Value: [40,60],
+        Hue: [128,255],
+        Saturation: [0,96],
+        Value: [16,176],
     },
     {
         color: 'green',
-        Hue: [40,60],
-        Saturation: [40,60],
-        Value: [40,60],
+        Hue: [85,106],
+        Saturation: [76,179],
+        Value: [0,179],
     },
 ]
 var videocolor = [
     {
         color: 'red',
-        Hue: [40,60],
-        Saturation: [40,60],
-        Value: [40,60],
+        Hue: [0,14],
+        Saturation: [166,255],
+        Value: [0,255],
     },
     {
         color: 'yellow',
-        Hue: [40,60],
-        Saturation: [40,60],
-        Value: [40,60],
+        Hue: [32,53],
+        Saturation: [144,255],
+        Value: [0,255],
     },
     {
         color: 'pink',
-        Hue: [40,60],
-        Saturation: [40,60],
-        Value: [40,60],
+        Hue: [0,14],
+        Saturation: [51,174],
+        Value: [96,255],
     },
     {
         color: 'blue',
-        Hue: [40,60],
-        Saturation: [40,60],
-        Value: [40,60],
+        Hue: [128,255],
+        Saturation: [0,96],
+        Value: [16,176],
     },
     {
         color: 'green',
-        Hue: [40,60],
-        Saturation: [40,60],
-        Value: [40,60],
+        Hue: [85,106],
+        Saturation: [76,179],
+        Value: [0,179],
     },
-];
+]
 
 
 // setting up TCP server 

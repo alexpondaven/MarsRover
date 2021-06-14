@@ -23,6 +23,7 @@ function Video_Slider({name, color, onChange, forcefetch, tooltip}) {
         fetch('http://localhost:5000/videosetting/' + color + '/' + name)
             .then(response => response.json())
             .then(response => update(response))
+        console.log("getdata")
     }
 
     useEffect(() => {

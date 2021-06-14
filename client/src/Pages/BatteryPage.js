@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 
 import Battery from '../Components/BatteryPage_Battery.js'
-import Health from '../Components/BatteryPage_Health.js'
+// import Health from '../Components/BatteryPage_Health.js'
+import Power from '../Components/BatteryPage_Power.js'
 import Alerts from '../Components/Alerts.js'
-import Linechart from '../Components/Linechart.js'
+// import Linechart from '../Components/Linechart.js'
+import Graph from '../Components/BatteryPage_Graph.js'
 
 function BatteryPage() {
     const [batteries,setBattery] = useState([{
@@ -12,11 +14,15 @@ function BatteryPage() {
         health: '30%',
       }
     ]);
-    const [data,setData] = useState([]);
+    const [data1,setData1] = useState([]);
+    const [data2,setData2] = useState([]);
+    const [mppt,setMPPT] = useState([]);
     const [alerts,setAlerts] = useState([]);
 
     function update(response) {
-        setData(response.batteryusage);
+        setData1(response.batteryusage.data1);
+        setData2(response.batteryusage.data2);
+        setMPPT(response.mppt)
         setBattery([response.battery])
         setAlerts(response.alert)
     }
@@ -50,11 +56,11 @@ function BatteryPage() {
                     )}
 
                     {batteries.map((battery,index) =>
-                        <Health key={index} battery={battery} />
-                    )}
+                        <Power key={index} battery={battery} />
+                    )}  
                 </div>
 
-                <Linechart data={data} name="Battery Usage" />
+                <Graph data1={data1} data2={data2} mppt={mppt}/>
 
             </div>
 

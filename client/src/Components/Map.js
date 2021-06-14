@@ -14,20 +14,22 @@ function Map({positions, current, obstacles, command}) {
             data: positions,
             backgroundColor: 'rgb(255, 99, 132)',
             showLine: true,
-            pointStyle: 'circle'
+            pointStyle: 'circle',
+            radius: 5,
         },{
             types: 'scatter',
             label: 'current position',
             data: current,
             backgroundColor: 'rgb(255, 99, 132)',
             pointStyle: 'rect',
-            radius: 7
+            radius: 8,
         },{
             types: 'scatter',
             label: 'obstacles',
             data: obstacles,
-            backgroundColor: 'rgb(255,255,0)',
-            pointStyle: 'circle'
+            backgroundColor: 'rgb(255,228,196)',
+            pointStyle: 'circle',
+            radius: 5,
         },{
             type: 'scatter',
             label: 'origin',
