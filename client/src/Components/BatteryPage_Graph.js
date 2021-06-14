@@ -13,7 +13,7 @@ function Graph({data1,data2,mppt}) {
         <div className="Card3">
             <ReactCardFlip isFlipped={flip} flipDirection="vertical">
                 <div>
-                    <Linechart data1={data1} name1='Battery 1' data2={data2} name2='Battery2' name="Battery Usage" limit={true}/>
+                    <Linechart type = {true} data1={data1} data2={data2}  name="Battery Usage" />
                     <button onClick={onClick} style = {{
                         position: 'absolute',
                         top: '0px',
@@ -24,7 +24,7 @@ function Graph({data1,data2,mppt}) {
                 </div>
 
                 <div>
-                    <Linechart data1={mppt} name1='MPPT' name="MPPT vs Voltage" limit={false}/>
+                    <Linechart type={false} data1={mppt} name="Power vs Voltage" />
                     <button onClick={onClick} style = {{
                         position: 'absolute',
                         top: '0px',

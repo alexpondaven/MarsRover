@@ -47,7 +47,14 @@ function DrivePage() {
             <div className="LeftColumn" >
                 <div className="Card0">
                     <h3>DRIVE</h3>
-                    <p1>some properties to be added</p1>
+                    <p style={{fontSize: '17px'}}>
+                        The rover runs on 2 wheels, controlled separately by 2 motors. 
+                        It can turn by moving the 2 wheels in opposite direction.
+                        <br/>
+                        <br/>
+                        An optical flow sensor is also used to measure the travelling distance in x and y direction, and estimate the coordinate
+                        of the rover.
+                    </p>
                 </div>
                 <Alerts alerts={alerts} />
             </div>

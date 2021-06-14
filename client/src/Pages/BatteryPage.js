@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react'
 
 import Battery from '../Components/BatteryPage_Battery.js'
-// import Health from '../Components/BatteryPage_Health.js'
 import Power from '../Components/BatteryPage_Power.js'
 import Alerts from '../Components/Alerts.js'
-// import Linechart from '../Components/Linechart.js'
 import Graph from '../Components/BatteryPage_Graph.js'
 
 function BatteryPage() {
@@ -35,7 +33,7 @@ function BatteryPage() {
 
     useEffect(() => {
         getData();
-        setInterval(getData, 5000)
+        // setInterval(getData, 5000)
     },[]);
 
     return (
@@ -43,7 +41,13 @@ function BatteryPage() {
             <div className="LeftColumn" >
                 <div className="Card0">
                     <h3>BATTERY</h3>
-                    <p>some properties to be added</p>
+                    <p style={{fontSize: '17px'}}>
+                        2 batteries are available on the rover, having a battery capacity of 500mAh.
+                        They are connected in parallel. 
+                        <br/>
+                        <br/>
+                        The rover can be charged in a charging station, where PV panel are used.
+                    </p>
                 </div>
                 <Alerts alerts={alerts} />
             </div>

@@ -11,7 +11,6 @@ app.use(cors())
 app.use(express.json())
 app.listen(5000, () => console.log("listening at port 5000")); 
 app.use(express.static("public"));
-// respond with the data pack of battery and speed and 'hi'
 app.get("/data", (request, response) => {
     response.json({
         data: 'hi',
@@ -58,7 +57,7 @@ app.get("/drive", (request, response) => {
         speed: speed,
         current: lastposition,
         obstacles: obstacles,
-        alert: batteryalert,
+        alert: drivealert,
     })
 })
 
@@ -208,14 +207,14 @@ var speed = {
     angle : 0
 }
 var batteryusage = require('./data/SoC_t.js');
-var batteryalert = [
+const batteryalert = [
     {
         id:0,
-        text: "hi"
+        text: "Battery 2 fully charged"
     },
     {
         id:1,
-        text: "world"
+        text: "Battery heating up"
     }
 ]
 const mppt = require('./data/MPPT.js');
@@ -226,6 +225,12 @@ var obstacles = [{
 },{
     x: 4, y: -10, time: new Date(), type: 'obstacle'
 }]
+const drivealert = [
+    {
+        id:0,
+        text: "Yellow obstacle 0.3m ahead"
+    }
+]
 var base = '';
 var toboard = {
     mode: 0,
@@ -306,15 +311,10 @@ var net = require('net');
 
 const server = net.createServer(socket => {
     socket.on("data", data => {
-        // console.log((data.toString()))
-        // var tmp = JSON.parse(data.toString());
-
         var tmp;
         try {
             tmp = JSON.parse(data.toString());
-            // console.log(tmp)
         } catch(e) { 
-            // console.log(e);
             return;
         }
         
@@ -327,7 +327,6 @@ const server = net.createServer(socket => {
             }
             roverposition.push(lastposition)
         }
-        // console.log(roverposition);
 
         speed.speed = tmp.position.speed;
         switch(tmp.position.direction) {
@@ -376,7 +375,6 @@ server.listen(2000);
 
 // TCP socket for video streaming
 const bmp = require("bmp-js");
-const { response } = require("express");
 const size = 77880;
 var datasize = 0;
 var databuffer = 0;

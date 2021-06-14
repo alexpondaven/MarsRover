@@ -93,6 +93,23 @@ span {
   background-color: #1a83ff;
 }
 
+.Weather {
+  display: inline-flex;
+  font-family: 'Roboto', sans-serif;
+  color: black;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  writing-mode: horizontal-tb;
+  height: 15vw;
+  width: 27vw;
+  position: relative;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  border-radius: 15px;
+  transition: 0.3s;
+  margin: 5px;
+}
+
 .HomeBlock {
   display: inline-flex;
   font-family: 'Roboto', sans-serif;
@@ -205,7 +222,7 @@ span {
   border-left: 5px solid black;
   background: #f4f4f4;
   margin: 5px;
-  padding: 10px 20px;
+  padding: 0.5px 20px;
 }
 
 .ControllerPosition {

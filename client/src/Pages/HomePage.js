@@ -3,6 +3,7 @@ import { AiFillCamera } from 'react-icons/ai';
 import { GiConsoleController } from 'react-icons/gi';
 import { BsFillPeopleFill } from 'react-icons/bs';
 
+import WeatherCard from '../Components/WeatherCard.js';
 import Battery from '../Components/Battery.js'
 import Speed from '../Components/Speed.js'
 import ControlCard from '../Components/ControlCard.js'
@@ -49,6 +50,7 @@ function HomePage() {
     return (
         <div className='HomePage'>
             <div>
+              <WeatherCard />
               {batteries.map((battery,index) =>
                 <Battery key={index} battery={battery} />
               )}
