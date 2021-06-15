@@ -2,6 +2,9 @@
 // Choose between WPS or SSID/Pass
 // #define WPS_MODE
 
+// Enable Video Streaming
+#define VIDEO_STREAMING
+
 // port and ip
 #define HOST_IP_ADDR "192.168.1.116"
 #define PORT_VIDEO 2001

@@ -17,6 +17,8 @@ extern "C" void app_main() {
   tcp_client_main();
 
   uart_setup();
-  init_i2s();
+  #ifdef VIDEO_STREAMING
+    init_i2s();
+  #endif
   exploration_main();
 }

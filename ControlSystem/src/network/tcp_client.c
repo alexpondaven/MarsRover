@@ -121,7 +121,7 @@ static void tcp_command(void *pvParameters)
     vTaskDelete(NULL);
 }
 
-
+#ifdef VIDEO_STREAMING
 static void tcp_video_frame(void *pvParameters)
 {
     // ESP_ERROR_CHECK(example_connect());
@@ -196,11 +196,13 @@ static void tcp_video_frame(void *pvParameters)
     vTaskDelete(NULL);
 }
 
-
+#endif // VIDEO_STREAMING
 
 void tcp_client_main(void)
 {
 
     xTaskCreate(tcp_command, "tcp_command", 5120, NULL, TCP_COMMAND_PRIORITY, NULL);
+    #ifdef VIDEO_STREAMING
     xTaskCreate(tcp_video_frame, "tcp_video", 4096, NULL, TCP_VIDEO_PRIORITY, NULL);
+    #endif
 }
