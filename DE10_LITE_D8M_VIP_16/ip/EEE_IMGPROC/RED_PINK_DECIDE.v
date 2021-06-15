@@ -29,6 +29,16 @@ module RED_PINK_DECIDE(clk,rst_n,bbb_red,bbb_pink,bbb_red_out,bbb_pink_out);
 //	assign top_overlap = (top_red > (top_pink-range)) & (top_red<(bottom_pink-range));
 //	assign bottom_overlap = (bottom_red < (bottom_pink+range)) & (bottom_red>(top_pink+range));
 
+	//assign overlap = left_overlap | right_overlap | top_overlap | bottom_overlap;
+							
+	
+//	assign red_best = red_filled > pink_filled;
+	
+	//if overlap, output the one with the larger concentration of pixels
+	//otherwise, output the same bounds
+//	assign bbb_red_out = overlap ? (red_best ? bbb_red : 44'b0 ) : bbb_red;
+//	assign bbb_pink_out = overlap ? (red_best ? 44'h0 : bbb_pink ) : bbb_pink;
+
 	assign red_inside  = ((left_red >= left_pink) & (right_red <= right_pink))
 								| ((left_red >= left_pink+range) & (right_red <= right_pink+range))
 								| ((left_red >= left_pink-range) & (right_red <= right_pink-range))
@@ -41,16 +51,6 @@ module RED_PINK_DECIDE(clk,rst_n,bbb_red,bbb_pink,bbb_red_out,bbb_pink_out);
 								| ((top_pink >= top_red) & (bottom_pink <= bottom_red))
 								| ((top_pink >= top_red+range) & (bottom_pink <= bottom_red+range))
 								| ((top_pink >= top_red-range) & (bottom_pink <= bottom_red-range));
-	
-	//assign overlap = left_overlap | right_overlap | top_overlap | bottom_overlap;
-							
-	
-//	assign red_best = red_filled > pink_filled;
-	
-	//if overlap, output the one with the larger concentration of pixels
-	//otherwise, output the same bounds
-//	assign bbb_red_out = overlap ? (red_best ? bbb_red : 44'b0 ) : bbb_red;
-//	assign bbb_pink_out = overlap ? (red_best ? 44'h0 : bbb_pink ) : bbb_pink;
 
 	//output the larger bounding box
 	assign bbb_red_out  = red_inside  ? 44'h0 : bbb_red;

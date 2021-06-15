@@ -244,14 +244,14 @@ assign blue_detect = (hue>=hue_min_b) & (hue<=hue_max_b) & (sat>=sat_min_b) & (s
 // Find boundary of cursor box
 
 // Highlight detected areas
-wire [23:0] red_high, pink_high, green_high, blue_high, yellow_high, var_high;
+wire [23:0] red_high, pink_high, green_high, blue_high, yellow_high, var_high, red_blur_high;
 assign grey = green[7:1] + red[7:2] + blue[7:2]; //Grey = green/2 + red/4 + blue/4
 //assign grey = red_detect ? 8'hff : 8'h0;
 assign red_high  = red_detect ? {8'hff, 8'h0, 8'h0} : {grey, grey, grey};
+assign red_blur_high = (blur_red_high>250) ? {8'hff, 8'h0, 8'h0} : {grey, grey, grey}; // to show improvement of blur
+
 assign pink_high = pink_detect ? {8'hff, 8'h80, 8'hd5} : {grey, grey, grey};
-
 assign green_high = green_detect ? {8'h0, 8'hff, 8'h0} : {grey, grey, grey};
-
 assign blue_high = blue_detect ? {8'h0, 8'h0, 8'hff} : {grey, grey, grey};
 assign yellow_high = yellow_detect ? {8'hff, 8'hff, 8'h0} : {grey, grey, grey};
 
@@ -283,10 +283,20 @@ reg [10:0] bleft_blue, bright_blue, btop_blue, bbottom_blue;
 //bb_filled
 wire [7:0] bb_filled_red,bb_filled_pink,bb_filled_yellow,bb_filled_green,bb_filled_blue;
 
-assign bb_active1 = (x == left[0]) | (x == right[0]) | (y == top[0]) | (y == bottom[0]);
-assign bb_active2  = (x == left[1]) | (x == right[1]) | (y == top[1]) | (y == bottom[1]);
-assign bb_active3  = (x == left[2]) | (x == right[2]) | (y == top[2]) | (y == bottom[2]);
-assign bb_active4  = (x == left[3]) | (x == right[3]) | (y == top[3]) | (y == bottom[3]);
+//assign bb_active1 = (x == left[0]) | (x == right[0]) | (y == top[0]) | (y == bottom[0]);
+//assign bb_active2  = (x == left[1]) | (x == right[1]) | (y == top[1]) | (y == bottom[1]);
+//assign bb_active3  = (x == left[2]) | (x == right[2]) | (y == top[2]) | (y == bottom[2]);
+//assign bb_active4  = (x == left[3]) | (x == right[3]) | (y == top[3]) | (y == bottom[3]);
+
+//multiple bounding boxes output
+assign bb_active1 = (x == left[0] | x == right[0])&(y>=top[0])&(y<=bottom[0])
+								| (y == top[0] | y == bottom[0])&(x<=right[0])&(x>=left[0]);
+assign bb_active2  = (x == left[1] | x == right[1])&(y>=top[1])&(y<=bottom[1])
+								| (y == top[1] | y == bottom[1])&(x<=right[1])&(x>=left[1]);
+assign bb_active3  = (x == left[2] | x == right[2])&(y>=top[2])&(y<=bottom[2])
+								| (y == top[2] | y == bottom[2])&(x<=right[2])&(x>=left[2]);
+assign bb_active4  = (x == left[3] | x == right[3])&(y>=top[3])&(y<=bottom[3])
+								| (y == top[3] | y == bottom[3])&(x<=right[3])&(x>=left[3]);
 assign bb_active = bb_active1 | bb_active2 | bb_active3 | bb_active4;
 
 //draw bounding boxes as closed rectangles
@@ -324,19 +334,13 @@ assign red_bbb_filled = bbb_active_red ? {bb_filled_red,bb_filled_red,bb_filled_
 // Don't modify the start-of-packet word - it's a packet discriptor
 // Don't modify data in non-video packets
 // Normal rgb: {red,green,blue}
-// Pixel by pixel edge detection: {diff_grey, diff_grey, diff_grey}
-// contrasted image: contrast_image
-// Convolution grey edge detection: {conv_grey, conv_grey, conv_grey}
-// Median filter grey: {med_grey, med_grey, med_grey}
-// Horizontal blur grey: {horizontal_blur[7:0],horizontal_blur[7:0],horizontal_blur[7:0]}
-// 3x3 gaussian blur grey: {vertical_blur[7:0], vertical_blur[7:0], vertical_blur[7:0]}
-// 5x5 gaussian blur grey: {vertical_5blur[7:0], vertical_5blur[7:0], vertical_5blur[7:0]}
-// 3x3 blur/sobel window: {blur_out[7:0], blur_out[7:0], blur_out[7:0]}
+// Bounding boxes: bbb
+// Multiple red bounding boxes: red_bb
 //HSV: {hue,hue,hue},{value,value,value},{sat,sat,sat}
 assign {red_out, green_out, blue_out} = ((mode==3'b001) & ~sop & packet_video) ? bbb:
-														((mode==3'b011) & ~sop & packet_video) ? red_bbb:
-														((mode==3'b010) & ~sop & packet_video) ? red_bbb_filled:
-														((mode==3'b110) & ~sop & packet_video) ? {sat,sat,sat}:
+														((mode==3'b011) & ~sop & packet_video) ? red_bb:
+														((mode==3'b010) & ~sop & packet_video) ? red_high:
+														((mode==3'b110) & ~sop & packet_video) ? red_blur_high:
 														((mode==3'b111) & ~sop & packet_video) ? {value,value,value}:
 														((mode==3'b101) & ~sop & packet_video) ? {hue,hue,hue}:
 														((mode==3'b100) & ~sop & packet_video) ? var_high:
@@ -628,7 +632,7 @@ BB_DETECT bb_detect_red (
 	.in_valid(in_valid),
 	.sop(sop),
 	.dist_thresh(dist_thresh),
-	.in(blur_red_high>250), // find boundary box on red_detect
+	.in(blur_red_high>250),
 	.x(x),
 	.y(y),
 	.bb1(bb[0]),
@@ -644,7 +648,7 @@ BB_DETECT bb_detect_pink (
 	.in_valid(in_valid),
 	.sop(sop),
 	.dist_thresh(dist_thresh),
-	.in(blur_pink_high>250), // find boundary box on red_detect
+	.in(blur_pink_high>250),
 	.x(x),
 	.y(y),
 	.bb_out(bbb_pink_inter),
@@ -656,7 +660,7 @@ BB_DETECT bb_detect_yellow (
 	.in_valid(in_valid),
 	.sop(sop),
 	.dist_thresh(dist_thresh),
-	.in(blur_yellow_high>250), // find boundary box on red_detect
+	.in(blur_yellow_high>250),
 	.x(x),
 	.y(y),
 	.bb_out(bbb_yellow),
@@ -668,7 +672,7 @@ BB_DETECT bb_detect_green (
 	.in_valid(in_valid),
 	.sop(sop),
 	.dist_thresh(dist_thresh),
-	.in(blur_green_high>250), // find boundary box on red_detect
+	.in(blur_green_high>250),
 	.x(x),
 	.y(y),
 	.bb_out(bbb_green),
@@ -680,7 +684,7 @@ BB_DETECT bb_detect_blue (
 	.in_valid(in_valid),
 	.sop(sop),
 	.dist_thresh(dist_thresh),
-	.in(blur_blue_high>250), // find boundary box on red_detect
+	.in(blur_blue_high>250),
 	.x(x),
 	.y(y),
 	.bb_out(bbb_blue),

@@ -36,6 +36,7 @@ module GAUSSBLUR_3x3(clk,rst_n,in_valid,in,out);
 			p <= 0;
 		end
 		else begin
+		
 		 //row convolutions
 			p0 <= p00 + 2*p01 + p02;
 			p1 <= p10 + 2*p11 + p12;

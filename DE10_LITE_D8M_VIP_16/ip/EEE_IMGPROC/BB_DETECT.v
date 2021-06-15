@@ -175,6 +175,7 @@ module BB_DETECT(clk,rst_n,in_valid,sop,dist_thresh,in,x,y,bb1,bb2,bb3,bb4,bb_ou
 			ywidth[k] <= bb[3][k] - bb[2][k];
 			xwidth1[k] <= xwidth[k]; // store xwidth and ywidth for extra cycle to synchronise data
 			ywidth1[k] <= ywidth[k];
+
 			diff_width[k] <= (xwidth[k]>ywidth[k]) ? (xwidth[k]-ywidth[k]) : (ywidth[k]-xwidth[k]);
 			min_size[k] <= (xwidth1[k]>10)&(ywidth1[k]>10);
 			more_square[k] <= diff_width[k]<bdiff_width; // is xwidth and ywidth closer together (more square like)

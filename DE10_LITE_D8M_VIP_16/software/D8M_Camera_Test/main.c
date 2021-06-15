@@ -293,7 +293,7 @@ int main()
 		   if (fwrite(&nl, 1, 1, ser) != 1)
 		   		   printf("Error writing to UART");
 		}
-		if (fwrite(&word, 4, 1, ser) != 1)
+		if (fwrite(&word, 4, 1, ser) != 1) // write the word to the esp
 			printf("Error writing to UART");
 		printf("%08x ",word);
 	}
@@ -311,7 +311,11 @@ int main()
 
 		  //read until newline
 		  do {
+			  printf("\nreading");
+
+
 			  fread(&in,1,1,ser);
+			  printf("in= %c",in);
 		  }
 		  while (in!='\n');
 
@@ -324,6 +328,7 @@ int main()
 		  //read struct (4 bytes) from esp
 		  if (fread(&hsv_struct,4,1,ser) != 1)
 			  printf("Error reading from UART");
+		  printf("\n%c,%c,%x,%x",hsv_struct[0],hsv_struct[1],hsv_struct[2],hsv_struct[3]);
 
 		  //check this is the right order
 		  colour=hsv_struct[0];
@@ -388,6 +393,7 @@ int main()
 				  printf("\nMin Val = %x ", value);
 			  }
 		  }
+
 //			int in = getchar();
 //		  switch (in) {
 //			   case 'e': {
@@ -435,7 +441,7 @@ int main()
 		  //update distance threshold between bounding boxes
 //		  IOWR(0x42000, EEE_IMGPROC_DIST_THRESH, 0x20);
 
-		  //select colour
+		  //select colour to change its hsv values with HUE, SAT, VAL
 		  // 1: RED
 		  // 2: PINK
 		  // 3: YELLOW

@@ -54,7 +54,7 @@ module WINDOW_3x3(in_grey,in_valid, clk, rst_n ,p00,p01,p02,p10,p11,p12,p20,p21,
 				end
 				
 				//row buffer 2
-				if (almost_full_2) begin // if buffer1 is full - read and write
+				if (almost_full_2) begin // if buffer2 is full - read and write
 					rdreq_2 <= 1'b1;
 					wrreq_2 <= 1'b1;
 				end
