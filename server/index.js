@@ -348,7 +348,7 @@ const server = net.createServer(socket => {
                 }
                 if (!found) {
                     // create new obstacle 
-                    let tmp = { x: tmp_pos[0], y: tmp_pos[1], time: new Date(), type: 'obstacle', color: colortoint(relative.color[i])};
+                    let tmp = { x: tmp_pos[0], y: tmp_pos[1], time: new Date(), type: 'obstacle', color: inttocolor(relative.color[i])};
                     obstacles.push(tmp);
                 }
             }
