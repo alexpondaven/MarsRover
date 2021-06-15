@@ -107,9 +107,12 @@ extern "C" bool recieve_TCP_packet(char * msg) {
       ESP_LOGI("Process Packets", "HSV Values: %d, %d, %d, %d", (int) hsv_change.color, (int)hsv_change.type, (int)hsv_change.option, (int)hsv_change.value);
       xQueueSendToBack(q_tcp_to_fpga, &hsv_change, 0);
     }
-
-    xQueueOverwrite(q_tcp_to_drive, &drive_commands);
-    xQueueOverwrite(q_tcp_to_explore, &desired_position);
+    if (mode) {
+      xQueueOverwrite(q_tcp_to_explore, &desired_position);
+    } else {
+      xQueueOverwrite(q_tcp_to_drive, &drive_commands);
+    }
+    
 
     xTaskNotify(exploration_task, mode, eSetValueWithOverwrite);
 
