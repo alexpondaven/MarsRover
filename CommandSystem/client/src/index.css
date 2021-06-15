@@ -1,0 +1,306 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+span {
+  margin-left: 16px;
+}
+
+.Navbar {
+  font-family: 'Segoe UI';
+  color: black;
+  height: 100px;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.Navbar .links {
+  margin-left: auto;
+  color: grey;
+}
+
+.SidebarClick {
+  margin-left: 50px;
+  background: none;
+}
+
+.SidebarClickActive {
+  margin-left: 150px;
+  background: none;
+}
+
+.Sidebar{
+  background-color: whitesmoke;
+  width: 100px;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  position: sticky;
+  top: 100px;
+  transition: 850ms;
+}
+
+.SidebarActive {
+  background-color: whitesmoke;
+  width: 200px;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  position: sticky;
+  top: 100px;
+  transition: 850ms;
+}
+
+.SidebarItems {
+  width: 100%;
+}
+
+.SidebarItem {
+  font-family: 'Roboto', sans-serif;
+  display: flex;
+  justify-content: start;
+  /* align-items: center; */
+  padding: 8px 0px 8px 16px;
+  list-style: none;
+  height: 60px;
+}
+
+.SidebarItem a {
+  text-decoration: none;
+  color: black;
+  font-size: 18px;
+  width: 95%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  /* padding: 0 16px; */
+  border-radius: 4px;
+}
+
+.SidebarItem:hover {
+  background-color: #1a83ff;
+}
+
+.Weather {
+  display: inline-flex;
+  font-family: 'Roboto', sans-serif;
+  color: black;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  writing-mode: horizontal-tb;
+  height: 15vw;
+  width: 27vw;
+  position: relative;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  border-radius: 15px;
+  transition: 0.3s;
+  margin: 5px;
+}
+
+.HomeBlock {
+  display: inline-flex;
+  font-family: 'Roboto', sans-serif;
+  color: black;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  writing-mode: horizontal-tb;
+  height: 15vw;
+  width: 27vw;
+  position: relative;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  border-radius: 15px;
+  transition: 0.3s;
+  margin: 5px;
+}
+
+.HomeBlock:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,1);
+}
+
+.SubPage {
+  position: relative;
+  display: flex;
+  overflow: auto;
+  width: 100vw;
+}
+
+.HomePage {
+  position: relative;
+  overflow: auto;
+  width: 100vw;
+}
+
+.LeftColumn {
+  display: 'inline-block';
+  width: 30%;
+  max-width: 325px;
+}
+
+.RightColumn {
+  display: 'inline-block';
+  float: left;
+  min-width: 70%;
+}
+
+@media only screen and (max-width: 620px) {
+  /* For mobile phones: */
+  .LeftColumn, .RightColumn {
+    width: 100%;
+  }
+  .BatteryPage {
+    display: grid;
+  }
+}
+
+.Card0 {
+  font-family: 'Roboto', sans-serif;
+  padding: 10px 20px;
+  writing-mode: horizontal-tb;
+  height: 320px;
+  position: relataive;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  border-radius: 15px;
+  transition: 0.3s;
+  margin: 5px;
+}
+
+.Card1 {
+  font-family: 'Roboto';
+  padding: 10px 20px;
+  writing-mode: horizontal-tb;
+  text-align: center;
+  align-self: center;
+  height: 320px;
+  width: 50%;
+  position: relative;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  border-radius: 15px;
+  transition: 0.3s;
+  margin: 5px;
+  display: grid;
+}
+
+.Card2 {
+  font-family: 'Roboto', sans-serif;
+  padding: 10px 20px;
+  writing-mode: horizontal-tb;
+  height: 425px;
+  position: relative;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  border-radius: 15px;
+  transition: 0.3s;
+  margin: 5px;
+}
+
+.Card3 {
+  font-family: 'Roboto', sans-serif;
+  padding: 10px 20px;
+  writing-mode: horizontal-tb;
+  position: relative;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  border-radius: 15px;
+  transition: 0.3s;
+  margin: 0px 5px;
+}
+
+.Alert {
+  font-family: 'Roboto', sans-serif;
+  border-left: 5px solid black;
+  background: #f4f4f4;
+  margin: 5px;
+  padding: 0.5px 20px;
+}
+
+.ControllerPosition {
+  height: 20vw;
+  max-height: 150px;
+  width: 20vw;
+  max-width: 150px;
+  margin: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.ControllerPositionDisabled {
+  height: 20vw;
+  max-height: 150px;
+  width: 20vw;
+  max-width: 150px;
+  margin: 5px;
+  border: none;
+}
+
+.Controller {
+  margin: auto;
+  height: 100vw;
+  max-height: 500px;
+  width: 100vw;
+  max-width: 500px;
+  display: flex;
+  column-count: 3;
+}
+
+.PositionControl {
+  display: inline-block;
+  width: 80vw;
+}
+
+.ExploreButton {
+  margin: auto;
+  height: 100vw;
+  max-height: 300px;
+  width: 100vw;
+  max-width: 300px;
+  padding: 20px;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 100%;
+}
+
+.ExploreButton:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,1);
+}
+
+.Map {
+  border: 1px solid #000000;
+}
+
+.ClearButton {
+  margin-top: 30px;
+  margin-right: 30px;
+  position:absolute;
+  top:0;
+  right:0;
+  cursor: pointer;
+  color: #000;
+}
+
+.VideoSetting {
+  font-family: 'Roboto', sans-serif;
+  padding: 10px 20px;
+  background-color: whitesmoke;
+  width: 500px;
+  height: 100vh;
+  justify-content: left;
+  align-items: left;
+  position: absolute;
+  top: 120px;
+  right:0;
+  transition: 850ms;
+}
