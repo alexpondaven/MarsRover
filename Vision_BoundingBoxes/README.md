@@ -9,6 +9,10 @@
 - .sof file in DE10_LITE_D8M_VIP_16/output_files to be used in Programmer in Quartus
 - .elf file in DE10_LITE_D8M_VIP_16/software/D8M_Camera_Test/ to program the Nios2 with "nios2-download D8M_Camera_Test.elf -c 1 -g"
 
+## Switch configurations
+- if all switches are down, switching up the rightmost switch shows the RGB image with bounding boxes
+- all configurations can be seen in ip/EEE_IMGPROC.v on lines 340-347
+
 
 
 ## Contents of this repository
