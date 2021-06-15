@@ -77,7 +77,6 @@ app.get("/drivedata", (request, response) => {
         console.log('...Done');
         response.download('./data/roverpositions.csv')
     });
-    // response.download('./data/roverpositions.csv')
 })
 
 const fs = require('fs')
@@ -221,9 +220,9 @@ const mppt = require('./data/MPPT.js');
 var lastposition = {x: 10, y:-1, time: new Date(), type: 'position'};
 var roverposition = [lastposition];
 var obstacles = [{
-    x: 10, y: 0, time: new Date(), type: 'obstacle'
+    x: 10, y: 0, time: new Date(), type: 'obstacle', color: 'red'
 },{
-    x: 4, y: -10, time: new Date(), type: 'obstacle'
+    x: 4, y: -10, time: new Date(), type: 'obstacle', color: 'yellow'
 }]
 const drivealert = [
     {
@@ -306,7 +305,6 @@ var videocolor = [
 
 
 // setting up TCP server 
-
 var net = require('net');
 
 const server = net.createServer(socket => {
@@ -316,6 +314,44 @@ const server = net.createServer(socket => {
             tmp = JSON.parse(data.toString());
         } catch(e) { 
             return;
+        }
+
+        const relative = {
+            color: tmp.colors,
+            angle: tmp.angle,
+            distance: tmp.distance
+        };
+        if (speed.angle===0 && tmp.position.direction===0){
+            var slope = Math.atan((tmp.position.X-lastposition.x)/(tmp.position.Y-lastposition.y));
+            slope = slope * 180 / Math.PI;
+            var found = false;
+
+            for (let i=0; i<relative.color.length; i++){
+                if (relative.color[i] === -1 || relative.angle[i] === -1 || relative.distance[i] < 1) break;
+                let theta = slope+relative.angle[i];
+                theta = theta * Math.PI / 180;
+                let tmp_pos = [Math.round(relative.distance[i]*Math.cos(theta)), Math.round(relative.distance[i]*Math.sin(theta))];
+
+                for (let j=0; j<obstacles.length ; j++){
+                    if (colortoint(obstacles[j].color) === relative.color[i]) {
+                        found = true;
+                        if (Math.abs(obstacles[j].x-tmp_pos[0]) < 50 && Math.abs(obstacles[j].y-tmp_pos[1]) < 50) {
+                            // moving average of existing
+                            obstacles[j].x = (obstacles[j].x+tmp_pos[0])/2;
+                            obstacles[j].y = (obstacles[j].y+tmp_pos[1])/2;
+                        } else {
+                            // create new obstacle
+                            let tmp = { x: tmp_pos[0], y: tmp_pos[1], time: new Date(), type: 'obstacle', color: obstacles[j].color};
+                            obstacles.push(tmp);
+                        }
+                    }
+                }
+                if (!found) {
+                    // create new obstacle 
+                    let tmp = { x: tmp_pos[0], y: tmp_pos[1], time: new Date(), type: 'obstacle', color: colortoint(relative.color[i])};
+                    obstacles.push(tmp);
+                }
+            }
         }
         
         if (lastposition.x !== tmp.position.X || lastposition.y !== tmp.position.Y){
@@ -347,7 +383,8 @@ const server = net.createServer(socket => {
                 else speed.angle = 5;
                 break;
         }
-        console.log(speed)
+        console.log(obstacles);
+
         
         var buf = Buffer.from(JSON.stringify(toboard));
         var tmp = Buffer.alloc(1, buf.length);
@@ -375,44 +412,44 @@ server.listen(2000);
 
 // TCP socket for video streaming
 const bmp = require("bmp-js");
-const size = 77880;
-var datasize = 0;
-var databuffer = 0;
+// const size = 77880;
+// var datasize = 0;
+// var databuffer = 0;
 
-const server_b = net.createServer(socket => {
-    socket.on("data", data => {
-        if (databuffer === 0){
-            databuffer = data
-        } else {
-            databuffer = Buffer.concat([databuffer,data]);
-        }
-        datasize += data.length;
-        if (datasize >= size){
-            socket.write("Received!");
-            console.log(datasize);
-            datasize =0;
+// const server_b = net.createServer(socket => {
+//     socket.on("data", data => {
+//         if (databuffer === 0){
+//             databuffer = data
+//         } else {
+//             databuffer = Buffer.concat([databuffer,data]);
+//         }
+//         datasize += data.length;
+//         if (datasize >= size){
+//             socket.write("Received!");
+//             console.log(datasize);
+//             datasize =0;
 
-            var bmpData = bmp.decode(databuffer);
-            var rawData = bmp.encode(bmpData);
-            base = Buffer.from(rawData.data).toString('base64')
+//             var bmpData = bmp.decode(databuffer);
+//             var rawData = bmp.encode(bmpData);
+//             base = Buffer.from(rawData.data).toString('base64')
 
-            databuffer = 0;
-        }
+//             databuffer = 0;
+//         }
 
-        socket.write("received!");
-    })
+//         socket.write("received!");
+//     })
 
-    socket.on("error", error => {
-        console.log("client left")
-        if (error.message === 'read ECONNRESET') return;
-        console.log(error)
-    })
+//     socket.on("error", error => {
+//         console.log("client left")
+//         if (error.message === 'read ECONNRESET') return;
+//         console.log(error)
+//     })
 
-    socket.on("end",() => {
-        console.log("client left")
-    })
-})
-server_b.listen(2002);
+//     socket.on("end",() => {
+//         console.log("client left")
+//     })
+// })
+// server_b.listen(2002);
 
 const colortoint = (str) => {
     switch(str){
@@ -428,5 +465,22 @@ const colortoint = (str) => {
             return 5;
         default:
             return 0;
+    }
+}
+
+const inttocolor = (int) => {
+    switch(int){
+        case 1:
+            return 'red';
+        case 2:
+            return 'pink';
+        case 3:
+            return 'yellow';
+        case 4:
+            return 'green';
+        case 5:
+            return 'blue';
+        default:
+            return '';
     }
 }

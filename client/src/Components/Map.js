@@ -69,6 +69,9 @@ function Map({positions, current, obstacles, command}) {
                         if (raw.type === 'position') {
                             label = ["time: " + raw.time];
                             label.push(["(" + raw.x + "," + raw.y + ")"]) ;
+                        } else if (raw.type === 'obstacle') {
+                            label = [raw.color + " obstacle: "];
+                            label.push(["(" + raw.x + "," + raw.y + ")"]);
                         } else {
                             label = [raw.type + ":"]
                             label.push(["(" + raw.x + "," + raw.y + ")"]);
