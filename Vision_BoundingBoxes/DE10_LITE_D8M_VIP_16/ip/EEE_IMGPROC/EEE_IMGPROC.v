@@ -340,7 +340,7 @@ assign red_bbb_filled = bbb_active_red ? {bb_filled_red,bb_filled_red,bb_filled_
 assign {red_out, green_out, blue_out} = ((mode==3'b001) & ~sop & packet_video) ? bbb:
 														((mode==3'b011) & ~sop & packet_video) ? red_bb:
 														((mode==3'b010) & ~sop & packet_video) ? red_high:
-														((mode==3'b110) & ~sop & packet_video) ? red_blur_high:
+														((mode==3'b110) & ~sop & packet_video) ? {sat,sat,sat}:
 														((mode==3'b111) & ~sop & packet_video) ? {value,value,value}:
 														((mode==3'b101) & ~sop & packet_video) ? {hue,hue,hue}:
 														((mode==3'b100) & ~sop & packet_video) ? var_high:
