@@ -1,5 +1,9 @@
 # EEE2Rover
 
+## Usage
+- No VGA output, just output on video stream on website
+- Instructions on Vision_BoundaryBoxes readme
+
 ## Contents of this repository
   Directory | Contents
   --------- | --------
