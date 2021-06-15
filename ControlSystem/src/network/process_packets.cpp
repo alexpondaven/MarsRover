@@ -31,7 +31,7 @@ extern "C" size_t prepare_TCP_packet(char * buff, size_t buffsize) {
     memset((void *) &direction, 0, sizeof(direction));
   }
 
-  StaticJsonDocument<384> doc;
+  StaticJsonDocument<800> doc;
     
     
     JsonObject coords = doc.createNestedObject("position");

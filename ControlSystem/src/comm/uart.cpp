@@ -136,14 +136,14 @@ void uart_fpga(void *params) {
         //     uart_write_bytes(UART_NUM_2, (char *) &send_hsv, sizeof(send_hsv_t));
         //   }
         // } else {
-          ESP_LOGI("FPGA UART", "Sending %s", (char *) &send_hsv);
-          uart_write_bytes(UART_NUM_2, (char *) &send_hsv, sizeof(send_hsv_t));
+          ESP_LOGI("FPGA UART", "Sending %d, %d, %d, %d, %d", (uint8_t) send_hsv.padding, (uint8_t) send_hsv.hsv_change.color, (uint8_t) send_hsv.hsv_change.type, (uint8_t) send_hsv.hsv_change.option, (uint8_t) send_hsv.hsv_change.value);
+          uart_write_bytes(UART_NUM_1, (char *) &send_hsv, sizeof(send_hsv_t));
         // }
         
         
       } 
       // empty hsv
-      uart_write_bytes(UART_NUM_2, (char *) &empty_hsv, sizeof(send_hsv_t));
+      uart_write_bytes(UART_NUM_1, (char *) &empty_hsv, sizeof(send_hsv_t));
 
       // uart_flush(UART_NUM_1);
       int sizeread = uart_read_bytes(UART_NUM_1, (uint8_t *) &recievebuff, sizeof(recievebuff) - 1, 20 / portTICK_PERIOD_MS);
