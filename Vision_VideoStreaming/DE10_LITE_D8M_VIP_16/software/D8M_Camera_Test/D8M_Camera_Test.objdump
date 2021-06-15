@@ -403,7 +403,7 @@ SYMBOL TABLE:
 0003142c g     F .text	000000c8 altera_avalon_jtag_uart_init
 000201d0 g     F .exceptions	00000074 alt_instruction_exception_entry
 00033758 g       *ABS*	00000000 __CTOR_LIST__
-00038ce0 g       *ABS*	00000000 __alt_stack_pointer
+00038e70 g       *ABS*	00000000 __alt_stack_pointer
 00031db8 g     F .text	0000008c alt_avalon_timer_sc_init
 00031ea4 g     F .text	00000060 altera_avalon_uart_write_fd
 000301fc g     F .text	00000064 .hidden __clzsi2
@@ -472,7 +472,7 @@ SYMBOL TABLE:
 0002cb78 g     F .text	00000018 __swbuf
 00022e68 g     F .text	0000022c _fread_r
 00024c70 g     F .text	00000008 __sclose
-00038ce0 g       *ABS*	00000000 __alt_heap_limit
+00038e70 g       *ABS*	00000000 __alt_heap_limit
 0002cd44 g     F .text	00000014 fclose
 000273e8 g     F .text	00001688 _dtoa_r
 00023cbc g     F .text	0000080c _malloc_r
@@ -533,7 +533,7 @@ SYMBOL TABLE:
 000296e4 g     F .text	000000c4 _fwalk_reent
 0002a4a0 g     F .text	000001fc __mdiff
 00022c2c g     F .text	00000074 .hidden __modsi3
-00038ce0 g       *ABS*	00000000 __alt_data_end
+00038e70 g       *ABS*	00000000 __alt_data_end
 00020020 g     F .exceptions	00000000 alt_exception
 0002907c g     F .text	00000004 __sfp_lock_release
 000214ac g     F .text	00000098 mipi_show_error_info
@@ -1024,7 +1024,7 @@ Disassembly of section .text:
     movhi sp, %hi(__alt_stack_pointer)
    20254:	06c000f4 	movhi	sp,3
     ori sp, sp, %lo(__alt_stack_pointer)
-   20258:	dee33814 	ori	sp,sp,36064
+   20258:	dee39c14 	ori	sp,sp,36464
     movhi gp, %hi(_gp)
    2025c:	068000f4 	movhi	gp,3
     ori gp, gp, %lo(_gp)
@@ -20451,7 +20451,7 @@ static ALT_INLINE alt_irq_context ALT_ALWAYS_INLINE
    30e50:	e0bfff17 	ldw	r2,-4(fp)
    30e54:	1887883a 	add	r3,r3,r2
    30e58:	00800134 	movhi	r2,4
-   30e5c:	10a33804 	addi	r2,r2,-29472
+   30e5c:	10a39c04 	addi	r2,r2,-29072
    30e60:	10c0062e 	bgeu	r2,r3,30e7c <sbrk+0x74>
    30e64:	e0bffb17 	ldw	r2,-20(fp)
    30e68:	e0bffa15 	stw	r2,-24(fp)
