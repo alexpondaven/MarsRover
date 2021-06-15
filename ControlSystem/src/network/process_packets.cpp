@@ -4,6 +4,8 @@
 #include "esp_log.h"
 #include <string>
 
+#define PI 3.1415926
+
 extern TaskHandle_t exploration_task;
 
 extern "C" size_t prepare_TCP_packet(char * buff, size_t buffsize) {
@@ -64,8 +66,8 @@ extern "C" size_t prepare_TCP_packet(char * buff, size_t buffsize) {
         cls[i] = i+1;
       }
       
-      ags[i] = obs.obstacles[i].angle;
-      dts[i] = obs.obstacles[i].distance;
+      ags[i] = (int) (obs.obstacles[i].angle * ((float) 180) / PI);
+      dts[i] = (int) obs.obstacles[i].distance;
     }
     int sz;
     if (  (sz = measureJson(doc)) > buffsize) {
