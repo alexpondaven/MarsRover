@@ -4,7 +4,7 @@ function WeatherCard() {
     const [x,set] = useState([]);
 
     const getData = async() => {
-        fetch('http://api.openweathermap.org/data/2.5/weather?q=London&appid=c82ce8c030b7a29097a5c92e0586c51f')
+        fetch('http://api.openweathermap.org/data/2.5/weather?q=London&appid=token')
           .then(response => response.json())
           .then(response => set([Number(response.main.temp),Number(response.main.humidity),response.weather[0].description]) )
         //   .then(response => console.log(response))
